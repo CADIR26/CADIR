@@ -2171,10 +2171,15 @@ function saveSettings() {
 
     function lfStartAutoSync() {
         if (_lfAutoSaveTimer) clearInterval(_lfAutoSaveTimer);
-        // Auto-save every 15 seconds if dirty
+        // Take initial snapshot
+        _lfLastSnapshot = lfComputeSnapshot();
+        // Poll every 5 seconds for changes + save if dirty
         _lfAutoSaveTimer = setInterval(function() {
-            if (_lfDirty && _lfDirHandle) lfWriteToFolder();
-        }, 15000);
+            lfPollForChanges();
+            if (_lfDirty && _lfDirHandle && !_lfSaving) {
+                lfWriteToFolder();
+            }
+        }, 5000);
         lfShowSyncIndicator();
     }
 
@@ -2268,14 +2273,45 @@ function saveSettings() {
         if (el) el.innerHTML = '<span style="color:' + (color||'#888') + ';">' + html + '</span>';
     }
 
-    // ── Hook: intercept all localStorage writes to mark dirty ──
-    (function() {
-        var origSetItem = localStorage.setItem.bind(localStorage);
-        localStorage.setItem = function(key, value) {
-            origSetItem(key, value);
-            if (_lfDirHandle && key !== 'pilote_lf') { _lfDirty = true; }
-        };
-    })();
+    // ── Sync Engine: poll ALL modules data for changes ──
+    var _lfLastSnapshot = '';
+
+    function lfComputeSnapshot() {
+        // Build a lightweight fingerprint of ALL data across ALL modules
+        var parts = [];
+        // 1. Wrapper localStorage
+        try {
+            for (var i = 0; i < localStorage.length; i++) {
+                var k = localStorage.key(i);
+                parts.push(k + '=' + (localStorage.getItem(k) || '').length);
+            }
+        } catch(e) {}
+        // 2. All iframe modules localStorage
+        var frames = ['frame-perdir', 'frame-exam', 'frame-oral', 'frame-aed', 'frame-bibase'];
+        frames.forEach(function(fid) {
+            var fr = document.getElementById(fid);
+            if (fr && fr.contentWindow) {
+                try {
+                    var ls = fr.contentWindow.localStorage;
+                    for (var j = 0; j < ls.length; j++) {
+                        var k2 = ls.key(j);
+                        parts.push(fid + ':' + k2 + '=' + (ls.getItem(k2) || '').length);
+                    }
+                } catch(e2) {}
+            }
+        });
+        return parts.sort().join('|');
+    }
+
+    function lfPollForChanges() {
+        if (!_lfDirHandle || _lfSaving) return;
+        var snap = lfComputeSnapshot();
+        if (snap !== _lfLastSnapshot) {
+            _lfLastSnapshot = snap;
+            _lfDirty = true;
+            lfUpdateSyncIndicator('Modifications détectées…', '#f39c12');
+        }
+    }
 
     // ── Init on page load ──
     // Fallback if DOMContentLoaded already fired
@@ -2283,42 +2319,22 @@ function saveSettings() {
     window.addEventListener('DOMContentLoaded', function() {
         setTimeout(function() {
             lfInitMode();
-            // Auto-load if localfolder is configured and handle exists
-            var cfg = getCloudConfig ? getCloudConfig() : {};
-            if (cfg.provider === 'localfolder' && _lfHasAPI) {
-                setTimeout(async function() {
-                    if (_lfDirHandle) {
-                        // Check if local file is newer than localStorage
-                        try {
-                            var fh = await _lfDirHandle.getFileHandle('pilote_data.json');
-                            var file = await fh.getFile();
-                            var meta = JSON.parse(await file.text())._cloudMeta;
-                            if (meta && meta.lastPush) {
-                                var ms = JSON.parse(localStorage.getItem('pilote_master_settings') || '{}');
-                                var localTime = ms._lastSave || '2000-01-01';
-                                if (meta.lastPush > localTime) {
-                                    console.log('Local folder data is newer, consider reloading');
-                                }
-                            }
-                        } catch(e) {}
-                    }
-                }, 2000);
-            }
         }, 500);
     });
 
     // ── Save before leaving ──
     window.addEventListener('beforeunload', function() {
         if (_lfDirHandle && _lfDirty) {
+            // Synchronous attempt — may not complete but worth trying
             try { lfWriteToFolder(); } catch(e) {}
         }
     });
 
-    // ── Listen for module data changes via postMessage ──
-    window.addEventListener('message', function(e) {
-        if (e.data && (e.data.type === 'pilote-data-changed' || e.data.type === 'pilote-shortcut')) return;
-        // Any message from modules = potential data change
-        if (_lfDirHandle && e.source !== window) { _lfDirty = true; }
+    // ── Save when tab becomes hidden (user switches tab/app) ──
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden && _lfDirHandle && _lfDirty) {
+            lfWriteToFolder();
+        }
     });
 
     async function cloudPush() {
@@ -2352,7 +2368,7 @@ function saveSettings() {
         if (cfg.provider === 'gist' && (!cfg.gistToken || !cfg.gistId)) return alert('Token et Gist ID requis');
         if (cfg.provider === 'webdav' && !cfg.wdUrl) return alert('URL WebDAV requise');
         if (cfg.provider === 'gdrive' && (!_gdriveToken || !cfg.gdriveFileId)) return alert('Connectez Google Drive et renseignez le File ID');
-        if (cfg.provider === 'localfolder') { lfForceSave(); return; }
+        if (cfg.provider === 'localfolder') { lfForceLoad(); return; }
 
         cloudSetStatus('<i class="fas fa-spinner fa-spin"></i> Récupération...', '#3498db');
         try {
@@ -2388,7 +2404,13 @@ function saveSettings() {
                 } catch(e) {}
             }
         });
-        allData['__master__settings'] = localStorage.getItem('pilote_master_settings') || '{}';
+        // Wrapper localStorage (settings, bibase_establishment, etc.)
+        try {
+            for (var wi = 0; wi < localStorage.length; wi++) {
+                var wk = localStorage.key(wi);
+                allData['__wrapper__' + wk] = localStorage.getItem(wk);
+            }
+        } catch(e) {}
         return allData;
     }
 
@@ -2407,7 +2429,12 @@ function saveSettings() {
                 } catch(e) {}
             }
         });
-        if (record['__master__settings']) localStorage.setItem('pilote_master_settings', record['__master__settings']);
+        // Restore wrapper localStorage
+        Object.keys(record).forEach(function(k) {
+            if (k.indexOf('__wrapper__') === 0) {
+                try { localStorage.setItem(k.substring(11), record[k]); } catch(e3) {}
+            }
+        });
     }
 
     // Auto-sync hook
