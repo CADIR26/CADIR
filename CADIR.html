@@ -451,7 +451,7 @@
                                     <button class="cloud-prov-btn" data-prov="gist" onclick="selectCloudProvider('gist')"><i class="fab fa-github" style="color:#333"></i> GitHub Gist<br><small>Gratuit &bull; Illimité</small></button>
                                     <button class="cloud-prov-btn" data-prov="webdav" onclick="selectCloudProvider('webdav')"><i class="fas fa-server" style="color:#e67e22"></i> WebDAV / FTP<br><small>Serveur perso</small></button>
                                     <button class="cloud-prov-btn" data-prov="gdrive" onclick="selectCloudProvider('gdrive')"><i class="fab fa-google-drive" style="color:#0f9d58"></i> Google Drive<br><small>OAuth2</small></button>
-                                    <button class="cloud-prov-btn" data-prov="onedrive" onclick="selectCloudProvider('onedrive')"><i class="fab fa-microsoft" style="color:#0078d4"></i> OneDrive Local<br><small>Dossier synchronisé</small></button>
+                                    <button class="cloud-prov-btn" data-prov="localfolder" onclick="selectCloudProvider('localfolder')"><i class="fas fa-folder-open" style="color:#0078d4"></i> Dossier Local<br><small>OneDrive / GDrive / Dropbox</small></button>
                                 </div>
                             </div>
                             <div id="cloud-cfg-jsonbin">
@@ -477,13 +477,37 @@
                                 <button class="backup-btn" onclick="gdriveAuth()" style="margin-top:8px;background:#0f9d58;color:#fff;border-color:#0f9d58;"><i class="fab fa-google"></i> Connecter Google Drive</button>
                                 <span id="gdrive-auth-status" style="font-size:.72rem;color:#888;margin-left:8px;"></span>
                             </div>
-                            <div id="cloud-cfg-onedrive" style="display:none;">
-                                <small style="color:#666;display:block;margin-bottom:8px;line-height:1.4;">Stockez vos données dans un <b>dossier local synchronisé OneDrive</b> (ou Dropbox, iCloud…). Utilise l'API File System Access du navigateur pour lire/écrire directement dans le dossier choisi.</small>
-                                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                                    <button class="backup-btn" onclick="onedrivePickFolder()" style="background:#0078d4;color:#fff;border-color:#0078d4;"><i class="fab fa-microsoft"></i> Choisir le dossier OneDrive</button>
-                                    <span id="onedrive-folder-status" style="font-size:.72rem;color:#888;"></span>
+                            <div id="cloud-cfg-localfolder" style="display:none;">
+                                <div id="lf-mode-auto" style="display:none;">
+                                    <small style="color:#666;display:block;margin-bottom:10px;line-height:1.4;"><b>Mode automatique</b> — Toutes vos données sont synchronisées en temps réel dans le dossier local choisi (OneDrive, Google Drive, Dropbox…).</small>
+                                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+                                        <button class="backup-btn" onclick="lfPickFolder()" style="background:#0078d4;color:#fff;border-color:#0078d4;" id="lf-pick-btn"><i class="fas fa-folder-open"></i> Choisir le dossier</button>
+                                        <span id="lf-auto-status" style="font-size:.72rem;color:#888;"></span>
+                                    </div>
+                                    <div id="lf-auto-actions" style="display:none;margin-top:6px;">
+                                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                                            <button class="backup-btn" onclick="lfForceSave()" style="background:#27ae60;color:#fff;border-color:#27ae60;font-size:.72rem;padding:6px 12px;"><i class="fas fa-save"></i> Forcer la sauvegarde</button>
+                                            <button class="backup-btn" onclick="lfForceLoad()" style="background:#3498db;color:#fff;border-color:#3498db;font-size:.72rem;padding:6px 12px;"><i class="fas fa-sync"></i> Recharger depuis le fichier</button>
+                                        </div>
+                                    </div>
+                                    <small style="color:#aaa;display:block;margin-top:8px;"><i class="fas fa-info-circle"></i> Le fichier <code>pilote_data.json</code> est automatiquement mis à jour dans le dossier sélectionné à chaque modification.</small>
                                 </div>
-                                <small style="color:#aaa;display:block;margin-top:6px;"><i class="fas fa-info-circle"></i> Le fichier <code>pilote_data.json</code> sera créé/mis à jour dans le dossier sélectionné. Compatible Chrome, Edge, Opera.</small>
+                                <div id="lf-mode-manual">
+                                    <small style="color:#666;display:block;margin-bottom:10px;line-height:1.4;">Sauvegardez vos données dans un fichier <code>pilote_data.json</code> que vous placez dans votre <b>dossier synchronisé</b> (OneDrive, Google Drive, Dropbox…).</small>
+                                    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+                                        <button class="backup-btn" onclick="localFolderExport()" style="background:#0078d4;color:#fff;border-color:#0078d4;"><i class="fas fa-download"></i> Exporter</button>
+                                        <label class="backup-btn" style="background:#27ae60;color:#fff;border-color:#27ae60;cursor:pointer;margin:0;"><i class="fas fa-upload"></i> Importer
+                                            <input type="file" id="localfolder-import" accept=".json" style="display:none;" onchange="localFolderImport(this)">
+                                        </label>
+                                    </div>
+                                    <span id="localfolder-status" style="font-size:.72rem;color:#888;display:block;margin-top:4px;"></span>
+                                    <div style="background:#fffbea;border:1px solid #f0d060;border-radius:8px;padding:10px 12px;margin-top:10px;">
+                                        <small style="color:#8a6d00;line-height:1.5;display:block;"><i class="fas fa-lightbulb" style="color:#f0a030;"></i> <b>Astuce — Synchronisation automatique :</b><br>
+                                        Lancez un mini-serveur local pour activer l'écriture directe dans votre dossier :<br>
+                                        <code style="background:#fff;padding:3px 8px;border-radius:4px;display:inline-block;margin:4px 0;user-select:all;cursor:pointer;" onclick="navigator.clipboard.writeText(this.textContent)" title="Cliquer pour copier">python3 -m http.server 8080</code><br>
+                                        puis ouvrez <code style="user-select:all;cursor:pointer;" onclick="navigator.clipboard.writeText('http://localhost:8080/PILOTE_Suite.html')">http://localhost:8080/PILOTE_Suite.html</code></small>
+                                    </div>
+                                </div>
                             </div>
                             <div id="cloud-cfg-webdav" style="display:none;">
                                 <small style="color:#666;display:block;margin-bottom:8px;line-height:1.4;">Connectez un serveur <b>WebDAV</b> (Nextcloud, OwnCloud, Synology, NAS…). Le protocole FTP natif n'est pas supporté par les navigateurs — utilisez un proxy WebDAV.</small>
@@ -647,6 +671,7 @@
 
     <div class="bottom-bar">
         <div><span class="status-dot"></span>Tous les modules opérationnels</div>
+        <div id="lf-sync-indicator" style="display:none;font-size:.7rem;color:#888;cursor:pointer;" onclick="lfForceSave()" title="Cliquer pour forcer la sauvegarde"><i class="fas fa-circle" style="color:#27ae60;font-size:.5rem;vertical-align:middle;margin-right:4px;"></i><span id="lf-sync-text">Synchronisé</span></div>
         <div id="bottomBarInfo">CADIR Suite — Direction</div>
     </div>
 
@@ -858,6 +883,7 @@ function saveSettings() {
             }
         } catch(e) {}
         closeSettings();
+        if (_lfDirHandle) { lfMarkDirty(); setTimeout(function(){ lfWriteToFolder(); }, 500); }
     }
 
 
@@ -1841,7 +1867,7 @@ function saveSettings() {
 
     function selectCloudProvider(prov) {
         _cloudProvider = prov;
-        ['jsonbin','gist','webdav','gdrive','onedrive'].forEach(function(p) {
+        ['jsonbin','gist','webdav','gdrive','localfolder'].forEach(function(p) {
             var el = document.getElementById('cloud-cfg-' + p);
             if (el) el.style.display = p === prov ? 'block' : 'none';
             var btn = document.querySelector('.cloud-prov-btn[data-prov="'+p+'"]');
@@ -2012,97 +2038,282 @@ function saveSettings() {
     }
 
     // ── Dispatcher ──
-    async // ── OneDrive Local (File System Access API) ──
-    var _onedriveDirHandle = null;
+    async // ── Dossier Local (auto-sync via File System Access + fallback manuel) ──
+    var _lfDirHandle = null;
+    var _lfAutoSaveTimer = null;
+    var _lfDirty = false;
+    var _lfSaving = false;
+    var _lfHasAPI = (typeof window.showDirectoryPicker === 'function');
 
-    async function onedrivePickFolder() {
+    // ── Détection du mode et initialisation ──
+    function lfInitMode() {
+        if (_lfHasAPI) {
+            var autoDiv = document.getElementById('lf-mode-auto');
+            var manDiv = document.getElementById('lf-mode-manual');
+            if (autoDiv) autoDiv.style.display = 'block';
+            if (manDiv) manDiv.style.display = 'none';
+            lfRestoreHandle();
+        } else {
+            var autoDiv = document.getElementById('lf-mode-auto');
+            var manDiv = document.getElementById('lf-mode-manual');
+            if (autoDiv) autoDiv.style.display = 'none';
+            if (manDiv) manDiv.style.display = 'block';
+        }
+    }
+
+    // ── File System Access API (auto mode) ──
+    async function lfPickFolder() {
         try {
-            if (!window.showDirectoryPicker) {
-                alert('Votre navigateur ne supporte pas l\'API File System Access.\nUtilisez Chrome, Edge ou Opera.');
-                return;
-            }
-            _onedriveDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-            // Persist handle in IndexedDB
-            await _odSaveHandle(_onedriveDirHandle);
-            document.getElementById('onedrive-folder-status').innerHTML = '<span style="color:#27ae60;"><i class="fas fa-check-circle"></i> ' + _onedriveDirHandle.name + '</span>';
+            _lfDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+            await lfSaveHandleToIDB(_lfDirHandle);
+            lfSetAutoStatus('<i class="fas fa-check-circle"></i> ' + _lfDirHandle.name, '#27ae60');
+            document.getElementById('lf-auto-actions').style.display = 'block';
+            lfStartAutoSync();
+            // Initial save
+            await lfWriteToFolder();
         } catch(e) {
-            if (e.name !== 'AbortError') {
-                document.getElementById('onedrive-folder-status').innerHTML = '<span style="color:#e74c3c;"><i class="fas fa-times"></i> ' + e.message + '</span>';
-            }
+            if (e.name !== 'AbortError') lfSetAutoStatus('<i class="fas fa-times"></i> ' + e.message, '#e74c3c');
         }
     }
 
-    async function _odSaveHandle(handle) {
-        return new Promise(function(resolve, reject) {
-            var req = indexedDB.open('pilote_onedrive', 1);
-            req.onupgradeneeded = function(e) { e.target.result.createObjectStore('handles'); };
+    async function lfSaveHandleToIDB(handle) {
+        return new Promise(function(res, rej) {
+            var req = indexedDB.open('pilote_lf', 1);
+            req.onupgradeneeded = function(e) { e.target.result.createObjectStore('h'); };
             req.onsuccess = function(e) {
-                var db = e.target.result;
-                var tx = db.transaction('handles', 'readwrite');
-                tx.objectStore('handles').put(handle, 'dirHandle');
-                tx.oncomplete = function() { resolve(); };
-                tx.onerror = function() { reject(tx.error); };
+                var tx = e.target.result.transaction('h', 'readwrite');
+                tx.objectStore('h').put(handle, 'dir');
+                tx.oncomplete = res; tx.onerror = function() { rej(tx.error); };
             };
-            req.onerror = function() { reject(req.error); };
+            req.onerror = function() { rej(req.error); };
         });
     }
 
-    async function _odLoadHandle() {
-        return new Promise(function(resolve, reject) {
-            var req = indexedDB.open('pilote_onedrive', 1);
-            req.onupgradeneeded = function(e) { e.target.result.createObjectStore('handles'); };
+    async function lfLoadHandleFromIDB() {
+        return new Promise(function(res) {
+            var req = indexedDB.open('pilote_lf', 1);
+            req.onupgradeneeded = function(e) { e.target.result.createObjectStore('h'); };
             req.onsuccess = function(e) {
-                var db = e.target.result;
-                var tx = db.transaction('handles', 'readonly');
-                var get = tx.objectStore('handles').get('dirHandle');
-                get.onsuccess = function() { resolve(get.result || null); };
-                get.onerror = function() { resolve(null); };
+                var tx = e.target.result.transaction('h', 'readonly');
+                var g = tx.objectStore('h').get('dir');
+                g.onsuccess = function() { res(g.result || null); };
+                g.onerror = function() { res(null); };
             };
-            req.onerror = function() { resolve(null); };
+            req.onerror = function() { res(null); };
         });
     }
 
-    async function _odEnsureHandle() {
-        if (_onedriveDirHandle) return _onedriveDirHandle;
-        _onedriveDirHandle = await _odLoadHandle();
-        if (!_onedriveDirHandle) throw new Error('Aucun dossier sélectionné. Cliquez "Choisir le dossier OneDrive".');
-        // Verify permission
-        var perm = await _onedriveDirHandle.queryPermission({ mode: 'readwrite' });
-        if (perm !== 'granted') {
-            perm = await _onedriveDirHandle.requestPermission({ mode: 'readwrite' });
-            if (perm !== 'granted') throw new Error('Permission refusée pour le dossier');
-        }
-        document.getElementById('onedrive-folder-status').innerHTML = '<span style="color:#27ae60;"><i class="fas fa-check-circle"></i> ' + _onedriveDirHandle.name + '</span>';
-        return _onedriveDirHandle;
-    }
-
-    async function onedrivePush(data) {
-        var dir = await _odEnsureHandle();
-        var fileHandle = await dir.getFileHandle('pilote_data.json', { create: true });
-        var writable = await fileHandle.createWritable();
-        await writable.write(JSON.stringify(data, null, 2));
-        await writable.close();
-    }
-
-    async function onedrivePull() {
-        var dir = await _odEnsureHandle();
-        var fileHandle = await dir.getFileHandle('pilote_data.json');
-        var file = await fileHandle.getFile();
-        var text = await file.text();
-        return JSON.parse(text);
-    }
-
-    // Restore OneDrive handle on page load
-    (async function() {
+    async function lfRestoreHandle() {
         try {
-            var h = await _odLoadHandle();
-            if (h) {
-                _onedriveDirHandle = h;
-                var statusEl = document.getElementById('onedrive-folder-status');
-                if (statusEl) statusEl.innerHTML = '<span style="color:#27ae60;"><i class="fas fa-link"></i> ' + h.name + ' (reconnecté)</span>';
+            var h = await lfLoadHandleFromIDB();
+            if (!h) return;
+            var perm = await h.queryPermission({ mode: 'readwrite' });
+            if (perm === 'granted') {
+                _lfDirHandle = h;
+                lfSetAutoStatus('<i class="fas fa-link"></i> ' + h.name + ' (reconnecté)', '#27ae60');
+                document.getElementById('lf-auto-actions').style.display = 'block';
+                lfStartAutoSync();
+                lfShowSyncIndicator();
+            } else {
+                lfSetAutoStatus('<i class="fas fa-lock"></i> ' + h.name + ' — cliquez pour réautoriser', '#e67e22');
+                document.getElementById('lf-pick-btn').innerHTML = '<i class="fas fa-lock-open"></i> Réautoriser ' + h.name;
             }
-        } catch(e) {}
+        } catch(e) { console.warn('lfRestoreHandle:', e); }
+    }
+
+    async function lfEnsurePermission() {
+        if (!_lfDirHandle) return false;
+        var perm = await _lfDirHandle.queryPermission({ mode: 'readwrite' });
+        if (perm === 'granted') return true;
+        perm = await _lfDirHandle.requestPermission({ mode: 'readwrite' });
+        return perm === 'granted';
+    }
+
+    async function lfWriteToFolder() {
+        if (!_lfDirHandle || _lfSaving) return;
+        _lfSaving = true;
+        try {
+            if (!await lfEnsurePermission()) throw new Error('Permission refusée');
+            var allData = collectAllModulesData();
+            allData._cloudMeta = { lastPush: new Date().toISOString(), provider: 'localfolder' };
+            var json = JSON.stringify(allData, null, 2);
+            var fh = await _lfDirHandle.getFileHandle('pilote_data.json', { create: true });
+            var w = await fh.createWritable();
+            await w.write(json);
+            await w.close();
+            _lfDirty = false;
+            lfUpdateSyncIndicator('Synchronisé ' + new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'}), '#27ae60');
+        } catch(err) {
+            console.error('lfWriteToFolder:', err);
+            lfUpdateSyncIndicator('Erreur sync', '#e74c3c');
+        }
+        _lfSaving = false;
+    }
+
+    async function lfReadFromFolder() {
+        if (!_lfDirHandle) return null;
+        try {
+            if (!await lfEnsurePermission()) return null;
+            var fh = await _lfDirHandle.getFileHandle('pilote_data.json');
+            var file = await fh.getFile();
+            var text = await file.text();
+            return JSON.parse(text);
+        } catch(e) {
+            if (e.name === 'NotFoundError') return null;
+            console.error('lfReadFromFolder:', e);
+            return null;
+        }
+    }
+
+    function lfStartAutoSync() {
+        if (_lfAutoSaveTimer) clearInterval(_lfAutoSaveTimer);
+        // Auto-save every 15 seconds if dirty
+        _lfAutoSaveTimer = setInterval(function() {
+            if (_lfDirty && _lfDirHandle) lfWriteToFolder();
+        }, 15000);
+        lfShowSyncIndicator();
+    }
+
+    function lfMarkDirty() {
+        _lfDirty = true;
+        lfUpdateSyncIndicator('Modifications non sauvegardées…', '#f39c12');
+    }
+
+    async function lfForceSave() {
+        if (_lfDirHandle) {
+            lfUpdateSyncIndicator('<i class="fas fa-spinner fa-spin"></i> Sauvegarde...', '#3498db');
+            lfSetAutoStatus('<i class="fas fa-spinner fa-spin"></i> Sauvegarde en cours...', '#3498db');
+            await lfWriteToFolder();
+            lfSetAutoStatus('<i class="fas fa-check-circle"></i> Sauvegardé ' + new Date().toLocaleTimeString('fr-FR'), '#27ae60');
+        } else {
+            localFolderExport();
+        }
+    }
+
+    async function lfForceLoad() {
+        if (!_lfDirHandle) { document.getElementById('localfolder-import').click(); return; }
+        lfSetAutoStatus('<i class="fas fa-spinner fa-spin"></i> Chargement...', '#3498db');
+        var data = await lfReadFromFolder();
+        if (data) {
+            distributeToModules(data);
+            var meta = data._cloudMeta || {};
+            lfSetAutoStatus('<i class="fas fa-check-circle"></i> Restauré (' + (meta.lastPush ? new Date(meta.lastPush).toLocaleString('fr-FR') : '?') + ')', '#27ae60');
+            alert('✅ Données importées ! Rechargez la page pour appliquer.');
+        } else {
+            lfSetAutoStatus('<i class="fas fa-exclamation-triangle"></i> Aucun fichier trouvé', '#e67e22');
+        }
+    }
+
+    // ── UI helpers ──
+    function lfSetAutoStatus(html, color) {
+        var el = document.getElementById('lf-auto-status');
+        if (el) el.innerHTML = '<span style="color:' + (color||'#888') + ';">' + html + '</span>';
+    }
+
+    function lfShowSyncIndicator() {
+        var el = document.getElementById('lf-sync-indicator');
+        if (el) el.style.display = 'block';
+    }
+
+    function lfUpdateSyncIndicator(text, color) {
+        var dot = document.querySelector('#lf-sync-indicator i');
+        var span = document.getElementById('lf-sync-text');
+        if (dot) dot.style.color = color || '#888';
+        if (span) span.textContent = text;
+        lfShowSyncIndicator();
+    }
+
+    // ── Manual mode (fallback file://) ──
+    function localFolderExport() {
+        try {
+            localFolderSetStatus('<i class="fas fa-spinner fa-spin"></i> Préparation...', '#f39c12');
+            var allData = collectAllModulesData();
+            allData._cloudMeta = { lastPush: new Date().toISOString(), provider: 'localfolder' };
+            var json = JSON.stringify(allData, null, 2);
+            var blob = new Blob([json], { type: 'application/json' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url; a.download = 'pilote_data.json';
+            document.body.appendChild(a); a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            localFolderSetStatus('✅ Fichier téléchargé', '#27ae60');
+        } catch(err) { localFolderSetStatus('❌ ' + err.message, '#e74c3c'); }
+    }
+
+    function localFolderImport(input) {
+        var file = input.files[0]; if (!file) return;
+        localFolderSetStatus('<i class="fas fa-spinner fa-spin"></i> Lecture...', '#3498db');
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                var data = JSON.parse(e.target.result);
+                if (!data || typeof data !== 'object') throw new Error('Format invalide');
+                distributeToModules(data);
+                var meta = data._cloudMeta || {};
+                localFolderSetStatus('✅ Importé (' + (meta.lastPush ? new Date(meta.lastPush).toLocaleString('fr-FR') : '?') + ')', '#27ae60');
+                alert('✅ Données importées ! Rechargez la page pour appliquer.');
+            } catch(err) { localFolderSetStatus('❌ ' + err.message, '#e74c3c'); }
+        };
+        reader.readAsText(file);
+        input.value = '';
+    }
+
+    function localFolderSetStatus(html, color) {
+        var el = document.getElementById('localfolder-status');
+        if (el) el.innerHTML = '<span style="color:' + (color||'#888') + ';">' + html + '</span>';
+    }
+
+    // ── Hook: intercept all localStorage writes to mark dirty ──
+    (function() {
+        var origSetItem = localStorage.setItem.bind(localStorage);
+        localStorage.setItem = function(key, value) {
+            origSetItem(key, value);
+            if (_lfDirHandle && key !== 'pilote_lf') { _lfDirty = true; }
+        };
     })();
+
+    // ── Init on page load ──
+    window.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            lfInitMode();
+            // Auto-load if localfolder is configured and handle exists
+            var cfg = getCloudConfig ? getCloudConfig() : {};
+            if (cfg.provider === 'localfolder' && _lfHasAPI) {
+                setTimeout(async function() {
+                    if (_lfDirHandle) {
+                        // Check if local file is newer than localStorage
+                        try {
+                            var fh = await _lfDirHandle.getFileHandle('pilote_data.json');
+                            var file = await fh.getFile();
+                            var meta = JSON.parse(await file.text())._cloudMeta;
+                            if (meta && meta.lastPush) {
+                                var ms = JSON.parse(localStorage.getItem('pilote_master_settings') || '{}');
+                                var localTime = ms._lastSave || '2000-01-01';
+                                if (meta.lastPush > localTime) {
+                                    console.log('Local folder data is newer, consider reloading');
+                                }
+                            }
+                        } catch(e) {}
+                    }
+                }, 2000);
+            }
+        }, 500);
+    });
+
+    // ── Save before leaving ──
+    window.addEventListener('beforeunload', function() {
+        if (_lfDirHandle && _lfDirty) {
+            try { lfWriteToFolder(); } catch(e) {}
+        }
+    });
+
+    // ── Listen for module data changes via postMessage ──
+    window.addEventListener('message', function(e) {
+        if (e.data && (e.data.type === 'pilote-data-changed' || e.data.type === 'pilote-shortcut')) return;
+        // Any message from modules = potential data change
+        if (_lfDirHandle && e.source !== window) { _lfDirty = true; }
+    });
 
     async function cloudPush() {
         var cfg = getCloudConfig();
@@ -2110,7 +2321,7 @@ function saveSettings() {
         if (cfg.provider === 'gist' && !cfg.gistToken) return alert('Saisissez votre GitHub Personal Access Token');
         if (cfg.provider === 'webdav' && !cfg.wdUrl) return alert('Saisissez l\'URL de votre serveur WebDAV');
         if (cfg.provider === 'gdrive' && !_gdriveToken) return alert('Connectez-vous à Google Drive');
-        if (cfg.provider === 'onedrive' && !_onedriveDirHandle) { try { await _odEnsureHandle(); } catch(e) { return alert(e.message); } }
+        if (cfg.provider === 'localfolder') { lfForceSave(); return; }
 
         cloudSetStatus('<i class="fas fa-spinner fa-spin"></i> Envoi en cours...', '#f39c12');
         try {
@@ -2121,7 +2332,7 @@ function saveSettings() {
             else if (cfg.provider === 'gist') await gistPush(allData, cfg);
             else if (cfg.provider === 'webdav') await webdavPush(allData, cfg);
             else if (cfg.provider === 'gdrive') await gdrivePush(allData, cfg);
-            else if (cfg.provider === 'onedrive') await onedrivePush(allData);
+            
 
             cloudSetStatus('✅ Envoyé le ' + new Date().toLocaleString('fr-FR') + ' via ' + cfg.provider, '#27ae60');
         } catch (err) {
@@ -2135,7 +2346,7 @@ function saveSettings() {
         if (cfg.provider === 'gist' && (!cfg.gistToken || !cfg.gistId)) return alert('Token et Gist ID requis');
         if (cfg.provider === 'webdav' && !cfg.wdUrl) return alert('URL WebDAV requise');
         if (cfg.provider === 'gdrive' && (!_gdriveToken || !cfg.gdriveFileId)) return alert('Connectez Google Drive et renseignez le File ID');
-        if (cfg.provider === 'onedrive' && !_onedriveDirHandle) { try { await _odEnsureHandle(); } catch(e) { return alert(e.message); } }
+        if (cfg.provider === 'localfolder') { lfForceSave(); return; }
 
         cloudSetStatus('<i class="fas fa-spinner fa-spin"></i> Récupération...', '#3498db');
         try {
@@ -2144,7 +2355,7 @@ function saveSettings() {
             else if (cfg.provider === 'gist') record = await gistPull(cfg);
             else if (cfg.provider === 'webdav') record = await webdavPull(cfg);
             else if (cfg.provider === 'gdrive') record = await gdrivePull(cfg);
-            else if (cfg.provider === 'onedrive') record = await onedrivePull();
+            
 
             if (!record) throw new Error('Données vides');
             distributeToModules(record);
