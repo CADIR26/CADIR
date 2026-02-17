@@ -951,7 +951,9 @@ function saveSettings() {
     }
 
     function openSettings() {
-        renderPerdirSubmenus(); loadSettingsUI(); loadBibSettingsUI(); document.getElementById('settingsOverlay').classList.add('open'); }
+        renderPerdirSubmenus(); loadSettingsUI(); loadBibSettingsUI();
+        if (typeof lfInitMode === 'function') lfInitMode();
+        document.getElementById('settingsOverlay').classList.add('open'); }
     
     var _gcalAccessToken = null;
     var _gcalCalsData = [];
@@ -1873,6 +1875,7 @@ function saveSettings() {
             var btn = document.querySelector('.cloud-prov-btn[data-prov="'+p+'"]');
             if (btn) btn.classList.toggle('active', p === prov);
         });
+        if (prov === 'localfolder' && typeof lfInitMode === 'function') lfInitMode();
     }
 
     function toggleCloudUI() {
@@ -2047,15 +2050,16 @@ function saveSettings() {
 
     // ── Détection du mode et initialisation ──
     function lfInitMode() {
+        var autoDiv = document.getElementById('lf-mode-auto');
+        var manDiv = document.getElementById('lf-mode-manual');
+        // Re-check API availability (may not be set at parse time)
+        _lfHasAPI = !!(window.showDirectoryPicker);
+        console.log('[PILOTE] lfInitMode: File System Access API =', _lfHasAPI, 'protocol =', location.protocol);
         if (_lfHasAPI) {
-            var autoDiv = document.getElementById('lf-mode-auto');
-            var manDiv = document.getElementById('lf-mode-manual');
             if (autoDiv) autoDiv.style.display = 'block';
             if (manDiv) manDiv.style.display = 'none';
             lfRestoreHandle();
         } else {
-            var autoDiv = document.getElementById('lf-mode-auto');
-            var manDiv = document.getElementById('lf-mode-manual');
             if (autoDiv) autoDiv.style.display = 'none';
             if (manDiv) manDiv.style.display = 'block';
         }
@@ -2274,6 +2278,8 @@ function saveSettings() {
     })();
 
     // ── Init on page load ──
+    // Fallback if DOMContentLoaded already fired
+    if (document.readyState !== 'loading') { setTimeout(function() { lfInitMode(); }, 200); }
     window.addEventListener('DOMContentLoaded', function() {
         setTimeout(function() {
             lfInitMode();
