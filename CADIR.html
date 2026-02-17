@@ -844,6 +844,7 @@ function saveSettings() {
             s.signSrc = (signImg && signImg.style.display !== 'none') ? signImg.src : '';
             moduleNames.forEach(function(m) { var tog = document.getElementById('tog-' + m); if(tog) s['show_' + m] = tog.checked; });
             s.navOrder = getCurrentOrderFromList();
+            s._lastSync = new Date().toISOString();
             localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
         } catch(e1) { console.error('saveSettings main:', e1); }
         // 2. Save cloud config (independent)
@@ -2072,6 +2073,8 @@ function saveSettings() {
             await lfSaveHandleToIDB(_lfDirHandle);
             lfSetAutoStatus('<i class="fas fa-check-circle"></i> ' + _lfDirHandle.name, '#27ae60');
             document.getElementById('lf-auto-actions').style.display = 'block';
+            // Check if file already exists in folder (restore if newer)
+            await lfAutoLoadOnStartup();
             lfStartAutoSync();
             // Initial save
             await lfWriteToFolder();
@@ -2114,15 +2117,39 @@ function saveSettings() {
             var perm = await h.queryPermission({ mode: 'readwrite' });
             if (perm === 'granted') {
                 _lfDirHandle = h;
-                lfSetAutoStatus('<i class="fas fa-link"></i> ' + h.name + ' (reconnecté)', '#27ae60');
+                lfSetAutoStatus('<i class="fas fa-spinner fa-spin"></i> Chargement des données...', '#3498db');
                 document.getElementById('lf-auto-actions').style.display = 'block';
-                lfStartAutoSync();
                 lfShowSyncIndicator();
+                // AUTO-LOAD: restore data from file on startup
+                await lfAutoLoadOnStartup();
+                lfSetAutoStatus('<i class="fas fa-link"></i> ' + h.name + ' (synchronisé)', '#27ae60');
+                lfStartAutoSync();
             } else {
                 lfSetAutoStatus('<i class="fas fa-lock"></i> ' + h.name + ' — cliquez pour réautoriser', '#e67e22');
-                document.getElementById('lf-pick-btn').innerHTML = '<i class="fas fa-lock-open"></i> Réautoriser ' + h.name;
+                var btn = document.getElementById('lf-pick-btn');
+                if (btn) btn.innerHTML = '<i class="fas fa-lock-open"></i> Réautoriser ' + h.name;
             }
         } catch(e) { console.warn('lfRestoreHandle:', e); }
+    }
+
+    async function lfAutoLoadOnStartup() {
+        try {
+            var data = await lfReadFromFolder();
+            if (!data) { console.log('[PILOTE] No pilote_data.json found, starting fresh'); return; }
+            var fileMeta = data._cloudMeta || {};
+            var fileTime = fileMeta.lastPush || '2000-01-01';
+            // Compare with local settings timestamp
+            var localSettings = JSON.parse(localStorage.getItem('pilote_suite_settings') || '{}');
+            var localTime = localSettings._lastSync || '2000-01-01';
+            console.log('[PILOTE] File time:', fileTime, '| Local time:', localTime);
+            if (fileTime > localTime) {
+                console.log('[PILOTE] File is newer → restoring all data');
+                distributeToModules(data);
+                lfUpdateSyncIndicator('Données restaurées', '#27ae60');
+            } else {
+                console.log('[PILOTE] Local is current, no restore needed');
+            }
+        } catch(e) { console.warn('lfAutoLoadOnStartup:', e); }
     }
 
     async function lfEnsurePermission() {
@@ -2139,7 +2166,14 @@ function saveSettings() {
         try {
             if (!await lfEnsurePermission()) throw new Error('Permission refusée');
             var allData = collectAllModulesData();
-            allData._cloudMeta = { lastPush: new Date().toISOString(), provider: 'localfolder' };
+            var now = new Date().toISOString();
+            allData._cloudMeta = { lastPush: now, provider: 'localfolder' };
+            // Update local timestamp so we know we're in sync
+            try {
+                var ls = JSON.parse(localStorage.getItem('pilote_suite_settings') || '{}');
+                ls._lastSync = now;
+                localStorage.setItem('pilote_suite_settings', JSON.stringify(ls));
+            } catch(e) {}
             var json = JSON.stringify(allData, null, 2);
             var fh = await _lfDirHandle.getFileHandle('pilote_data.json', { create: true });
             var w = await fh.createWritable();
@@ -2173,13 +2207,13 @@ function saveSettings() {
         if (_lfAutoSaveTimer) clearInterval(_lfAutoSaveTimer);
         // Take initial snapshot
         _lfLastSnapshot = lfComputeSnapshot();
-        // Poll every 5 seconds for changes + save if dirty
+        // Poll every 3 seconds for changes + save if dirty
         _lfAutoSaveTimer = setInterval(function() {
             lfPollForChanges();
             if (_lfDirty && _lfDirHandle && !_lfSaving) {
                 lfWriteToFolder();
             }
-        }, 5000);
+        }, 3000);
         lfShowSyncIndicator();
     }
 
@@ -2276,14 +2310,25 @@ function saveSettings() {
     // ── Sync Engine: poll ALL modules data for changes ──
     var _lfLastSnapshot = '';
 
+    function _lfHash(str) {
+        // DJB2 hash — fast, reliable for change detection
+        var hash = 5381;
+        for (var i = 0; i < str.length; i++) {
+            hash = ((hash << 5) + hash) + str.charCodeAt(i);
+            hash = hash & hash; // Convert to 32-bit integer
+        }
+        return hash.toString(36);
+    }
+
     function lfComputeSnapshot() {
-        // Build a lightweight fingerprint of ALL data across ALL modules
+        // Build a fingerprint of ALL data using content hashes
         var parts = [];
-        // 1. Wrapper localStorage
+        // 1. Wrapper localStorage (pilote_suite_settings, pilote_master_settings, bibase_*)
         try {
             for (var i = 0; i < localStorage.length; i++) {
                 var k = localStorage.key(i);
-                parts.push(k + '=' + (localStorage.getItem(k) || '').length);
+                var v = localStorage.getItem(k) || '';
+                parts.push(k + '=' + v.length + ':' + _lfHash(v));
             }
         } catch(e) {}
         // 2. All iframe modules localStorage
@@ -2295,7 +2340,8 @@ function saveSettings() {
                     var ls = fr.contentWindow.localStorage;
                     for (var j = 0; j < ls.length; j++) {
                         var k2 = ls.key(j);
-                        parts.push(fid + ':' + k2 + '=' + (ls.getItem(k2) || '').length);
+                        var v2 = ls.getItem(k2) || '';
+                        parts.push(fid + ':' + k2 + '=' + v2.length + ':' + _lfHash(v2));
                     }
                 } catch(e2) {}
             }
