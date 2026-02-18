@@ -39,7 +39,7 @@
         .brand-icon img { width:100%; height:100%; object-fit:contain; }
         .brand-text { font-family:var(--font-display); font-size:1.05rem; font-weight:700; color:#fff; }
         .brand-text span { color:var(--c-text-dim); font-family:var(--font); font-weight:400; font-size:0.6rem; display:block; margin-top:-2px; letter-spacing:1.5px; text-transform:uppercase; }
-        .nav-sep { width:1px; height:24px; background:rgba(255,255,255,0.1); margin:0 6px; }
+        .nav-sep { width:3px; height:28px; background:#ffffff; margin:0 8px; border-radius:2px; }
         .nav-items { display:flex; align-items:center; gap:3px; height:100%; }
         .nav-item { display:flex; align-items:center; gap:7px; padding:7px 14px; border-radius:7px; cursor:pointer; transition:all 0.2s; color:var(--c-text-dim); font-size:0.8rem; font-weight:500; position:relative; height:34px; user-select:none; white-space:nowrap; }
         .nav-item:hover { background:var(--c-nav-hover); color:var(--c-text); }
@@ -132,6 +132,14 @@
         .order-icon { width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:0.7rem; flex-shrink:0; }
         .order-label { flex:1; font-size:0.82rem; font-weight:500; color:#333; }
         .order-hint { font-size:0.65rem; color:#aaa; margin-top:6px; }
+        .order-item.sep-item { background:#f0f0f0; border:1px dashed #ccc; padding:6px 14px; cursor:grab; }
+        .order-item.sep-item:active { cursor:grabbing; }
+        .order-item.sep-item .sep-line { flex:1; height:2px; background:rgba(0,0,0,0.12); border-radius:2px; }
+        .order-item.sep-item .sep-label { font-size:0.68rem; color:#aaa; font-style:italic; white-space:nowrap; }
+        .order-item.sep-item .sep-del { width:20px; height:20px; border:none; background:rgba(0,0,0,0.07); border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.6rem; color:#999; flex-shrink:0; }
+        .order-item.sep-item .sep-del:hover { background:#fde0e0; color:var(--c-accent); }
+        .add-sep-btn { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border:1px dashed #bbb; border-radius:7px; background:#fafbfc; cursor:pointer; font-size:0.75rem; color:#888; font-family:var(--font); font-weight:500; transition:all 0.2s; margin-top:8px; }
+        .add-sep-btn:hover { border-color:var(--c-info); color:var(--c-info); background:#eaf4fe; }
 
         /* Export/Import buttons */
         .settings-backup { display:flex; gap:8px; flex-wrap:wrap; }
@@ -252,7 +260,7 @@
         <div class="nav-sep"></div>
         <div class="nav-items" id="navItems"><div class="nav-item active" data-module="perdir" onclick="loadModule('perdir')" title="Ctrl+P"><i class="fas fa-building-columns"></i><span class="nav-label">CADIR</span><span class="nav-badge">Direction</span><kbd class="nav-shortcut">Ctrl+P</kbd></div><div class="nav-item" data-module="exam" onclick="loadModule('exam')" title="Ctrl+E"><i class="fas fa-file-pen"></i><span class="nav-label">EXAM</span><span class="nav-badge">Épreuves</span><kbd class="nav-shortcut">Ctrl+E</kbd></div><div class="nav-item" data-module="oral" onclick="loadModule('oral')" title="Ctrl+O"><i class="fas fa-comments"></i><span class="nav-label">ORAL</span><span class="nav-badge">Oraux</span><kbd class="nav-shortcut">Ctrl+O</kbd></div><div class="nav-item" data-module="aed" onclick="loadModule('aed')" title="Ctrl+A"><i class="fas fa-user-shield"></i><span class="nav-label">AED</span><span class="nav-badge">Vie Scolaire</span><kbd class="nav-shortcut">Ctrl+A</kbd></div><div class="nav-item" data-module="bibase" onclick="loadModule('bibase')" title="Ctrl+B"><i class="fas fa-newspaper"></i><span class="nav-label">BULLETIN</span><span class="nav-badge">Information</span><kbd class="nav-shortcut">Ctrl+B</kbd></div><div class="nav-item" data-module="data" onclick="openDataPanel()" title="Ctrl+D"><i class="fas fa-database"></i><span class="nav-label">Données</span><span class="nav-badge">Import</span><kbd class="nav-shortcut">Ctrl+D</kbd></div></div>
         <div class="nav-right">
-            <div class="nav-clock" id="clock">mer. 18 févr., 21:26</div>
+            <div class="nav-clock" id="clock">mer. 18 févr., 21:54</div>
             <button class="nav-btn" onclick="openSettings()" title="Paramètres (Alt+P)"><i class="fas fa-cog"></i></button>
             <button class="nav-btn" onclick="toggleFullscreen()" title="Plein écran"><i class="fas fa-expand" id="fs-icon"></i></button>
         </div>
@@ -267,7 +275,7 @@
             </div>
             <div class="settings-body">
 
-                <div class="acc-section open">
+                <div class="acc-section">
                     <div class="acc-header" onclick="toggleAcc(this)"><h3><i class="fas fa-id-card"></i> Identité &amp; Établissement</h3><i class="fas fa-chevron-right acc-chevron"></i></div>
                     <div class="acc-body">
                     <div class="settings-grid">
@@ -364,15 +372,17 @@
                 <span class="order-label">DONNÉES <span style="color:#999;font-weight:400;font-size:0.72rem;">— Import</span></span>
             </li></ul>
                     <div class="order-hint"><i class="fas fa-hand-pointer"></i> Glissez-déposez pour réorganiser l'ordre</div>
+                    <button class="add-sep-btn" onclick="addSeparatorToOrderList()"><i class="fas fa-grip-lines"></i> Ajouter un séparateur</button>
                     
                     </div>
                 </div>
-                <div class="acc-section">
+                <div class="acc-section open">
                     <div class="acc-header" onclick="toggleAcc(this)"><h3><i class="fas fa-bars"></i> Sous-menus CADIR</h3><i class="fas fa-chevron-right acc-chevron"></i></div>
                     <div class="acc-body"><div class="acc-body-inner">
                         <small style="color:#888;display:block;margin-bottom:10px;">Affichez/masquez et réorganisez les sous-menus du module CADIR par glisser-déposer.</small>
-                        <div id="perdir-submenu-list" style="margin-bottom:8px;"></div>
-                        <div class="order-hint" style="font-size:.68rem;color:#aaa;"><i class="fas fa-hand-pointer"></i> Glissez pour réordonner. Décochez pour masquer.</div>
+                        <div id="perdir-submenu-list" style="margin-bottom:8px;"><div data-idx="0" data-menuid="menu2" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#3498db;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-check-square"></i></div><span class="order-label">To Do List</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu2',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="1" data-menuid="menu3" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#e67e22;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-calendar-alt"></i></div><span class="order-label">Calendrier</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu3',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="2" data-menuid="menu4" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#2c3e50;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-clipboard-list"></i></div><span class="order-label">Conseil de Direction</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu4',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="3" data-menuid="menu5" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#27ae60;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-user-graduate"></i></div><span class="order-label">Suivi Élève / Point CPE</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu5',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="4" data-menuid="menu6" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#9b59b6;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-comments"></i></div><span class="order-label">Entretiens</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu6',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="5" data-menuid="menu7" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#e74c3c;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-users"></i></div><span class="order-label">Réunions</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu7',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="6" data-menuid="menu8" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#95a5a6;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-history"></i></div><span class="order-label">Historique</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu8',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="7" data-menuid="menu9" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#f39c12;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-chart-line"></i></div><span class="order-label">Tableau de Bord</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu9',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="8" data-menuid="__sep__" draggable="true" class="order-item sep-item"><span class="order-grip"><i class="fas fa-grip-vertical"></i></span><span class="sep-label">— séparateur —</span><span class="sep-line"></span><button class="sep-del" title="Supprimer" onclick="event.stopPropagation();deleteSubMenuSep(8)"><i class="fas fa-times"></i></button></div><div data-idx="9" data-menuid="menu10" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#1abc9c;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-calendar-check"></i></div><span class="order-label">Activités pédagogiques</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu10',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="10" data-menuid="menu11" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#8e44ad;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-stream"></i></div><span class="order-label">Échéances</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu11',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="11" data-menuid="menu12" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#16a085;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-book"></i></div><span class="order-label">Procédures</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu12',this.checked)"><span class="toggle-slider"></span></label></div></div>
+                        <button class="add-sep-btn" onclick="addSubMenuSeparator()"><i class="fas fa-grip-lines"></i> Ajouter un séparateur</button>
+                        <div class="order-hint" style="font-size:.68rem;color:#aaa;margin-top:6px;"><i class="fas fa-hand-pointer"></i> Glissez pour réordonner. Décochez pour masquer.</div>
                     </div></div>
                 </div>
                 <div class="acc-section">
@@ -541,7 +551,7 @@
                                     </div>
                                     <small style="color:#aaa;display:block;margin-top:8px;"><i class="fas fa-info-circle"></i> Le fichier <code>pilote_data.json</code> est automatiquement mis à jour dans le dossier sélectionné à chaque modification.</small>
                                 </div>
-                                <div id="lf-mode-manual">
+                                <div id="lf-mode-manual" style="display: block;">
                                     <small style="color:#666;display:block;margin-bottom:10px;line-height:1.4;">Sauvegardez vos données dans un fichier <code>pilote_data.json</code> que vous placez dans votre <b>dossier synchronisé</b> (OneDrive, Google Drive, Dropbox…).</small>
                                     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
                                         <button class="backup-btn" onclick="localFolderExport()" style="background:#0078d4;color:#fff;border-color:#0078d4;"><i class="fas fa-download"></i> Exporter</button>
@@ -708,7 +718,7 @@ fichier JSON contient identité, images, ordre et visibilité des modules.</div>
         </div>
 
         <div class="loader-overlay" id="loader"><div class="loader-spinner"></div><div class="loader-text">Chargement du module…</div></div>
-        <iframe class="module-frame active" id="frame-perdir" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads allow-forms" src="blob:null/51323e71-e24a-4649-809a-7b80b991e53a"></iframe>
+        <iframe class="module-frame active" id="frame-perdir" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads allow-forms" src="blob:null/1a12ef90-57f6-4637-aec4-afa888b1e2c7"></iframe>
         <iframe class="module-frame" id="frame-exam" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads allow-forms"></iframe>
         <iframe class="module-frame" id="frame-oral" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads allow-forms"></iframe>
         <iframe class="module-frame" id="frame-aed" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads allow-forms"></iframe>
@@ -779,11 +789,11 @@ fichier JSON contient identité, images, ordre et visibilité des modules.</div>
     function getNavOrder() {
         const s = getSettings();
         if (s.navOrder && s.navOrder.length) {
-            // Add any missing modules
+            // Add any missing modules (not separators)
             var order = s.navOrder.slice();
             ALL_ITEMS.forEach(function(m) { if (order.indexOf(m) < 0) order.push(m); });
-            // Remove deleted modules
-            order = order.filter(function(m) { return ALL_ITEMS.indexOf(m) >= 0; });
+            // Remove deleted modules but keep separators (__sep__)
+            order = order.filter(function(m) { return m === '__sep__' || ALL_ITEMS.indexOf(m) >= 0; });
             return order;
         }
         return [...DEFAULT_ORDER];
@@ -912,8 +922,12 @@ function saveSettings() {
             var perdirCfg = [];
             document.querySelectorAll('#perdir-submenu-list .order-item').forEach(function(item) {
                 var menuId = item.dataset.menuid;
-                var chk = item.querySelector('input[type=checkbox]');
-                perdirCfg.push({id: menuId, visible: chk ? chk.checked : true});
+                if (menuId === '__sep__') {
+                    perdirCfg.push({id: '__sep__'});
+                } else {
+                    var chk = item.querySelector('input[type=checkbox]');
+                    perdirCfg.push({id: menuId, visible: chk ? chk.checked : true});
+                }
             });
             if (perdirCfg.length) {
                 var ms2 = JSON.parse(localStorage.getItem('pilote_master_settings') || '{}');
@@ -1479,13 +1493,21 @@ function saveSettings() {
     }
 
     // ═══ DRAG & DROP ORDER ═══
-    function renderOrderList() {
-        const order = getNavOrder();
-        const list = document.getElementById('orderList');
-        list.innerHTML = '';
-        order.forEach((id) => {
+    function _makeOrderItem(list, id) {
+        const li = document.createElement('li');
+        if (id === '__sep__') {
+            li.className = 'order-item sep-item';
+            li.setAttribute('draggable', 'true');
+            li.dataset.module = '__sep__';
+            li.innerHTML = `
+                <span class="order-grip"><i class="fas fa-grip-vertical"></i></span>
+                <span class="sep-label">— séparateur —</span>
+                <span class="sep-line"></span>
+                <button class="sep-del" title="Supprimer" onclick="this.closest('li').remove()"><i class="fas fa-times"></i></button>
+            `;
+        } else {
             const meta = MODULE_META[id];
-            const li = document.createElement('li');
+            if (!meta) return null;
             li.className = 'order-item';
             li.setAttribute('draggable', 'true');
             li.dataset.module = id;
@@ -1494,23 +1516,39 @@ function saveSettings() {
                 <span class="order-icon" style="background:${meta.color}"><i class="${meta.icon}"></i></span>
                 <span class="order-label">${meta.label} <span style="color:#999;font-weight:400;font-size:0.72rem;">— ${meta.sublabel}</span></span>
             `;
-            li.addEventListener('dragstart', () => { li.classList.add('dragging'); });
-            li.addEventListener('dragend', () => { li.classList.remove('dragging'); document.querySelectorAll('.order-item').forEach(el => el.classList.remove('drag-over')); });
-            li.addEventListener('dragover', (e) => { e.preventDefault(); li.classList.add('drag-over'); });
-            li.addEventListener('dragleave', () => { li.classList.remove('drag-over'); });
-            li.addEventListener('drop', (e) => {
-                e.preventDefault();
-                li.classList.remove('drag-over');
-                const dragging = list.querySelector('.dragging');
-                if (dragging && dragging !== li) {
-                    const items = [...list.children];
-                    const fromIdx = items.indexOf(dragging);
-                    const toIdx = items.indexOf(li);
-                    if (fromIdx < toIdx) li.after(dragging); else li.before(dragging);
-                }
-            });
-            list.appendChild(li);
+        }
+        li.addEventListener('dragstart', () => { li.classList.add('dragging'); });
+        li.addEventListener('dragend', () => { li.classList.remove('dragging'); document.querySelectorAll('.order-item').forEach(el => el.classList.remove('drag-over')); });
+        li.addEventListener('dragover', (e) => { e.preventDefault(); li.classList.add('drag-over'); });
+        li.addEventListener('dragleave', () => { li.classList.remove('drag-over'); });
+        li.addEventListener('drop', (e) => {
+            e.preventDefault();
+            li.classList.remove('drag-over');
+            const dragging = list.querySelector('.dragging');
+            if (dragging && dragging !== li) {
+                const items = [...list.children];
+                const fromIdx = items.indexOf(dragging);
+                const toIdx = items.indexOf(li);
+                if (fromIdx < toIdx) li.after(dragging); else li.before(dragging);
+            }
         });
+        return li;
+    }
+
+    function renderOrderList() {
+        const order = getNavOrder();
+        const list = document.getElementById('orderList');
+        list.innerHTML = '';
+        order.forEach((id) => {
+            const li = _makeOrderItem(list, id);
+            if (li) list.appendChild(li);
+        });
+    }
+
+    function addSeparatorToOrderList() {
+        const list = document.getElementById('orderList');
+        const li = _makeOrderItem(list, '__sep__');
+        if (li) list.appendChild(li);
     }
 
     function getCurrentOrderFromList() {
@@ -1522,10 +1560,16 @@ function saveSettings() {
         const container = document.getElementById('navItems');
         const items = {};
         container.querySelectorAll('.nav-item').forEach(el => { items[el.dataset.module] = el; });
-        // Also grab separators
-        const seps = container.querySelectorAll('.nav-sep');
         while (container.firstChild) container.removeChild(container.firstChild);
-        order.forEach((id) => { if (items[id]) container.appendChild(items[id]); });
+        order.forEach((id) => {
+            if (id === '__sep__') {
+                const sep = document.createElement('div');
+                sep.className = 'nav-sep';
+                container.appendChild(sep);
+            } else if (items[id]) {
+                container.appendChild(items[id]);
+            }
+        });
 
         // Also reorder welcome cards
         const grid = document.getElementById('moduleGrid');
@@ -1793,6 +1837,7 @@ function saveSettings() {
     // ═══ INIT ═══
     loadSettingsUI();
     applyNavOrder();
+    goHome();
     
     // ═══ ACCORDION TOGGLE ═══
     
@@ -1815,22 +1860,59 @@ function saveSettings() {
     function renderPerdirSubmenus() {
         var ms = JSON.parse(localStorage.getItem('pilote_master_settings') || '{}');
         var cfg = ms.perdirMenus || PERDIR_MENUS.map(function(m){ return {id:m.id, visible:true}; });
-        var cfgIds2 = cfg.map(function(c){return c.id;});
+        // Add missing real menus (not separators)
+        var cfgIds2 = cfg.filter(function(c){return c.id!=='__sep__';}).map(function(c){return c.id;});
         PERDIR_MENUS.forEach(function(m){if(cfgIds2.indexOf(m.id)<0)cfg.push({id:m.id,visible:true});});
         var list = document.getElementById('perdir-submenu-list');
         if (!list) return;
-        var html = '';
+        list.innerHTML = '';
         cfg.forEach(function(item, i) {
-            var def = PERDIR_MENUS.find(function(m){ return m.id === item.id; });
-            if (!def) return;
-            html += '<div class="order-item" draggable="true" data-idx="'+i+'" data-menuid="'+item.id+'" ondragstart="dragSubM(event,'+i+')" ondragover="overSubM(event,this)" ondrop="dropSubM(event,'+i+')">';
-            html += '<i class="fas fa-grip-vertical order-grip"></i>';
-            html += '<div class="order-icon" style="background:'+def.color+'"><i class="fas '+def.icon+'"></i></div>';
-            html += '<span class="order-label">'+def.label+'</span>';
-            html += '<label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" '+(item.visible!==false?'checked':'')+' onchange="toggleSubM(\''+item.id+'\',this.checked)"><span class="toggle-slider"></span></label>';
-            html += '</div>';
+            var el = document.createElement('div');
+            el.dataset.idx = i;
+            el.dataset.menuid = item.id;
+            el.setAttribute('draggable', 'true');
+            el.addEventListener('dragstart', function(e){ dragSubM(e, i); });
+            el.addEventListener('dragover', function(e){ overSubM(e, el); });
+            el.addEventListener('drop', function(e){ dropSubM(e, i); });
+            if (item.id === '__sep__') {
+                el.className = 'order-item sep-item';
+                el.innerHTML = '<span class="order-grip"><i class="fas fa-grip-vertical"></i></span>'
+                    + '<span class="sep-label">— séparateur —</span>'
+                    + '<span class="sep-line"></span>'
+                    + '<button class="sep-del" title="Supprimer" onclick="event.stopPropagation();deleteSubMenuSep('+i+')"><i class="fas fa-times"></i></button>';
+            } else {
+                var def = PERDIR_MENUS.find(function(m){ return m.id === item.id; });
+                if (!def) return;
+                el.className = 'order-item';
+                el.innerHTML = '<span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span>'
+                    + '<div class="order-icon" style="background:'+def.color+';width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas '+def.icon+'"></i></div>'
+                    + '<span class="order-label">'+def.label+'</span>'
+                    + '<label class="toggle-switch" onclick="event.stopPropagation()">'
+                    + '<input type="checkbox" '+(item.visible!==false?'checked':'')+' onchange="toggleSubM(\''+item.id+'\',this.checked)">'
+                    + '<span class="toggle-slider"></span></label>';
+            }
+            list.appendChild(el);
         });
-        list.innerHTML = html;
+    }
+
+    function addSubMenuSeparator() {
+        var ms = JSON.parse(localStorage.getItem('pilote_master_settings') || '{}');
+        var cfg = ms.perdirMenus || PERDIR_MENUS.map(function(m){ return {id:m.id, visible:true}; });
+        cfg.push({id: '__sep__'});
+        ms.perdirMenus = cfg;
+        localStorage.setItem('pilote_master_settings', JSON.stringify(ms));
+        renderPerdirSubmenus();
+        applyPerdirSubmenus();
+    }
+
+    function deleteSubMenuSep(idx) {
+        var ms = JSON.parse(localStorage.getItem('pilote_master_settings') || '{}');
+        var cfg = ms.perdirMenus || PERDIR_MENUS.map(function(m){ return {id:m.id, visible:true}; });
+        cfg.splice(idx, 1);
+        ms.perdirMenus = cfg;
+        localStorage.setItem('pilote_master_settings', JSON.stringify(ms));
+        renderPerdirSubmenus();
+        applyPerdirSubmenus();
     }
 
     var _dragSubIdx = null;
@@ -1865,19 +1947,23 @@ function saveSettings() {
         try { if (!fr || !fr.contentWindow || !fr.contentWindow.document) return; } catch(e) { return; }
         var ms = JSON.parse(localStorage.getItem('pilote_master_settings') || '{}');
         var cfg = ms.perdirMenus || PERDIR_MENUS.map(function(m){ return {id:m.id, visible:true}; });
-        // Merge new menus not yet in saved config
-        var cfgIds = cfg.map(function(c){return c.id;});
+        var cfgIds = cfg.filter(function(c){return c.id!=='__sep__';}).map(function(c){return c.id;});
         PERDIR_MENUS.forEach(function(m){if(cfgIds.indexOf(m.id)<0)cfg.push({id:m.id,visible:true});});
         var menuDiv; try { menuDiv = fr.contentWindow.document.querySelector('.menu'); } catch(e) { return; }
         if (!menuDiv) return;
-        
+
+        // Remove previously injected separators
+        menuDiv.querySelectorAll('.__cadir_sep__').forEach(function(s){ s.remove(); });
+
+        // First pass: order & visibility of real items
         var visNum = 1;
-        cfg.forEach(function(item, i) {
+        cfg.filter(function(c){return c.id!=='__sep__';}).forEach(function(item, i) {
             var link = menuDiv.querySelector('[data-menu="'+item.id+'"]');
             if (link) {
                 var isVisible = item.visible !== false;
                 link.style.display = isVisible ? '' : 'none';
-                link.style.order = i;
+                // order = position in cfg (skipping seps for offset)
+                link.style.order = cfg.indexOf(item) * 2; // *2 to leave room for seps
                 if (isVisible) {
                     var numSpan = link.querySelector('.menu-num');
                     if (numSpan) numSpan.textContent = visNum + '.';
@@ -1885,6 +1971,16 @@ function saveSettings() {
                 }
             }
         });
+
+        // Second pass: insert separator elements at correct flex order
+        cfg.forEach(function(item, i) {
+            if (item.id !== '__sep__') return;
+            var hr = fr.contentWindow.document.createElement('hr');
+            hr.className = '__cadir_sep__';
+            hr.style.cssText = 'border:none;border-top:1.5px solid #ffffff;margin:6px 10px;order:'+(i*2-1)+';flex-shrink:0;border-radius:2px;';
+            menuDiv.appendChild(hr);
+        });
+
         menuDiv.style.display = 'flex';
         menuDiv.style.flexDirection = 'column';
     }
