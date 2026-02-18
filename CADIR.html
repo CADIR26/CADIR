@@ -258,9 +258,9 @@
             <div class="brand-text">CADIR<span>Suite Direction</span></div>
         </a>
         <div class="nav-sep"></div>
-        <div class="nav-items" id="navItems"><div class="nav-item active" data-module="perdir" onclick="loadModule('perdir')" title="Ctrl+P"><i class="fas fa-building-columns"></i><span class="nav-label">CADIR</span><span class="nav-badge">Direction</span><kbd class="nav-shortcut">Ctrl+P</kbd></div><div class="nav-item" data-module="exam" onclick="loadModule('exam')" title="Ctrl+E"><i class="fas fa-file-pen"></i><span class="nav-label">EXAM</span><span class="nav-badge">Épreuves</span><kbd class="nav-shortcut">Ctrl+E</kbd></div><div class="nav-item" data-module="oral" onclick="loadModule('oral')" title="Ctrl+O"><i class="fas fa-comments"></i><span class="nav-label">ORAL</span><span class="nav-badge">Oraux</span><kbd class="nav-shortcut">Ctrl+O</kbd></div><div class="nav-item" data-module="aed" onclick="loadModule('aed')" title="Ctrl+A"><i class="fas fa-user-shield"></i><span class="nav-label">AED</span><span class="nav-badge">Vie Scolaire</span><kbd class="nav-shortcut">Ctrl+A</kbd></div><div class="nav-item" data-module="bibase" onclick="loadModule('bibase')" title="Ctrl+B"><i class="fas fa-newspaper"></i><span class="nav-label">BULLETIN</span><span class="nav-badge">Information</span><kbd class="nav-shortcut">Ctrl+B</kbd></div><div class="nav-item" data-module="data" onclick="openDataPanel()" title="Ctrl+D"><i class="fas fa-database"></i><span class="nav-label">Données</span><span class="nav-badge">Import</span><kbd class="nav-shortcut">Ctrl+D</kbd></div></div>
+        <div class="nav-items" id="navItems"><div class="nav-item active" data-module="perdir" onclick="loadModule('perdir')" title="Ctrl+P"><i class="fas fa-building-columns"></i><span class="nav-label">CADIR</span><span class="nav-badge">Direction</span><kbd class="nav-shortcut">Ctrl+P</kbd></div><div class="nav-item" data-module="exam" onclick="loadModule('exam')" title="Ctrl+E"><i class="fas fa-file-pen"></i><span class="nav-label">EXAM</span><span class="nav-badge">Épreuves</span><kbd class="nav-shortcut">Ctrl+E</kbd></div><div class="nav-item" data-module="oral" onclick="loadModule('oral')" title="Ctrl+O"><i class="fas fa-comments"></i><span class="nav-label">ORAL</span><span class="nav-badge">Oraux</span><kbd class="nav-shortcut">Ctrl+O</kbd></div><div class="nav-item" data-module="bibase" onclick="loadModule('bibase')" title="Ctrl+B"><i class="fas fa-newspaper"></i><span class="nav-label">BULLETIN</span><span class="nav-badge">Information</span><kbd class="nav-shortcut">Ctrl+B</kbd></div><div class="nav-item" data-module="data" onclick="openDataPanel()" title="Ctrl+D"><i class="fas fa-database"></i><span class="nav-label">Données</span><span class="nav-badge">Import</span><kbd class="nav-shortcut">Ctrl+D</kbd></div><div class="nav-item hidden-module" data-module="aed" onclick="loadModule('aed')" title="Ctrl+A"><i class="fas fa-user-shield"></i><span class="nav-label">AED</span><span class="nav-badge">Vie Scolaire</span><kbd class="nav-shortcut">Ctrl+A</kbd></div></div>
         <div class="nav-right">
-            <div class="nav-clock" id="clock">mer. 18 févr., 21:54</div>
+            <div class="nav-clock" id="clock">mer. 18 févr., 22:09</div>
             <button class="nav-btn" onclick="openSettings()" title="Paramètres (Alt+P)"><i class="fas fa-cog"></i></button>
             <button class="nav-btn" onclick="toggleFullscreen()" title="Plein écran"><i class="fas fa-expand" id="fs-icon"></i></button>
         </div>
@@ -315,72 +315,68 @@
                         </div>
                     </div>
                 </div></div>
-                <div class="acc-section">
+                <div class="acc-section open">
                     <div class="acc-header" onclick="toggleAcc(this)"><h3><i class="fas fa-sliders"></i> Modules &amp; Organisation</h3><i class="fas fa-chevron-right acc-chevron"></i></div>
                     <div class="acc-body">
-                        <h4 style="font-size:.78rem;font-weight:600;color:#666;margin:0 0 10px;text-transform:uppercase;letter-spacing:.5px"><i class="fas fa-eye" style="color:var(--c-info)"></i> Modules affichés</h4>
-                        <div class="module-toggle">
-                        <div class="module-toggle-icon" style="background:var(--c-info)"><i class="fas fa-building-columns"></i></div>
-                        <div class="module-toggle-info"><strong>CADIR</strong><span>Direction &amp; pilotage</span></div>
-                        <label class="toggle-switch"><input type="checkbox" id="tog-perdir" checked="checked" onchange="updateModuleVisibility()"><span class="toggle-slider"></span></label>
-                    </div>
-                    <div class="module-toggle">
-                        <div class="module-toggle-icon" style="background:var(--c-accent)"><i class="fas fa-file-pen"></i></div>
-                        <div class="module-toggle-info"><strong>EXAM</strong><span>Organisation des épreuves</span></div>
-                        <label class="toggle-switch"><input type="checkbox" id="tog-exam" checked="checked" onchange="updateModuleVisibility()"><span class="toggle-slider"></span></label>
-                    </div>
-                    <div class="module-toggle">
-                        <div class="module-toggle-icon" style="background:var(--c-warning)"><i class="fas fa-comments"></i></div>
-                        <div class="module-toggle-info"><strong>ORAL</strong><span>Gestion des oraux</span></div>
-                        <label class="toggle-switch"><input type="checkbox" id="tog-oral" checked="checked" onchange="updateModuleVisibility()"><span class="toggle-slider"></span></label>
-                    </div>
-                    <div class="module-toggle">
-                        <div class="module-toggle-icon" style="background:var(--c-success)"><i class="fas fa-user-shield"></i></div>
-                        <div class="module-toggle-info"><strong>AED</strong><span>Assistants d'éducation</span></div>
-                        <label class="toggle-switch"><input type="checkbox" id="tog-aed" checked="checked" onchange="updateModuleVisibility()"><span class="toggle-slider"></span></label>
-                    </div>
-                    <div class="module-toggle">
-                        <div class="module-toggle-icon" style="background:#e67e22"><i class="fas fa-newspaper"></i></div>
-                        <div class="module-toggle-info"><strong>BULLETIN</strong><span>Bulletin d'information</span></div>
-                        <label class="toggle-switch"><input type="checkbox" id="tog-bibase" checked="checked" onchange="updateModuleVisibility()"><span class="toggle-slider"></span></label>
-                    </div>
-                        <hr style="margin:18px 0;border:none;border-top:1px solid #eee">
-                        <h4 style="font-size:.78rem;font-weight:600;color:#666;margin:0 0 10px;text-transform:uppercase;letter-spacing:.5px"><i class="fas fa-arrows-up-down" style="color:var(--c-info)"></i> Ordre des menus</h4>
+                        <small style="color:#888;display:block;margin-bottom:12px;">Glissez pour réordonner. Décochez pour masquer. Ajoutez des séparateurs pour organiser la barre de navigation.</small>
                         <ul class="order-list" id="orderList"><li class="order-item" draggable="true" data-module="perdir">
                 <span class="order-grip"><i class="fas fa-grip-vertical"></i></span>
                 <span class="order-icon" style="background:var(--c-info)"><i class="fas fa-building-columns"></i></span>
                 <span class="order-label">PERDIR <span style="color:#999;font-weight:400;font-size:0.72rem;">— Direction</span></span>
+                <label class="toggle-switch" onclick="event.stopPropagation()">
+                    <input type="checkbox" id="tog-perdir" checked="checked" onchange="updateModuleVisibility()">
+                    <span class="toggle-slider"></span>
+                </label>
             </li><li class="order-item" draggable="true" data-module="exam">
                 <span class="order-grip"><i class="fas fa-grip-vertical"></i></span>
                 <span class="order-icon" style="background:var(--c-accent)"><i class="fas fa-file-pen"></i></span>
                 <span class="order-label">EXAM <span style="color:#999;font-weight:400;font-size:0.72rem;">— Épreuves</span></span>
+                <label class="toggle-switch" onclick="event.stopPropagation()">
+                    <input type="checkbox" id="tog-exam" checked="checked" onchange="updateModuleVisibility()">
+                    <span class="toggle-slider"></span>
+                </label>
             </li><li class="order-item" draggable="true" data-module="oral">
                 <span class="order-grip"><i class="fas fa-grip-vertical"></i></span>
                 <span class="order-icon" style="background:var(--c-warning)"><i class="fas fa-comments"></i></span>
                 <span class="order-label">ORAL <span style="color:#999;font-weight:400;font-size:0.72rem;">— Oraux</span></span>
-            </li><li class="order-item" draggable="true" data-module="aed">
-                <span class="order-grip"><i class="fas fa-grip-vertical"></i></span>
-                <span class="order-icon" style="background:var(--c-success)"><i class="fas fa-user-shield"></i></span>
-                <span class="order-label">AED <span style="color:#999;font-weight:400;font-size:0.72rem;">— Vie Scolaire</span></span>
+                <label class="toggle-switch" onclick="event.stopPropagation()">
+                    <input type="checkbox" id="tog-oral" checked="checked" onchange="updateModuleVisibility()">
+                    <span class="toggle-slider"></span>
+                </label>
             </li><li class="order-item" draggable="true" data-module="bibase">
                 <span class="order-grip"><i class="fas fa-grip-vertical"></i></span>
                 <span class="order-icon" style="background:#e67e22"><i class="fas fa-newspaper"></i></span>
                 <span class="order-label">BULLETIN <span style="color:#999;font-weight:400;font-size:0.72rem;">— Information</span></span>
+                <label class="toggle-switch" onclick="event.stopPropagation()">
+                    <input type="checkbox" id="tog-bibase" checked="checked" onchange="updateModuleVisibility()">
+                    <span class="toggle-slider"></span>
+                </label>
             </li><li class="order-item" draggable="true" data-module="data">
                 <span class="order-grip"><i class="fas fa-grip-vertical"></i></span>
                 <span class="order-icon" style="background:var(--c-purple)"><i class="fas fa-database"></i></span>
                 <span class="order-label">DONNÉES <span style="color:#999;font-weight:400;font-size:0.72rem;">— Import</span></span>
+                <label class="toggle-switch" onclick="event.stopPropagation()">
+                    <input type="checkbox" id="tog-data" checked="checked" onchange="updateModuleVisibility()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </li><li class="order-item" draggable="true" data-module="aed">
+                <span class="order-grip"><i class="fas fa-grip-vertical"></i></span>
+                <span class="order-icon" style="background:var(--c-success)"><i class="fas fa-user-shield"></i></span>
+                <span class="order-label">AED <span style="color:#999;font-weight:400;font-size:0.72rem;">— Vie Scolaire</span></span>
+                <label class="toggle-switch" onclick="event.stopPropagation()">
+                    <input type="checkbox" id="tog-aed" onchange="updateModuleVisibility()">
+                    <span class="toggle-slider"></span>
+                </label>
             </li></ul>
-                    <div class="order-hint"><i class="fas fa-hand-pointer"></i> Glissez-déposez pour réorganiser l'ordre</div>
-                    <button class="add-sep-btn" onclick="addSeparatorToOrderList()"><i class="fas fa-grip-lines"></i> Ajouter un séparateur</button>
-                    
+                        <div class="order-hint"><i class="fas fa-hand-pointer"></i> Glissez-déposez pour réorganiser l'ordre</div>
+                        <button class="add-sep-btn" onclick="addSeparatorToOrderList()"><i class="fas fa-grip-lines"></i> Ajouter un séparateur</button>
                     </div>
                 </div>
-                <div class="acc-section open">
+                <div class="acc-section">
                     <div class="acc-header" onclick="toggleAcc(this)"><h3><i class="fas fa-bars"></i> Sous-menus CADIR</h3><i class="fas fa-chevron-right acc-chevron"></i></div>
                     <div class="acc-body"><div class="acc-body-inner">
                         <small style="color:#888;display:block;margin-bottom:10px;">Affichez/masquez et réorganisez les sous-menus du module CADIR par glisser-déposer.</small>
-                        <div id="perdir-submenu-list" style="margin-bottom:8px;"><div data-idx="0" data-menuid="menu2" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#3498db;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-check-square"></i></div><span class="order-label">To Do List</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu2',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="1" data-menuid="menu3" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#e67e22;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-calendar-alt"></i></div><span class="order-label">Calendrier</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu3',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="2" data-menuid="menu4" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#2c3e50;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-clipboard-list"></i></div><span class="order-label">Conseil de Direction</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu4',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="3" data-menuid="menu5" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#27ae60;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-user-graduate"></i></div><span class="order-label">Suivi Élève / Point CPE</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu5',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="4" data-menuid="menu6" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#9b59b6;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-comments"></i></div><span class="order-label">Entretiens</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu6',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="5" data-menuid="menu7" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#e74c3c;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-users"></i></div><span class="order-label">Réunions</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu7',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="6" data-menuid="menu8" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#95a5a6;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-history"></i></div><span class="order-label">Historique</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu8',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="7" data-menuid="menu9" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#f39c12;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-chart-line"></i></div><span class="order-label">Tableau de Bord</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu9',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="8" data-menuid="__sep__" draggable="true" class="order-item sep-item"><span class="order-grip"><i class="fas fa-grip-vertical"></i></span><span class="sep-label">— séparateur —</span><span class="sep-line"></span><button class="sep-del" title="Supprimer" onclick="event.stopPropagation();deleteSubMenuSep(8)"><i class="fas fa-times"></i></button></div><div data-idx="9" data-menuid="menu10" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#1abc9c;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-calendar-check"></i></div><span class="order-label">Activités pédagogiques</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu10',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="10" data-menuid="menu11" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#8e44ad;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-stream"></i></div><span class="order-label">Échéances</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu11',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="11" data-menuid="menu12" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#16a085;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-book"></i></div><span class="order-label">Procédures</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu12',this.checked)"><span class="toggle-slider"></span></label></div></div>
+                        <div id="perdir-submenu-list" style="margin-bottom:8px;"><div data-idx="0" data-menuid="menu2" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#3498db;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-check-square"></i></div><span class="order-label">To Do List</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu2',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="1" data-menuid="menu3" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#e67e22;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-calendar-alt"></i></div><span class="order-label">Calendrier</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu3',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="2" data-menuid="menu4" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#2c3e50;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-clipboard-list"></i></div><span class="order-label">Conseil de Direction</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu4',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="3" data-menuid="menu5" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#27ae60;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-user-graduate"></i></div><span class="order-label">Suivi Élève / Point CPE</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu5',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="4" data-menuid="menu6" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#9b59b6;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-comments"></i></div><span class="order-label">Entretiens</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu6',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="5" data-menuid="menu7" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#e74c3c;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-users"></i></div><span class="order-label">Réunions</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu7',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="6" data-menuid="menu8" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#95a5a6;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-history"></i></div><span class="order-label">Historique</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu8',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="7" data-menuid="menu9" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#f39c12;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-chart-line"></i></div><span class="order-label">Tableau de Bord</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu9',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="8" data-menuid="menu10" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#1abc9c;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-calendar-check"></i></div><span class="order-label">Activités pédagogiques</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu10',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="9" data-menuid="menu11" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#8e44ad;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-stream"></i></div><span class="order-label">Échéances</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu11',this.checked)"><span class="toggle-slider"></span></label></div><div data-idx="10" data-menuid="menu12" draggable="true" class="order-item"><span class="order-grip" style="color:#bbb;font-size:.9rem;"><i class="fas fa-grip-vertical"></i></span><div class="order-icon" style="background:#16a085;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:.7rem;flex-shrink:0;"><i class="fas fa-book"></i></div><span class="order-label">Procédures</span><label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" checked="checked" onchange="toggleSubM('menu12',this.checked)"><span class="toggle-slider"></span></label></div></div>
                         <button class="add-sep-btn" onclick="addSubMenuSeparator()"><i class="fas fa-grip-lines"></i> Ajouter un séparateur</button>
                         <div class="order-hint" style="font-size:.68rem;color:#aaa;margin-top:6px;"><i class="fas fa-hand-pointer"></i> Glissez pour réordonner. Décochez pour masquer.</div>
                     </div></div>
@@ -656,7 +652,7 @@ fichier JSON contient identité, images, ordre et visibilité des modules.</div>
                 <h1 class="welcome-title">Bienvenue sur CADIR</h1>
                 <p class="welcome-subtitle" id="welcomeSubtitle">Suite d'outils pour la direction d'établissement</p>
             </div>
-            <div class="module-grid" id="moduleGrid"><div class="module-card" data-m="perdir" onclick="loadModule('perdir')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><rect x="3" y="10" width="18" height="11" rx="1"></rect><path d="M3 10l9-7 9 7"></path><line x1="12" y1="3" x2="12" y2="10"></line><rect x="7" y="14" width="3" height="7"></rect><rect x="14" y="14" width="3" height="7"></rect></svg></div><h3>CADIR</h3><p>Direction &amp; pilotage</p></div><div class="module-card" data-m="exam" onclick="loadModule('exam')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><path d="M10 9H8"></path></svg></div><h3>EXAM</h3><p>Organisation des épreuves</p></div><div class="module-card" data-m="oral" onclick="loadModule('oral')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div><h3>ORAL</h3><p>Gestion des oraux &amp; écrits</p></div><div class="module-card" data-m="aed" onclick="loadModule('aed')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle><path d="M18 8s2 2 0 5"></path></svg></div><h3>AED</h3><p>Assistants d'éducation</p></div><div class="module-card" data-m="bibase" onclick="loadModule('bibase')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a4 4 0 0 1-4-4V6"></path><line x1="16" y1="6" x2="10" y2="6"></line><line x1="16" y1="10" x2="10" y2="10"></line><line x1="16" y1="14" x2="10" y2="14"></line></svg></div><h3>BULLETIN</h3><p>Bulletin d'information</p></div><div class="module-card" data-m="data" onclick="openDataPanel()"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></div><h3>DONNÉES</h3><p>Import élèves &amp; enseignants</p></div></div>
+            <div class="module-grid" id="moduleGrid"><div class="module-card" data-m="perdir" onclick="loadModule('perdir')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><rect x="3" y="10" width="18" height="11" rx="1"></rect><path d="M3 10l9-7 9 7"></path><line x1="12" y1="3" x2="12" y2="10"></line><rect x="7" y="14" width="3" height="7"></rect><rect x="14" y="14" width="3" height="7"></rect></svg></div><h3>CADIR</h3><p>Direction &amp; pilotage</p></div><div class="module-card" data-m="exam" onclick="loadModule('exam')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><path d="M10 9H8"></path></svg></div><h3>EXAM</h3><p>Organisation des épreuves</p></div><div class="module-card" data-m="oral" onclick="loadModule('oral')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div><h3>ORAL</h3><p>Gestion des oraux &amp; écrits</p></div><div class="module-card" data-m="bibase" onclick="loadModule('bibase')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a4 4 0 0 1-4-4V6"></path><line x1="16" y1="6" x2="10" y2="6"></line><line x1="16" y1="10" x2="10" y2="10"></line><line x1="16" y1="14" x2="10" y2="14"></line></svg></div><h3>BULLETIN</h3><p>Bulletin d'information</p></div><div class="module-card" data-m="data" onclick="openDataPanel()"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></div><h3>DONNÉES</h3><p>Import élèves &amp; enseignants</p></div><div class="module-card card-hidden" data-m="aed" onclick="loadModule('aed')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle><path d="M18 8s2 2 0 5"></path></svg></div><h3>AED</h3><p>Assistants d'éducation</p></div></div>
         </div>
 
         <!-- DATA PANEL -->
@@ -718,7 +714,7 @@ fichier JSON contient identité, images, ordre et visibilité des modules.</div>
         </div>
 
         <div class="loader-overlay" id="loader"><div class="loader-spinner"></div><div class="loader-text">Chargement du module…</div></div>
-        <iframe class="module-frame active" id="frame-perdir" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads allow-forms" src="blob:null/1a12ef90-57f6-4637-aec4-afa888b1e2c7"></iframe>
+        <iframe class="module-frame active" id="frame-perdir" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads allow-forms" src="blob:null/8def538d-7512-4256-8622-72b330a4e45e"></iframe>
         <iframe class="module-frame" id="frame-exam" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads allow-forms"></iframe>
         <iframe class="module-frame" id="frame-oral" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads allow-forms"></iframe>
         <iframe class="module-frame" id="frame-aed" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads allow-forms"></iframe>
@@ -839,10 +835,9 @@ fichier JSON contient identité, images, ordre et visibilité des modules.</div>
         if (s.logoSrc) {
                 updateFavicon(s.logoSrc); document.getElementById('img-logo').src = s.logoSrc; document.getElementById('img-logo').style.display='block'; document.getElementById('ph-logo').style.display='none'; }
         if (s.signSrc) { document.getElementById('img-sign').src = s.signSrc; document.getElementById('img-sign').style.display='block'; document.getElementById('ph-sign').style.display='none'; }
-        moduleNames.forEach(m => { const el = document.getElementById('tog-' + m); if (el) el.checked = s['show_' + m] !== false; });
+        renderOrderList();
         updateModuleVisibility();
         updateBrandLogo();
-        renderOrderList();
         refreshDataUI();
     }
 
@@ -1493,7 +1488,7 @@ function saveSettings() {
     }
 
     // ═══ DRAG & DROP ORDER ═══
-    function _makeOrderItem(list, id) {
+    function _makeOrderItem(list, id, checked) {
         const li = document.createElement('li');
         if (id === '__sep__') {
             li.className = 'order-item sep-item';
@@ -1508,6 +1503,7 @@ function saveSettings() {
         } else {
             const meta = MODULE_META[id];
             if (!meta) return null;
+            const isChecked = checked !== false;
             li.className = 'order-item';
             li.setAttribute('draggable', 'true');
             li.dataset.module = id;
@@ -1515,6 +1511,10 @@ function saveSettings() {
                 <span class="order-grip"><i class="fas fa-grip-vertical"></i></span>
                 <span class="order-icon" style="background:${meta.color}"><i class="${meta.icon}"></i></span>
                 <span class="order-label">${meta.label} <span style="color:#999;font-weight:400;font-size:0.72rem;">— ${meta.sublabel}</span></span>
+                <label class="toggle-switch" onclick="event.stopPropagation()">
+                    <input type="checkbox" id="tog-${id}" ${isChecked ? 'checked' : ''} onchange="updateModuleVisibility()">
+                    <span class="toggle-slider"></span>
+                </label>
             `;
         }
         li.addEventListener('dragstart', () => { li.classList.add('dragging'); });
@@ -1537,17 +1537,19 @@ function saveSettings() {
 
     function renderOrderList() {
         const order = getNavOrder();
+        const s = getSettings();
         const list = document.getElementById('orderList');
         list.innerHTML = '';
         order.forEach((id) => {
-            const li = _makeOrderItem(list, id);
+            const checked = id === '__sep__' ? null : s['show_' + id] !== false;
+            const li = _makeOrderItem(list, id, checked);
             if (li) list.appendChild(li);
         });
     }
 
     function addSeparatorToOrderList() {
         const list = document.getElementById('orderList');
-        const li = _makeOrderItem(list, '__sep__');
+        const li = _makeOrderItem(list, '__sep__', null);
         if (li) list.appendChild(li);
     }
 
@@ -1717,7 +1719,8 @@ function saveSettings() {
     // ═══ MODULE VISIBILITY ═══
     function updateModuleVisibility() {
         moduleNames.forEach(m => {
-            const visible = document.getElementById('tog-' + m).checked;
+            const tog = document.getElementById('tog-' + m);
+            const visible = tog ? tog.checked : true;
             const navItem = document.querySelector('.nav-item[data-module="' + m + '"]');
             if (navItem) navItem.classList.toggle('hidden-module', !visible);
             const card = document.querySelector('.module-card[data-m="' + m + '"]');
