@@ -3,8 +3,9 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PILOTE — Suite de Direction</title>
+    <title>PILOTE — PERDIR</title>
     <link rel="stylesheet" href="CADIR_fichiers/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
     <!-- Aptos: police native Windows 11/Office. Pas de Google Fonts nécessaire -->
     <script src="CADIR_fichiers/xlsx.full.min.js"></script>
     <style>
@@ -258,11 +259,11 @@
             <div class="brand-text">CADIR<span>Suite Direction</span></div>
         </a>
         <div class="nav-sep"></div>
-        <div class="nav-items" id="navItems"><div class="nav-item" data-module="perdir" onclick="loadModule('perdir')" title="Ctrl+P"><i class="fas fa-building-columns"></i><span class="nav-label">CADIR</span><span class="nav-badge">Direction</span><kbd class="nav-shortcut">Ctrl+P</kbd></div><div class="nav-item" data-module="exam" onclick="loadModule('exam')" title="Ctrl+E"><i class="fas fa-file-pen"></i><span class="nav-label">EXAM</span><span class="nav-badge">Épreuves</span><kbd class="nav-shortcut">Ctrl+E</kbd></div><div class="nav-item" data-module="oral" onclick="loadModule('oral')" title="Ctrl+O"><i class="fas fa-comments"></i><span class="nav-label">ORAL</span><span class="nav-badge">Oraux</span><kbd class="nav-shortcut">Ctrl+O</kbd></div><div class="nav-item" data-module="aed" onclick="loadModule('aed')" title="Ctrl+A"><i class="fas fa-user-shield"></i><span class="nav-label">AED</span><span class="nav-badge">Vie Scolaire</span><kbd class="nav-shortcut">Ctrl+A</kbd></div><div class="nav-item" data-module="bibase" onclick="loadModule('bibase')" title="Ctrl+B"><i class="fas fa-newspaper"></i><span class="nav-label">BULLETIN</span><span class="nav-badge">Information</span><kbd class="nav-shortcut">Ctrl+B</kbd></div><div class="nav-item" data-module="data" onclick="openDataPanel()" title="Ctrl+D"><i class="fas fa-database"></i><span class="nav-label">Données</span><span class="nav-badge">Import</span><kbd class="nav-shortcut">Ctrl+D</kbd></div></div>
+        <div class="nav-items" id="navItems"><div class="nav-item active" data-module="perdir" onclick="loadModule('perdir')" title="Ctrl+P"><i class="fas fa-building-columns"></i><span class="nav-label">CADIR</span><span class="nav-badge">Direction</span><kbd class="nav-shortcut">Ctrl+P</kbd></div><div class="nav-item" data-module="exam" onclick="loadModule('exam')" title="Ctrl+E"><i class="fas fa-file-pen"></i><span class="nav-label">EXAM</span><span class="nav-badge">Épreuves</span><kbd class="nav-shortcut">Ctrl+E</kbd></div><div class="nav-item" data-module="oral" onclick="loadModule('oral')" title="Ctrl+O"><i class="fas fa-comments"></i><span class="nav-label">ORAL</span><span class="nav-badge">Oraux</span><kbd class="nav-shortcut">Ctrl+O</kbd></div><div class="nav-item" data-module="aed" onclick="loadModule('aed')" title="Ctrl+A"><i class="fas fa-user-shield"></i><span class="nav-label">AED</span><span class="nav-badge">Vie Scolaire</span><kbd class="nav-shortcut">Ctrl+A</kbd></div><div class="nav-item" data-module="bibase" onclick="loadModule('bibase')" title="Ctrl+B"><i class="fas fa-newspaper"></i><span class="nav-label">BULLETIN</span><span class="nav-badge">Information</span><kbd class="nav-shortcut">Ctrl+B</kbd></div><div class="nav-item" data-module="data" onclick="openDataPanel()" title="Ctrl+D"><i class="fas fa-database"></i><span class="nav-label">Données</span><span class="nav-badge">Import</span><kbd class="nav-shortcut">Ctrl+D</kbd></div></div>
         <div class="nav-right">
-            <div class="nav-clock" id="clock">mer. 18 févr., 22:10</div>
-            <button class="nav-btn" onclick="openSettings()" title="Paramètres (Alt+P)"><i class="fas fa-cog"></i></button>
-            <button class="nav-btn" onclick="toggleFullscreen()" title="Plein écran"><i class="fas fa-expand" id="fs-icon"></i></button>
+            <div class="nav-clock" id="clock">mer. 18 févr., 21:26</div>
+            <button class="nav-btn" onclick="openSettings()" title="Paramètres (Alt+P)"><svg id="settings-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button>
+            <button class="nav-btn" onclick="toggleFullscreen()" title="Plein écran"><svg id="fs-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg></button>
         </div>
     </nav>
 
@@ -319,55 +320,7 @@
                     <div class="acc-header" onclick="toggleAcc(this)"><h3><i class="fas fa-sliders"></i> Modules &amp; Organisation</h3><i class="fas fa-chevron-right acc-chevron"></i></div>
                     <div class="acc-body">
                         <small style="color:#888;display:block;margin-bottom:12px;">Glissez pour réordonner. Décochez pour masquer. Ajoutez des séparateurs pour organiser la barre de navigation.</small>
-                        <ul class="order-list" id="orderList"><li class="order-item" draggable="true" data-module="perdir">
-                <span class="order-grip"><i class="fas fa-grip-vertical"></i></span>
-                <span class="order-icon" style="background:var(--c-info)"><i class="fas fa-building-columns"></i></span>
-                <span class="order-label">PERDIR <span style="color:#999;font-weight:400;font-size:0.72rem;">— Direction</span></span>
-                <label class="toggle-switch" onclick="event.stopPropagation()">
-                    <input type="checkbox" id="tog-perdir" checked="checked" onchange="updateModuleVisibility()">
-                    <span class="toggle-slider"></span>
-                </label>
-            </li><li class="order-item" draggable="true" data-module="exam">
-                <span class="order-grip"><i class="fas fa-grip-vertical"></i></span>
-                <span class="order-icon" style="background:var(--c-accent)"><i class="fas fa-file-pen"></i></span>
-                <span class="order-label">EXAM <span style="color:#999;font-weight:400;font-size:0.72rem;">— Épreuves</span></span>
-                <label class="toggle-switch" onclick="event.stopPropagation()">
-                    <input type="checkbox" id="tog-exam" checked="checked" onchange="updateModuleVisibility()">
-                    <span class="toggle-slider"></span>
-                </label>
-            </li><li class="order-item" draggable="true" data-module="oral">
-                <span class="order-grip"><i class="fas fa-grip-vertical"></i></span>
-                <span class="order-icon" style="background:var(--c-warning)"><i class="fas fa-comments"></i></span>
-                <span class="order-label">ORAL <span style="color:#999;font-weight:400;font-size:0.72rem;">— Oraux</span></span>
-                <label class="toggle-switch" onclick="event.stopPropagation()">
-                    <input type="checkbox" id="tog-oral" checked="checked" onchange="updateModuleVisibility()">
-                    <span class="toggle-slider"></span>
-                </label>
-            </li><li class="order-item" draggable="true" data-module="aed">
-                <span class="order-grip"><i class="fas fa-grip-vertical"></i></span>
-                <span class="order-icon" style="background:var(--c-success)"><i class="fas fa-user-shield"></i></span>
-                <span class="order-label">AED <span style="color:#999;font-weight:400;font-size:0.72rem;">— Vie Scolaire</span></span>
-                <label class="toggle-switch" onclick="event.stopPropagation()">
-                    <input type="checkbox" id="tog-aed" checked="checked" onchange="updateModuleVisibility()">
-                    <span class="toggle-slider"></span>
-                </label>
-            </li><li class="order-item" draggable="true" data-module="bibase">
-                <span class="order-grip"><i class="fas fa-grip-vertical"></i></span>
-                <span class="order-icon" style="background:#e67e22"><i class="fas fa-newspaper"></i></span>
-                <span class="order-label">BULLETIN <span style="color:#999;font-weight:400;font-size:0.72rem;">— Information</span></span>
-                <label class="toggle-switch" onclick="event.stopPropagation()">
-                    <input type="checkbox" id="tog-bibase" checked="checked" onchange="updateModuleVisibility()">
-                    <span class="toggle-slider"></span>
-                </label>
-            </li><li class="order-item" draggable="true" data-module="data">
-                <span class="order-grip"><i class="fas fa-grip-vertical"></i></span>
-                <span class="order-icon" style="background:var(--c-purple)"><i class="fas fa-database"></i></span>
-                <span class="order-label">DONNÉES <span style="color:#999;font-weight:400;font-size:0.72rem;">— Import</span></span>
-                <label class="toggle-switch" onclick="event.stopPropagation()">
-                    <input type="checkbox" id="tog-data" checked="checked" onchange="updateModuleVisibility()">
-                    <span class="toggle-slider"></span>
-                </label>
-            </li></ul>
+                        <ul class="order-list" id="orderList"></ul>
                         <div class="order-hint"><i class="fas fa-hand-pointer"></i> Glissez-déposez pour réorganiser l'ordre</div>
                         <button class="add-sep-btn" onclick="addSeparatorToOrderList()"><i class="fas fa-grip-lines"></i> Ajouter un séparateur</button>
                     </div>
@@ -646,7 +599,7 @@ fichier JSON contient identité, images, ordre et visibilité des modules.</div>
 
     <!-- ═══ CONTENT ═══ -->
     <div class="content-area" id="contentArea">
-        <div class="welcome" id="welcome">
+        <div class="welcome hidden" id="welcome">
             <div class="welcome-header">
                 <div class="welcome-logo" id="welcomeLogo"><span id="welcomeLetter">P</span><img id="welcomeLogoImg" style="display:none"></div>
                 <h1 class="welcome-title">Bienvenue sur CADIR</h1>
@@ -666,13 +619,13 @@ fichier JSON contient identité, images, ordre et visibilité des modules.</div>
                     <div class="data-card-header teachers">
                         <i class="fas fa-chalkboard-teacher"></i>
                         <h3>Enseignants</h3>
-                        <span class="data-badge" id="badge-teachers">Non chargé</span>
+                        <span class="data-badge has-data" id="badge-teachers">Non chargé</span>
                     </div>
                     <div class="data-card-body">
                         <div class="data-actions" style="margin-bottom:12px">
                             <button class="data-btn data-btn-tpl" onclick="downloadTemplate('teachers')"><i class="fas fa-file-download"></i> Télécharger le modèle vierge</button>
                         </div>
-                        <div class="excel-drop" id="drop-teachers">
+                        <div class="excel-drop loaded" id="drop-teachers">
                             <input type="file" accept=".xlsx,.xls,.csv" multiple="" onchange="handleExcelImport(this,'teachers')">
                             <i class="fas fa-file-excel drop-icon"></i>
                             <div class="drop-label" id="lbl-teachers">Cliquez ou glissez un ou plusieurs fichiers Excel</div>
@@ -690,13 +643,13 @@ fichier JSON contient identité, images, ordre et visibilité des modules.</div>
                     <div class="data-card-header students">
                         <i class="fas fa-user-graduate"></i>
                         <h3>Élèves</h3>
-                        <span class="data-badge" id="badge-students">Non chargé</span>
+                        <span class="data-badge has-data" id="badge-students">Non chargé</span>
                     </div>
                     <div class="data-card-body">
                         <div class="data-actions" style="margin-bottom:12px">
                             <button class="data-btn data-btn-tpl" onclick="downloadTemplate('students')"><i class="fas fa-file-download"></i> Télécharger le modèle vierge</button>
                         </div>
-                        <div class="excel-drop" id="drop-students">
+                        <div class="excel-drop loaded" id="drop-students">
                             <input type="file" accept=".xlsx,.xls,.csv" multiple="" onchange="handleExcelImport(this,'students')">
                             <i class="fas fa-file-excel drop-icon"></i>
                             <div class="drop-label" id="lbl-students">Cliquez ou glissez un ou plusieurs fichiers Excel</div>
@@ -714,7 +667,7 @@ fichier JSON contient identité, images, ordre et visibilité des modules.</div>
         </div>
 
         <div class="loader-overlay" id="loader"><div class="loader-spinner"></div><div class="loader-text">Chargement du module…</div></div>
-        <iframe class="module-frame" id="frame-perdir" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads allow-forms" src="blob:null/51323e71-e24a-4649-809a-7b80b991e53a"></iframe>
+        <iframe class="module-frame active" id="frame-perdir" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads allow-forms" src="blob:null/51323e71-e24a-4649-809a-7b80b991e53a"></iframe>
         <iframe class="module-frame" id="frame-exam" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads allow-forms"></iframe>
         <iframe class="module-frame" id="frame-oral" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads allow-forms"></iframe>
         <iframe class="module-frame" id="frame-aed" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads allow-forms"></iframe>
@@ -1825,7 +1778,12 @@ function saveSettings() {
     document.getElementById('frame-perdir').addEventListener('load', function(){ setTimeout(applyPerdirSubmenus, 500); });
 
     document.addEventListener('fullscreenchange', () => {
-        document.getElementById('fs-icon').className = document.fullscreenElement ? 'fas fa-compress' : 'fas fa-expand';
+        var fsIcon = document.getElementById('fs-icon');
+        if (document.fullscreenElement) {
+            fsIcon.innerHTML = '<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>';
+        } else {
+            fsIcon.innerHTML = '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>';
+        }
     });
 
     document.addEventListener('keydown', (e) => {
