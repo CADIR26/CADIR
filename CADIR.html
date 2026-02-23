@@ -1659,7 +1659,8 @@ function saveSettings() {
 
     // ═══ OUVRIR DHG ═══
     function openDHG() {
-        window.open('https://cadir26.github.io/CADIR/DGH.htm', 'DHG_Manager', 'width=1200,height=800,resizable=yes,scrollbars=yes');
+        const win = window.open('https://cadir26.github.io/CADIR/DGH.htm', 'DHG_Manager', 'width=' + screen.availWidth + ',height=' + screen.availHeight);
+        if (win) { win.moveTo(0, 0); }
     }
 
     // ═══ PUSH TO MODULES ═══
