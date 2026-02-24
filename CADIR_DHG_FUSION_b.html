@@ -2198,7 +2198,7 @@ function installCadirCalendarOverride(){
         
         function __isInSidebar(el){
             try{
-                return !!(el && el.closest && el.closest('aside,nav,.sidebar,.sidenav,.side-menu,.menu,.left-panel,.cadir-sidebar,.sidebar-menu,.app-sidebar'));
+                return !!(el && el.closest && el.closest('aside,nav,.sidebar,.sidenav,.side-menu,.menu,.left-panel,.cadir-sidebar,.sidebar-menu,.app-sidebar,.drawer,.MuiDrawer-root,.ant-layout-sider'));
             }catch(e){ return false; }
         }
 
@@ -2232,7 +2232,20 @@ function findCalendarHost(){
 
         function mountIfCalendarPage(){
             var titleOk = Array.from(doc.querySelectorAll('h1,h2,h3,div')).some(function(el){ return __isMainCalendarTitle(el); });
-            if(!titleOk) return;
+
+            // Si on quitte l'écran Calendrier, on retire l'injection (sinon elle reste sur les autres sous-menus)
+            if(!titleOk){
+                var existing = doc.getElementById('cadirCalOverrideRoot');
+                if(existing){
+                    try{ existing.remove(); }catch(e){ existing.parentNode && existing.parentNode.removeChild(existing); }
+                }
+                // Ré-affiche l'ancienne vue si elle avait été masquée
+                try{
+                    var old = doc.querySelector('.calendar-grid, .calendar-view, #calendarView, .fc, .fc-view-harness');
+                    if(old) old.style.display = '';
+                }catch(e){}
+                return;
+            }
 
             // Empêche remount en boucle
             if(doc.getElementById('cadirCalOverrideRoot')) return;
