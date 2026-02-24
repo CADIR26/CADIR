@@ -2195,12 +2195,28 @@ function installCadirCalendarOverride(){
             container.innerHTML = html;
         }
 
-        function findCalendarHost(){
+        
+        function __isInSidebar(el){
+            try{
+                return !!(el && el.closest && el.closest('aside,nav,.sidebar,.sidenav,.side-menu,.menu,.left-panel,.cadir-sidebar,.sidebar-menu,.app-sidebar'));
+            }catch(e){ return false; }
+        }
+
+        function __isMainCalendarTitle(el){
+            if(!el) return false;
+            var t = (el.textContent||'').trim();
+            if(t !== 'Calendrier') return false;
+            // Prefer real page headings
+            var tag = (el.tagName||'').toUpperCase();
+            if(tag === 'H1' || tag === 'H2' || tag === 'H3') return !__isInSidebar(el);
+            // Accept a div/span title only if it looks like a page title container
+            var cls = (el.className||'').toString();
+            var looksTitle = /title|header|page|content/i.test(cls);
+            return looksTitle && !__isInSidebar(el);
+        }
+function findCalendarHost(){
             // On détecte l’écran "Calendrier" via le titre affiché
-            var candidates = Array.from(doc.querySelectorAll('h1,h2,h3,div')).filter(function(el){
-                var t = (el.textContent||'').trim();
-                return t === 'Calendrier';
-            });
+            var candidates = Array.from(doc.querySelectorAll('h1,h2,h3,div')).filter(function(el){ return __isMainCalendarTitle(el); });
             if(!candidates.length) return null;
 
             // On remonte jusqu’à un conteneur stable
@@ -2215,7 +2231,7 @@ function installCadirCalendarOverride(){
         }
 
         function mountIfCalendarPage(){
-            var titleOk = Array.from(doc.querySelectorAll('*')).some(function(el){ return (el.textContent||'').trim() === 'Calendrier'; });
+            var titleOk = Array.from(doc.querySelectorAll('h1,h2,h3,div')).some(function(el){ return __isMainCalendarTitle(el); });
             if(!titleOk) return;
 
             // Empêche remount en boucle
