@@ -30,10 +30,10 @@
             --font-display: 'Aptos', 'Calibri', 'Trebuchet MS', Arial, sans-serif;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: var(--font); background: var(--c-bg); height: 100vh; display: flex; flex-direction: column; overflow: hidden; color: #2c3040; }
+        body { font-family: var(--font); background: var(--c-bg); height: 100vh; display: flex; flex-direction: column; overflow: hidden; color: #2c3040; padding-top: var(--nav-h); box-sizing: border-box; }
 
         /* ═══ TOP NAV ═══ */
-        .topnav { height: var(--nav-h); background: var(--c-nav); display: flex; align-items: center; padding: 0 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.25); z-index: 1000; flex-shrink: 0; position: relative; }
+        .topnav { height: var(--nav-h); background: var(--c-nav); display: flex; align-items: center; padding: 0 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.25); z-index: 1000; flex-shrink: 0; position: fixed; top:0; left:0; right:0; }
         .topnav::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--c-accent),#f39c12,var(--c-accent)); opacity:0.7; }
         .brand { display:flex; align-items:center; gap:8px; margin-right:20px; cursor:pointer; text-decoration:none; }
         .brand-icon { width:32px; height:32px; background:var(--c-accent); border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:15px; color:white; font-weight:700; box-shadow:0 2px 8px var(--c-accent-glow); overflow:hidden; }
@@ -212,7 +212,7 @@
         .data-count i { color:var(--c-success); }
 
         /* ═══ CONTENT ═══ */
-        .content-area { flex:1; position:relative; overflow:hidden; }
+        .content-area { flex: 1; position: relative; overflow: hidden; height: calc(100vh - var(--nav-h)); }
         .welcome { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; background:linear-gradient(160deg,#f0f1f4,#e4e7ee,#dfe2ea); z-index:10; transition:opacity 0.4s,transform 0.4s; padding:24px 16px 120px; overflow:auto; }
         .welcome.hidden { opacity:0; transform:scale(0.98); pointer-events:none; }
         .welcome.welcome-center { justify-content:center; padding-top:24px; }
@@ -675,6 +675,9 @@
                                     <small style="color:#666;display:block;margin-bottom:10px;line-height:1.4;">Sauvegardez vos données dans un fichier <code>pilote_data.json</code> que vous placez dans votre <b>dossier synchronisé</b> (OneDrive, Google Drive, Dropbox…).</small>
                                     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
                                         <button class="backup-btn" onclick="localFolderExport()" style="background:#0078d4;color:#fff;border-color:#0078d4;"><i class="fas fa-download"></i> Exporter</button>
+                                        <button class="backup-btn" onclick="downloadBackupHistory()" title="Télécharger l'historique des 10 dernières sauvegardes locales"><i class="fas fa-clock-rotate-left"></i> Historique (10)</button>
+                                        <button class="backup-btn" onclick="restoreBackupFromHistory()" title="Restaurer une version précédente (10 dernières)"><i class="fas fa-rotate-left"></i> Restaurer…</button>
+
                                         <label class="backup-btn" style="background:#27ae60;color:#fff;border-color:#27ae60;cursor:pointer;margin:0;"><i class="fas fa-upload"></i> Importer
                                             <input type="file" id="localfolder-import" accept=".json" style="display:none;" onchange="localFolderImport(this)">
                                         </label>
@@ -2029,42 +2032,45 @@ function loadModule(name) {
     function _safeTime(t){ return (t||'').substring(0,5); }
 
     function getMasterAllCalendarEvents(){
-        var s = getSettings();
-        var gSel = Array.isArray(s.gcalSel) ? s.gcalSel : [];
-        var oSel = Array.isArray(s.outlookSel) ? s.outlookSel : [];
+        // Source unique: cache CADIR (Google/Outlook) + sélection des agendas cochés
+        var sel = readSelectedCalendarIds(); // null => pas d'info => ne pas filtrer
+        if (Array.isArray(sel) && sel.length === 0) sel = null;
+
+        var ev = readEvents();
         var all = [];
+
         // Google
-        (s.gcalEvents || []).forEach(function(e){
-            var calId = e.calId || e.calendarId || e.idCal || e.cal || '';
-            if (gSel.length && calId && gSel.indexOf(calId) === -1) return; // uniquement agendas cochés
+        (ev.g || []).forEach(function(e){
+            var calId = e.calId || e.calendarId || e.idCal || e.cal || e.calendar || '';
+            if (sel && calId && sel.indexOf(calId) === -1) return;
             all.push({
                 src:'gcal',
                 calId: calId,
-                color:e.color||'#4285f4',
-                calName:e.calName||e.calendarName||'Google',
-                title:e.title,
-                date:e.date,
-                time:_safeTime(e.time),
-                endTime:_safeTime(e.endTime)
+                color: e.color || '#4285f4',
+                calName: e.calName || e.calendarName || e.organizer || 'Google',
+                title: e.title || e.summary || e.subject || '',
+                date: e.date || (e.start ? String(e.start).slice(0,10) : ''),
+                time: _safeTime(e.time || (e.start ? String(e.start).slice(11,16) : '')),
+                endTime: _safeTime(e.endTime || (e.end ? String(e.end).slice(11,16) : ''))
             });
         });
+
         // Outlook
-        (s.outlookEvents || []).forEach(function(e){
-            var calId = e.calId || e.calendarId || e.idCal || e.cal || '';
-            if (oSel.length && calId && oSel.indexOf(calId) === -1) return; // uniquement agendas cochés
+        (ev.o || []).forEach(function(e){
+            var calId = e.calId || e.calendarId || e.idCal || e.cal || e.calendar || '';
+            if (sel && calId && sel.indexOf(calId) === -1) return;
             all.push({
                 src:'outlook',
                 calId: calId,
-                color:e.color||'#0078d4',
-                calName:e.calName||e.calendarName||'Outlook',
-                title:e.title,
-                date:e.date,
-                time:_safeTime(e.time),
-                endTime:_safeTime(e.endTime)
+                color: e.color || '#0a84ff',
+                calName: e.calName || e.calendarName || e.organizer || 'Outlook',
+                title: e.title || e.subject || e.summary || '',
+                date: e.date || (e.start ? String(e.start).slice(0,10) : ''),
+                time: _safeTime(e.time || (e.start ? String(e.start).slice(11,16) : '')),
+                endTime: _safeTime(e.endTime || (e.end ? String(e.end).slice(11,16) : ''))
             });
         });
-        // Si aucune sélection n'est définie (liste vide), on garde tout (comportement historique)
-        // Mais si une sélection existe et que calId est vide, on conserve l'événement (cas rare).
+
         return all;
     }
 
@@ -2094,6 +2100,28 @@ function loadModule(name) {
         box.innerHTML = '';
         return;
     }
+
+  // Auto-refresh Accueil après synchronisation (même dans le même onglet)
+  (function(){
+    var lastCache = null;
+    function tick(){
+      try{
+        var v = localStorage.getItem('CADIR_EXTERNAL_CAL_CACHE') || localStorage.getItem('CADIR_CAL_CACHE') || '';
+        if(v !== lastCache){
+          lastCache = v;
+          try{ renderHomeTodayEvents(); }catch(e){}
+        }
+      }catch(e){}
+    }
+    window.addEventListener('storage', function(e){
+      if(!e) return;
+      if(e.key === 'CADIR_EXTERNAL_CAL_CACHE' || e.key === 'CADIR_CAL_CACHE'){
+        try{ renderHomeTodayEvents(); }catch(err){}
+      }
+    });
+    setInterval(tick, 2500);
+    setTimeout(tick, 600);
+  })();
 
     if (wrap) wrap.style.display = '';
     if (welcome) welcome.classList.remove('welcome-center');
@@ -2953,6 +2981,7 @@ function findCalendarHost(){
         try {
             if (!await lfEnsurePermission()) throw new Error('Permission refusée');
             var allData = collectAllModulesData();
+            try{ pushBackupSnapshot('export'); }catch(e){}
             var now = new Date().toISOString();
             allData._cloudMeta = { lastPush: now, provider: 'localfolder' };
             // Update local timestamp so we know we're in sync
@@ -3007,6 +3036,7 @@ function findCalendarHost(){
     function lfMarkDirty() {
         _lfDirty = true;
         lfUpdateSyncIndicator('Modifications non sauvegardées…', '#f39c12');
+        scheduleBackupSnapshot('auto');
     }
 
     async function lfForceSave() {
@@ -3058,6 +3088,7 @@ function findCalendarHost(){
         try {
             localFolderSetStatus('<i class="fas fa-spinner fa-spin"></i> Préparation...', '#f39c12');
             var allData = collectAllModulesData();
+            try{ pushBackupSnapshot('export'); }catch(e){}
             allData._cloudMeta = { lastPush: new Date().toISOString(), provider: 'localfolder' };
             var json = JSON.stringify(allData, null, 2);
             var blob = new Blob([json], { type: 'application/json' });
@@ -3088,6 +3119,86 @@ function findCalendarHost(){
         reader.readAsText(file);
         input.value = '';
     }
+
+    // ── Historique local des sauvegardes (10 dernières versions) ──
+    // Objectif : permettre de retrouver facilement une version précédente (.json) en cas d'erreur.
+    var BACKUP_HISTORY_KEY = 'pilote_backup_history_v1';
+    var _backupDebounceTimer = null;
+
+    function _nowIsoLocal() {
+        // ISO local (sans UTC) pour éviter les décalages de date dans l'historique
+        var d = new Date();
+        var pad = function(n){ return String(n).padStart(2,'0'); };
+        return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + 'T' +
+               pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+    }
+
+    function _readBackupHistory() {
+        try { return JSON.parse(localStorage.getItem(BACKUP_HISTORY_KEY) || '[]') || []; }
+        catch(e){ return []; }
+    }
+
+    function _writeBackupHistory(hist) {
+        try { localStorage.setItem(BACKUP_HISTORY_KEY, JSON.stringify(hist)); } catch(e) {}
+    }
+
+    function pushBackupSnapshot(reason) {
+        try {
+            var hist = _readBackupHistory();
+            var payload = collectAllModulesData();
+            payload._backupMeta = { ts: _nowIsoLocal(), reason: reason || 'auto' };
+            hist.unshift({ ts: payload._backupMeta.ts, reason: payload._backupMeta.reason, data: payload });
+            // dédoublonnage simple (même minute + même raison)
+            var seen = new Set();
+            hist = hist.filter(function(h){
+                var k = (h.ts || '') + '|' + (h.reason || '');
+                if (seen.has(k)) return false;
+                seen.add(k); return true;
+            });
+            if (hist.length > 10) hist = hist.slice(0, 10);
+            _writeBackupHistory(hist);
+        } catch(e) {}
+    }
+
+    function scheduleBackupSnapshot(reason) {
+        clearTimeout(_backupDebounceTimer);
+        _backupDebounceTimer = setTimeout(function(){ pushBackupSnapshot(reason || 'auto'); }, 1500);
+    }
+
+    function downloadBackupHistory() {
+        var hist = _readBackupHistory();
+        if (!hist.length) return alert("Aucun historique pour l'instant.");
+        var out = hist.map(function(h, idx){
+            return { index: idx, ts: h.ts, reason: h.reason, data: h.data };
+        });
+        var json = JSON.stringify(out, null, 2);
+        var blob = new Blob([json], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'pilote_historique_10.json';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function restoreBackupFromHistory() {
+        var hist = _readBackupHistory();
+        if (!hist.length) return alert("Aucun historique disponible.");
+        var msg = "Choisissez une version à restaurer (0 = la plus récente) :\n\n" +
+            hist.map(function(h,i){ return i + " — " + (h.ts || '?') + " (" + (h.reason||'') + ")"; }).join("\n") +
+            "\n\nEntrez un numéro :";
+        var n = prompt(msg, "0");
+        if (n === null) return;
+        var idx = parseInt(n, 10);
+        if (isNaN(idx) || idx < 0 || idx >= hist.length) return alert("Numéro invalide.");
+        try {
+            distributeToModules(hist[idx].data);
+            alert("✅ Version restaurée. Rechargez la page (F5) pour appliquer partout.");
+        } catch(e) {
+            alert("❌ Restauration impossible : " + e.message);
+        }
+    }
+
 
     function localFolderSetStatus(html, color) {
         var el = document.getElementById('localfolder-status');
@@ -3185,6 +3296,7 @@ function findCalendarHost(){
         cloudSetStatus('<i class="fas fa-spinner fa-spin"></i> Envoi en cours...', '#f39c12');
         try {
             var allData = collectAllModulesData();
+            try{ pushBackupSnapshot('export'); }catch(e){}
             allData._cloudMeta = { lastPush: new Date().toISOString(), provider: cfg.provider };
 
             if (cfg.provider === 'jsonbin') await jsonbinPush(allData, cfg);
