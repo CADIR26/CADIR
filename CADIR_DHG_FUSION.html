@@ -1289,6 +1289,12 @@ function saveSettings() {
         }
     }
 
+    function pushCalendarsFromStorage(){
+        try{ pushGcalToModules(); }catch(e){}
+        try{ pushOutlookToModules(); }catch(e){}
+        try{ renderHomeTodayEvents(); }catch(e){}
+    }
+
     // Outlook CRUD
     function outlookAddEvent(data) {
         if (!_outlookToken) { alert('Outlook non connecté'); return; }
@@ -1915,7 +1921,7 @@ function updateModuleVisibility() {
         else document.exitFullscreen();
     }
     // Apply PERDIR submenus when frames load
-    document.getElementById('frame-perdir').addEventListener('load', function(){ setTimeout(applyPerdirSubmenus, 500); });
+    document.getElementById('frame-perdir').addEventListener('load', function(){ setTimeout(applyPerdirSubmenus, 500); setTimeout(pushCalendarsFromStorage, 650); });
 
     document.addEventListener('fullscreenchange', () => {
         var fsIcon = document.getElementById('fs-icon');
@@ -5998,6 +6004,8 @@ window.onload = function() {
     } else {
         document.getElementById('setup-overlay').style.display = 'flex';
     }
+
+    try{ pushCalendarsFromStorage(); }catch(e){}
 };
 
 function getDefaultActiveLevels(s) {
