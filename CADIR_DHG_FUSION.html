@@ -60,7 +60,7 @@
         .nav-item[data-module="data"] .nav-badge { background:var(--c-purple); color:#fff; }
         .nav-item[data-module="dhg"] .nav-badge { background:#16a085; color:#fff; }
         .module-card[data-m="dhg"]::before { background:#16a085; }
-        .module-card[data-m="dhg"] .module-icon { background:#16a085; }
+        .module-card[data-m="dhg"] .module-icon { background:#16a085; transition: transform 320ms cubic-bezier(.2,.8,.2,1), filter 320ms; }
 
         .nav-right { margin-left:auto; display:flex; align-items:center; gap:8px; }
         .nav-clock { color:var(--c-text-dim); font-size:0.75rem; font-variant-numeric:tabular-nums; }
@@ -216,11 +216,24 @@
         .welcome-logo img { height:4cm; width:auto; object-fit:contain; }
         .welcome-title { font-family:var(--font-display); font-size:2rem; font-weight:700; color:var(--c-nav); margin-bottom:6px; }
         .welcome-subtitle { color:#6b7280; font-size:0.95rem; }
-        .module-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:16px; max-width:1000px; width:100%; }
-        .module-card { background:var(--c-card); border-radius:var(--radius); padding:24px 20px; cursor:pointer; transition:all 0.25s; box-shadow:var(--shadow); border:1px solid var(--c-border); text-align:center; position:relative; overflow:hidden; width:170px; flex-shrink:0; }
-        .module-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:var(--radius) var(--radius) 0 0; transition:height 0.3s; }
-        .module-card:hover { transform:translateY(-4px); box-shadow:0 8px 32px rgba(0,0,0,0.12); }
-        .module-card:hover::before { height:5px; }
+        .module-grid { display:flex; flex-wrap:wrap; gap:16px; width:100%; justify-content:center; align-content:flex-start; max-width: calc(var(--home-cols, 3) * 170px + (var(--home-cols, 3) - 1) * 16px); margin: 0 auto; }
+        @media (max-width: 720px){ .module-grid{ grid-template-columns: repeat(2, 170px); max-width: calc(2 * 170px + 16px); } }
+        .module-card { 
+  background:var(--c-card); border-radius:var(--radius); padding:24px 20px; cursor:pointer; 
+  transition: transform 320ms cubic-bezier(.2,.8,.2,1), box-shadow 320ms cubic-bezier(.2,.8,.2,1), border-color 320ms, background 320ms;
+  box-shadow:var(--shadow); border:1px solid var(--c-border); text-align:center; position:relative; overflow:hidden; width:170px; 
+  will-change: transform;
+}
+.module-card:focus-visible{ outline:none; box-shadow:0 0 0 3px var(--c-accent-glow), var(--shadow); }
+.module-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:var(--radius) var(--radius) 0 0; transition:height 320ms cubic-bezier(.2,.8,.2,1); }
+.module-card::after { content:''; position:absolute; inset:-1px; border-radius:var(--radius); pointer-events:none; opacity:0; transition:opacity 320ms; box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+.module-card:hover { transform:translateY(-6px); box-shadow:0 14px 44px rgba(0,0,0,0.14); background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(240,241,244,0.35) 100%); }
+.module-card:hover::before { height:6px; }
+.module-card:hover .module-icon { transform: translateY(-2px) scale(1.05); filter: saturate(1.05); }
+.module-card:active { transform:translateY(-2px) scale(0.99); box-shadow:0 10px 34px rgba(0,0,0,0.12); }
+.module-card.active { border-color: rgba(212,72,59,0.45); box-shadow:0 18px 54px rgba(0,0,0,0.16); transform:translateY(-4px); }
+.module-card.active::before { height:8px; }
+.module-card.active::after { opacity:1; box-shadow: 0 0 0 3px var(--c-accent-glow); }
         .module-card.card-hidden { display:none !important; }
         .module-card[data-m="perdir"]::before { background:var(--c-info); }
         .module-card[data-m="exam"]::before { background:var(--c-accent); }
@@ -228,7 +241,7 @@
         .module-card[data-m="aed"]::before { background:var(--c-success); }
         .module-card[data-m="bibase"]::before { background:#e67e22; }
             .module-card[data-m="data"]::before { background:var(--c-purple); }
-        .module-icon { width:44px; height:44px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; color:white; margin:0 auto 12px; }
+        .module-icon { width:44px; height:44px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; color:white; margin:0 auto 12px;  transition: transform 320ms cubic-bezier(.2,.8,.2,1), filter 320ms; }
         .module-card[data-m="perdir"] .module-icon { background:var(--c-info); }
         .module-card[data-m="exam"] .module-icon { background:var(--c-accent); }
         .module-card[data-m="oral"] .module-icon { background:var(--c-warning); }
@@ -263,7 +276,7 @@
             <div class="brand-text">CADIR<span>Suite Direction</span></div>
         </a>
         <div class="nav-sep"></div>
-        <div class="nav-items" id="navItems"><div class="nav-item active" data-module="perdir" onclick="loadModule('perdir')" title="Ctrl+P"><i class="fas fa-building-columns"></i><span class="nav-label">CADIR</span><span class="nav-badge">Direction</span><kbd class="nav-shortcut">Ctrl+P</kbd></div><div class="nav-item" data-module="exam" onclick="loadModule('exam')" title="Ctrl+E"><i class="fas fa-file-pen"></i><span class="nav-label">Écrit</span><span class="nav-badge">Épreuves</span><kbd class="nav-shortcut">Ctrl+E</kbd></div><div class="nav-item" data-module="oral" onclick="loadModule('oral')" title="Ctrl+O"><i class="fas fa-comments"></i><span class="nav-label">ORAL</span><span class="nav-badge">Oraux</span><kbd class="nav-shortcut">Ctrl+O</kbd></div><div class="nav-item" data-module="aed" onclick="loadModule('aed')" title="Ctrl+A"><i class="fas fa-user-shield"></i><span class="nav-label">AED</span><span class="nav-badge">Vie Scolaire</span><kbd class="nav-shortcut">Ctrl+A</kbd></div><div class="nav-item" data-module="bibase" onclick="loadModule('bibase')" title="Ctrl+B"><i class="fas fa-newspaper"></i><span class="nav-label">BULLETIN</span><span class="nav-badge">Information</span><kbd class="nav-shortcut">Ctrl+B</kbd></div><div class="nav-item" data-module="dhg" onclick="loadModule('dhg')" title="Ctrl+H"><i class="fas fa-table-cells"></i><span class="nav-label">DHG</span><span class="nav-badge">Services</span><kbd class="nav-shortcut">Ctrl+H</kbd></div><div class="nav-item" data-module="data" onclick="openDataPanel()" title="Ctrl+D"><i class="fas fa-database"></i><span class="nav-label">Données</span><span class="nav-badge">Import</span><kbd class="nav-shortcut">Ctrl+D</kbd></div></div>
+        <div class="nav-items" id="navItems"><div class="nav-item active" data-module="perdir" onclick="loadModule('perdir')" title="Ctrl+P"><i class="fas fa-building-columns"></i><span class="nav-label">CADIR</span><span class="nav-badge">Direction</span><kbd class="nav-shortcut">Ctrl+P</kbd></div><div class="nav-item" data-module="exam" onclick="loadModule('exam')" title="Ctrl+E"><i class="fas fa-file-pen"></i><span class="nav-label">Écrit</span><span class="nav-badge">Épreuves</span><kbd class="nav-shortcut">Ctrl+E</kbd></div><div class="nav-item" data-module="oral" onclick="loadModule('oral')" title="Ctrl+O"><i class="fas fa-comments"></i><span class="nav-label">Oral</span><span class="nav-badge">Oraux</span><kbd class="nav-shortcut">Ctrl+O</kbd></div><div class="nav-item" data-module="aed" onclick="loadModule('aed')" title="Ctrl+A"><i class="fas fa-user-shield"></i><span class="nav-label">AED</span><span class="nav-badge">Vie Scolaire</span><kbd class="nav-shortcut">Ctrl+A</kbd></div><div class="nav-item" data-module="bibase" onclick="loadModule('bibase')" title="Ctrl+B"><i class="fas fa-newspaper"></i><span class="nav-label">BULLETIN</span><span class="nav-badge">Information</span><kbd class="nav-shortcut">Ctrl+B</kbd></div><div class="nav-item" data-module="dhg" onclick="loadModule('dhg')" title="Ctrl+H"><i class="fas fa-table-cells"></i><span class="nav-label">DHG</span><span class="nav-badge">Services</span><kbd class="nav-shortcut">Ctrl+H</kbd></div><div class="nav-item" data-module="data" onclick="openDataPanel()" title="Ctrl+D"><i class="fas fa-database"></i><span class="nav-label">Données</span><span class="nav-badge">Import</span><kbd class="nav-shortcut">Ctrl+D</kbd></div></div>
         <div class="nav-right">
             <div class="nav-clock" id="clock">mer. 18 févr., 21:26</div>
             <button class="nav-btn" onclick="openSettings()" title="Paramètres (Alt+P)"><svg id="settings-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button>
@@ -609,7 +622,7 @@ fichier JSON contient identité, images, ordre et visibilité des modules.</div>
                 <h1 class="welcome-title">Bienvenue sur CADIR</h1>
                 <p class="welcome-subtitle" id="welcomeSubtitle">Suite d'outils pour la direction d'établissement</p>
             </div>
-            <div class="module-grid" id="moduleGrid"><div class="module-card" data-m="perdir" onclick="loadModule('perdir')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><rect x="3" y="10" width="18" height="11" rx="1"></rect><path d="M3 10l9-7 9 7"></path><line x1="12" y1="3" x2="12" y2="10"></line><rect x="7" y="14" width="3" height="7"></rect><rect x="14" y="14" width="3" height="7"></rect></svg></div><h3>CADIR</h3><p>Direction &amp; pilotage</p></div><div class="module-card" data-m="exam" onclick="loadModule('exam')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><path d="M10 9H8"></path></svg></div><h3>EXAM</h3><p>Organisation des épreuves</p></div><div class="module-card" data-m="oral" onclick="loadModule('oral')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div><h3>ORAL</h3><p>Gestion des oraux &amp; écrits</p></div><div class="module-card" data-m="aed" onclick="loadModule('aed')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle><path d="M18 8s2 2 0 5"></path></svg></div><h3>AED</h3><p>Assistants d'éducation</p></div><div class="module-card" data-m="bibase" onclick="loadModule('bibase')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a4 4 0 0 1-4-4V6"></path><line x1="16" y1="6" x2="10" y2="6"></line><line x1="16" y1="10" x2="10" y2="10"></line><line x1="16" y1="14" x2="10" y2="14"></line></svg></div><h3>BULLETIN</h3><p>Bulletin d'information</p></div><div class="module-card" data-m="dhg" onclick="loadModule('dhg')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18"></path><path d="M3 15h18"></path><path d="M9 3v18"></path><path d="M15 3v18"></path></svg></div><h3>DHG</h3><p>Gestion des services</p></div><div class="module-card" data-m="data" onclick="openDataPanel()"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></div><h3>DONNÉES</h3><p>Import élèves &amp; enseignants</p></div></div>
+            <div class="module-grid" id="moduleGrid"><div class="module-card" data-m="perdir" onclick="loadModule('perdir')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><rect x="3" y="10" width="18" height="11" rx="1"></rect><path d="M3 10l9-7 9 7"></path><line x1="12" y1="3" x2="12" y2="10"></line><rect x="7" y="14" width="3" height="7"></rect><rect x="14" y="14" width="3" height="7"></rect></svg></div><h3>CADIR</h3><p>Direction &amp; pilotage</p></div><div class="module-card" data-m="exam" onclick="loadModule('exam')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><path d="M10 9H8"></path></svg></div><h3>Écrit</h3><p>Organisation d'épreuves écrites</p></div><div class="module-card" data-m="oral" onclick="loadModule('oral')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div><h3>Oral</h3><p>Organisation d'épreuves orales</p></div><div class="module-card" data-m="aed" onclick="loadModule('aed')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle><path d="M18 8s2 2 0 5"></path></svg></div><h3>AED</h3><p>Assistants d'éducation</p></div><div class="module-card" data-m="bibase" onclick="loadModule('bibase')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a4 4 0 0 1-4-4V6"></path><line x1="16" y1="6" x2="10" y2="6"></line><line x1="16" y1="10" x2="10" y2="10"></line><line x1="16" y1="14" x2="10" y2="14"></line></svg></div><h3>BULLETIN</h3><p>Bulletin d'information</p></div><div class="module-card" data-m="dhg" onclick="loadModule('dhg')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18"></path><path d="M3 15h18"></path><path d="M9 3v18"></path><path d="M15 3v18"></path></svg></div><h3>DHG</h3><p>Gestion des services</p></div><div class="module-card" data-m="data" onclick="openDataPanel()"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></div><h3>DONNÉES</h3><p>Import élèves &amp; enseignants</p></div></div>
         </div>
 
         <!-- DATA PANEL -->
@@ -696,8 +709,8 @@ fichier JSON contient identité, images, ordre et visibilité des modules.</div>
 
     const MODULE_META = {
         perdir: { label:'PERDIR', sublabel:'Direction', icon:'fas fa-building-columns', color:'var(--c-info)' },
-        exam:   { label:'EXAM',   sublabel:'Épreuves', icon:'fas fa-file-pen', color:'var(--c-accent)' },
-        oral:   { label:'ORAL',   sublabel:'Oraux', icon:'fas fa-comments', color:'var(--c-warning)' },
+        exam:   { label:'Écrit',  sublabel:"Organisation d'épreuves écrites", icon:'fas fa-file-pen', color:'var(--c-accent)' },
+        oral:   { label:'Oral',   sublabel:"Organisation d'épreuves orales", icon:'fas fa-comments', color:'var(--c-warning)' },
         aed:    { label:'AED',    sublabel:'Vie Scolaire', icon:'fas fa-user-shield', color:'var(--c-success)' },
         data:   { label:'DONNÉES', sublabel:'Import', icon:'fas fa-database', color:'var(--c-purple)' },
         bibase: { label:'BULLETIN', sublabel:'Information', icon:'fas fa-newspaper', color:'#e67e22' },
@@ -972,6 +985,8 @@ function saveSettings() {
     function openSettings() {
         renderPerdirSubmenus(); loadSettingsUI(); loadBibSettingsUI();
         if (typeof lfInitMode === 'function') lfInitMode();
+            updateHomeGrid();
+            if(!window.__homeGridResize){ window.__homeGridResize=true; window.addEventListener('resize', updateHomeGrid); }
         document.getElementById('settingsOverlay').classList.add('open'); }
     
     var _gcalAccessToken = null;
@@ -1687,7 +1702,20 @@ function saveSettings() {
     });
 
     // ═══ MODULE VISIBILITY ═══
-    function updateModuleVisibility() {
+    
+
+    // ═══ HOME GRID LAYOUT (2 lignes symétriques) ═══
+    function updateHomeGrid(){
+        const grid = document.querySelector('.module-grid');
+        if(!grid) return;
+        const cards = Array.from(grid.querySelectorAll('.module-card')).filter(c => !c.classList.contains('card-hidden'));
+        const n = cards.length;
+        if(n === 0) return;
+        const cols = Math.ceil(n / 2);
+        grid.style.setProperty('--home-cols', cols);
+    }
+
+function updateModuleVisibility() {
         moduleNames.forEach(m => {
             const tog = document.getElementById('tog-' + m);
             const visible = tog ? tog.checked : true;
@@ -1697,6 +1725,7 @@ function saveSettings() {
             if (card) card.classList.toggle('card-hidden', !visible);
             if (!visible && currentModule === m) goHome();
         });
+        updateHomeGrid();
     }
 
     // ═══ MODULE LOADING ═══
@@ -1745,6 +1774,9 @@ function saveSettings() {
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         const navItem = document.querySelector('.nav-item[data-module="' + name + '"]');
         if (navItem) navItem.classList.add('active');
+        document.querySelectorAll('.module-card').forEach(el => el.classList.remove('active'));
+        const card = document.querySelector('.module-card[data-m="' + name + '"]');
+        if (card) card.classList.add('active');
         document.getElementById('welcome').classList.add('hidden');
         document.querySelectorAll('.module-frame').forEach(f => f.classList.remove('active'));
         const frame = document.getElementById('frame-' + name);
@@ -1786,6 +1818,7 @@ function saveSettings() {
         currentModule = null;
         closeDataPanel();
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.module-card').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.module-frame').forEach(f => f.classList.remove('active'));
         document.getElementById('welcome').classList.remove('hidden');
         document.title = 'PILOTE — Suite de Direction';
@@ -2021,6 +2054,8 @@ function saveSettings() {
             if (btn) btn.classList.toggle('active', p === prov);
         });
         if (prov === 'localfolder' && typeof lfInitMode === 'function') lfInitMode();
+            updateHomeGrid();
+            if(!window.__homeGridResize){ window.__homeGridResize=true; window.addEventListener('resize', updateHomeGrid); }
     }
 
     function toggleCloudUI() {
@@ -2505,10 +2540,14 @@ function saveSettings() {
 
     // ── Init on page load ──
     // Fallback if DOMContentLoaded already fired
-    if (document.readyState !== 'loading') { setTimeout(function() { lfInitMode(); }, 200); }
+    if (document.readyState !== 'loading') { setTimeout(function() { lfInitMode();
+            updateHomeGrid();
+            if(!window.__homeGridResize){ window.__homeGridResize=true; window.addEventListener('resize', updateHomeGrid); } }, 200); }
     window.addEventListener('DOMContentLoaded', function() {
         setTimeout(function() {
             lfInitMode();
+            updateHomeGrid();
+            if(!window.__homeGridResize){ window.__homeGridResize=true; window.addEventListener('resize', updateHomeGrid); }
         }, 500);
     });
 
