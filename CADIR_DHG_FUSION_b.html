@@ -213,7 +213,7 @@
 
         /* ═══ CONTENT ═══ */
         .content-area { flex:1; position:relative; overflow:hidden; }
-        .welcome { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:linear-gradient(160deg,#f0f1f4,#e4e7ee,#dfe2ea); z-index:10; transition:opacity 0.4s,transform 0.4s; padding:40px; }
+        .welcome { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; background:linear-gradient(160deg,#f0f1f4,#e4e7ee,#dfe2ea); z-index:10; transition:opacity 0.4s,transform 0.4s; padding:24px 16px 120px; overflow:auto; }
         .welcome.hidden { opacity:0; transform:scale(0.98); pointer-events:none; }
         .welcome-header { text-align:center; margin-bottom:40px; }
         .welcome-logo { width:auto; height:auto; min-height:56px; background:var(--c-accent); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:24px; color:white; font-weight:700; margin:0 auto 16px; box-shadow:0 8px 32px var(--c-accent-glow); overflow:hidden; }
@@ -221,6 +221,106 @@
         .welcome-title { font-family:var(--font-display); font-size:2rem; font-weight:700; color:var(--c-nav); margin-bottom:6px; }
         .welcome-subtitle { color:#6b7280; font-size:0.95rem; }
         .module-grid { display:flex; flex-wrap:wrap; gap:16px; width:100%; justify-content:center; align-content:flex-start; max-width: calc(var(--home-cols, 3) * 170px + (var(--home-cols, 3) - 1) * 16px); margin: 0 auto; }
+
+        
+        .home-events{width:100%;max-width:980px;margin-top:14px}
+        .home-event-row{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #eef2f7}
+        .home-event-row:last-child{border-bottom:none}
+        .home-event-when{min-width:84px;font-weight:800;color:#0f172a;font-size:.86rem;white-space:nowrap}
+        .home-event-title{font-weight:800;color:#0f172a;font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .home-empty{padding:10px 12px;border:1px dashed #cbd5e1;border-radius:12px;background:#f8fafc;color:#475569;font-weight:700}
+
+/* ─── Accueil : Dock style (inspiration macOS) ─── */
+        .module-grid{
+            position: fixed;
+            left: 50%;
+            bottom: 14px;
+            transform: translateX(-50%);
+            display:flex;
+            flex-wrap:nowrap;
+            gap:10px;
+            padding:10px 14px;
+            border-radius:20px;
+            background: rgba(255,255,255,0.72);
+            border:1px solid rgba(15,23,42,0.10);
+            box-shadow: 0 16px 50px rgba(15,23,42,0.18);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            z-index: 1500;
+            max-width: min(980px, calc(100vw - 24px));
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .module-grid::-webkit-scrollbar{ display:none; }
+        .module-card{
+            width:104px;
+            padding:12px 10px 10px 10px;
+            border-radius:16px;
+            box-shadow:none;
+            background: rgba(255,255,255,0.45);
+            border:1px solid rgba(15,23,42,0.10);
+            overflow: visible;
+        }
+        .module-card::after{
+            content:'';
+            position:absolute;
+            left:50%;
+            bottom:-10px;
+            width:6px;
+            height:6px;
+            border-radius:999px;
+            background: transparent;
+            transform: translateX(-50%);
+            transition: all 220ms ease;
+        }
+        .module-card:hover{
+            transform: translateY(-8px) scale(1.12);
+            box-shadow: 0 18px 40px rgba(15,23,42,0.16);
+            background: rgba(255,255,255,0.72);
+            border-color: rgba(14,165,233,0.35);
+        }
+        .module-card:hover .module-icon{
+            transform: scale(1.06);
+            filter: saturate(1.1);
+        }
+        .module-card h3{
+            margin-top:10px;
+            font-size:0.92rem;
+            letter-spacing:0.2px;
+        }
+        .module-card p{
+            display:none; /* le dock reste épuré */
+        }
+        .module-card.active{
+            background: rgba(255,255,255,0.80);
+            border-color: rgba(212,72,59,0.35);
+        }
+        .module-card.active::after{
+            background: rgba(15,23,42,0.55);
+        }
+        /* Tooltip label au survol */
+        .module-card[data-title]::before{
+            content: attr(data-title);
+            position:absolute;
+            left:50%;
+            top:-38px;
+            transform: translateX(-50%);
+            background: rgba(15,23,42,0.88);
+            color:#fff;
+            padding:6px 10px;
+            border-radius:10px;
+            font-size:0.74rem;
+            font-weight:800;
+            white-space:nowrap;
+            opacity:0;
+            pointer-events:none;
+            transition: opacity 180ms ease, transform 180ms ease;
+        }
+        .module-card:hover::before{
+            opacity:1;
+            transform: translateX(-50%) translateY(-2px);
+        }
+
         @media (max-width: 720px){ .module-grid{ grid-template-columns: repeat(2, 170px); max-width: calc(2 * 170px + 16px); } }
         .module-card { 
   background:var(--c-card); border-radius:var(--radius); padding:24px 20px; cursor:pointer; 
@@ -674,7 +774,7 @@ fichier JSON contient identité, images, ordre et visibilité des modules.</div>
                 <h1 class="welcome-title">Bienvenue sur CADIR</h1>
                 <p class="welcome-subtitle" id="welcomeSubtitle">Suite d'outils pour la direction d'établissement</p>
             </div>
-            <div class="module-grid" id="moduleGrid"><div class="module-card" data-m="perdir" onclick="loadModule('perdir')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><rect x="3" y="10" width="18" height="11" rx="1"></rect><path d="M3 10l9-7 9 7"></path><line x1="12" y1="3" x2="12" y2="10"></line><rect x="7" y="14" width="3" height="7"></rect><rect x="14" y="14" width="3" height="7"></rect></svg></div><h3>CADIR</h3><p>Direction &amp; pilotage</p></div><div class="module-card" data-m="exam" onclick="loadModule('exam')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><path d="M10 9H8"></path></svg></div><h3>Écrit</h3><p>Organisation d'épreuves écrites</p></div><div class="module-card" data-m="oral" onclick="loadModule('oral')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div><h3>Oral</h3><p>Organisation d'épreuves orales</p></div><div class="module-card" data-m="aed" onclick="loadModule('aed')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle><path d="M18 8s2 2 0 5"></path></svg></div><h3>AED</h3><p>Assistants d'éducation</p></div><div class="module-card" data-m="bibase" onclick="loadModule('bibase')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a4 4 0 0 1-4-4V6"></path><line x1="16" y1="6" x2="10" y2="6"></line><line x1="16" y1="10" x2="10" y2="10"></line><line x1="16" y1="14" x2="10" y2="14"></line></svg></div><h3>BULLETIN</h3><p>Bulletin d'information</p></div><div class="module-card" data-m="dhg" onclick="loadModule('dhg')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18"></path><path d="M3 15h18"></path><path d="M9 3v18"></path><path d="M15 3v18"></path></svg></div><h3>DHG</h3><p>Gestion des services</p></div><div class="module-card" data-m="data" onclick="openDataPanel()"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></div><h3>DONNÉES</h3><p>Import élèves &amp; enseignants</p></div></div>
+            <div class="module-grid" id="moduleGrid"><div class="module-card" data-m="perdir" data-title="perdir" onclick="loadModule('perdir')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><rect x="3" y="10" width="18" height="11" rx="1"></rect><path d="M3 10l9-7 9 7"></path><line x1="12" y1="3" x2="12" y2="10"></line><rect x="7" y="14" width="3" height="7"></rect><rect x="14" y="14" width="3" height="7"></rect></svg></div><h3>CADIR</h3><p>Direction &amp; pilotage</p></div><div class="module-card" data-m="exam" data-title="exam" onclick="loadModule('exam')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><path d="M10 9H8"></path></svg></div><h3>Écrit</h3><p>Organisation d'épreuves écrites</p></div><div class="module-card" data-m="oral" data-title="oral" onclick="loadModule('oral')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div><h3>Oral</h3><p>Organisation d'épreuves orales</p></div><div class="module-card" data-m="aed" data-title="aed" onclick="loadModule('aed')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle><path d="M18 8s2 2 0 5"></path></svg></div><h3>AED</h3><p>Assistants d'éducation</p></div><div class="module-card" data-m="bibase" data-title="bibase" onclick="loadModule('bibase')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a4 4 0 0 1-4-4V6"></path><line x1="16" y1="6" x2="10" y2="6"></line><line x1="16" y1="10" x2="10" y2="10"></line><line x1="16" y1="14" x2="10" y2="14"></line></svg></div><h3>BULLETIN</h3><p>Bulletin d'information</p></div><div class="module-card" data-m="dhg" data-title="dhg" onclick="loadModule('dhg')"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18"></path><path d="M3 15h18"></path><path d="M9 3v18"></path><path d="M15 3v18"></path></svg></div><h3>DHG</h3><p>Gestion des services</p></div><div class="module-card" data-m="data" data-title="data" onclick="openDataPanel()"><div class="module-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></div><h3>DONNÉES</h3><p>Import élèves &amp; enseignants</p></div></div>
 
             <div class="home-events" id="homeEvents">
                 <div class="home-events-head">
@@ -685,18 +785,7 @@ fichier JSON contient identité, images, ordre et visibilité des modules.</div>
                 </div>
                 <div class="home-events-body" id="homeEventsBody"></div>
             </div>
-
-
-            <div class="home-calwrap" id="homeUpcomingWrap" style="display:none">
-                <div class="home-calhead">
-                    <div class="ttl"><i class="fas fa-calendar-week"></i> Prochaines 2 semaines (par agenda)</div>
-                    <div class="home-events-actions">
-                        <button class="home-events-btn" onclick="renderHomeUpcoming2Weeks()" title="Rafraîchir l'affichage"><i class="fas fa-rotate"></i> Rafraîchir</button>
-                    </div>
-                </div>
-                <div class="home-calgrid" id="homeUpcomingGrid"></div>
-                <div class="home-calempty" id="homeUpcomingEmpty" style="display:none;"></div>
-            </div>
+</div>
 
 
         </div>
@@ -1851,7 +1940,16 @@ function updateModuleVisibility() {
         }
     });
 
-    function loadModule(name) {
+    
+    function setActiveHomeCard(mod){
+        try{
+            document.querySelectorAll('.module-card').forEach(function(c){ c.classList.remove('active'); });
+            var t = document.querySelector('.module-card[data-m="'+mod+'"]');
+            if (t) t.classList.add('active');
+        }catch(e){}
+    }
+
+function loadModule(name) {
         if (name === 'data') { openDataPanel(); return; }
         const s = getSettings();
         if (s['show_' + name] === false) return;
@@ -1923,9 +2021,41 @@ function updateModuleVisibility() {
 
     function getMasterAllCalendarEvents(){
         var s = getSettings();
+        var gSel = Array.isArray(s.gcalSel) ? s.gcalSel : [];
+        var oSel = Array.isArray(s.outlookSel) ? s.outlookSel : [];
         var all = [];
-        (s.gcalEvents || []).forEach(function(e){ all.push({src:'gcal', color:e.color||'#4285f4', calName:e.calName||'Google', title:e.title, date:e.date, time:_safeTime(e.time), endTime:_safeTime(e.endTime)}); });
-        (s.outlookEvents || []).forEach(function(e){ all.push({src:'outlook', color:e.color||'#0078d4', calName:e.calName||'Outlook', title:e.title, date:e.date, time:_safeTime(e.time), endTime:_safeTime(e.endTime)}); });
+        // Google
+        (s.gcalEvents || []).forEach(function(e){
+            var calId = e.calId || e.calendarId || e.idCal || e.cal || '';
+            if (gSel.length && calId && gSel.indexOf(calId) === -1) return; // uniquement agendas cochés
+            all.push({
+                src:'gcal',
+                calId: calId,
+                color:e.color||'#4285f4',
+                calName:e.calName||e.calendarName||'Google',
+                title:e.title,
+                date:e.date,
+                time:_safeTime(e.time),
+                endTime:_safeTime(e.endTime)
+            });
+        });
+        // Outlook
+        (s.outlookEvents || []).forEach(function(e){
+            var calId = e.calId || e.calendarId || e.idCal || e.cal || '';
+            if (oSel.length && calId && oSel.indexOf(calId) === -1) return; // uniquement agendas cochés
+            all.push({
+                src:'outlook',
+                calId: calId,
+                color:e.color||'#0078d4',
+                calName:e.calName||e.calendarName||'Outlook',
+                title:e.title,
+                date:e.date,
+                time:_safeTime(e.time),
+                endTime:_safeTime(e.endTime)
+            });
+        });
+        // Si aucune sélection n'est définie (liste vide), on garde tout (comportement historique)
+        // Mais si une sélection existe et que calId est vide, on conserve l'événement (cas rare).
         return all;
     }
 
@@ -1982,7 +2112,7 @@ function installCadirCalendarOverride(){
             .cadir-cal-override{padding:18px 18px 26px 18px;}
             .cadir-cal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 14px 0;}
             .cadir-cal-title{font-weight:800;font-size:1.05rem;color:#0f172a;display:flex;align-items:center;gap:10px;}
-            .cadir-cal-title .pill{font-size:.72rem;font-weight:800;color:#334155;background:#e2e8f0;border:1px solid #cbd5e1;border-radius:999px;padding:4px 10px}
+            .cadir-cal-title .pill{font-size:.70rem;font-weight:800;color:#334155;background:#e2e8f0;border:1px solid #cbd5e1;border-radius:999px;padding:4px 10px}
             .cadir-cal-actions{display:flex;gap:8px;flex-wrap:wrap}
             .cadir-cal-btn{border:none;border-radius:10px;padding:9px 12px;font-weight:700;cursor:pointer;font-size:.82rem}
             .cadir-cal-btn.primary{background:#0ea5e9;color:#fff}
@@ -1992,14 +2122,14 @@ function installCadirCalendarOverride(){
             .cadir-cal-card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;box-shadow:0 8px 22px rgba(15,23,42,.05)}
             .cadir-cal-card h4{margin:0;padding:12px 14px;border-bottom:1px solid #eef2f7;display:flex;align-items:center;gap:10px;font-size:.95rem;font-weight:800;color:#0f172a;}
             .cadir-cal-dot{width:10px;height:10px;border-radius:999px;display:inline-block}
-            .cadir-cal-list{padding:10px 14px 12px 14px;}
-            .cadir-cal-row{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f1f5f9}
+            .cadir-cal-list{padding:8px 12px 10px 12px;}
+            .cadir-cal-row{display:flex;gap:10px;padding:4px 0;border-bottom:1px solid #f1f5f9;align-items:center}
             .cadir-cal-row:last-child{border-bottom:none}
-            .cadir-cal-when{min-width:92px;font-weight:800;color:#0f172a;font-size:.84rem}
-            .cadir-cal-when small{display:block;color:#64748b;font-weight:800;font-size:.72rem;margin-top:2px}
+            .cadir-cal-when{min-width:0;font-weight:800;color:#0f172a;font-size:.80rem;line-height:1.2;white-space:nowrap}
+            .cadir-cal-when small{display:none}
             .cadir-cal-meta{min-width:0}
             .cadir-cal-meta .t{font-weight:800;color:#0f172a;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-            .cadir-cal-meta .s{color:#64748b;font-weight:700;font-size:.74rem;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+            .cadir-cal-meta .s{display:none}
             .cadir-cal-empty{padding:14px;border:1px dashed #cbd5e1;border-radius:14px;background:#f8fafc;color:#475569;font-weight:700}
             .cadir-cal-sep{height:1px;background:#e2e8f0;margin:14px 0}
         `;
@@ -2178,9 +2308,10 @@ function installCadirCalendarOverride(){
                 } else {
                     rows = g.events.slice(0, 80).map(function(e){
                         var when = e.time ? (e.time + (e.endTime ? '–'+e.endTime : '')) : 'Journée';
-                        return '<div class="cadir-cal-row">'
-                            + '<div class="cadir-cal-when">'+ escHtml(when) +'<small>'+ escHtml(fmtFR(e.date)) +'</small></div>'
-                            + '<div class="cadir-cal-meta"><div class="t">'+ escHtml(e.title||'(sans titre)') +'</div><div class="s">'+ escHtml(c.name) +'</div></div>'
+                        var line = fmtFR(e.date) + ' • ' + when;
+                        return '<div class=\"cadir-cal-row\">'
+                            + '<div class=\"cadir-cal-when\">'+ escHtml(line) +'</div>'
+                            + '<div class=\"cadir-cal-meta\"><div class=\"t\">'+ escHtml(e.title||'(sans titre)') +'</div></div>'
                             + '</div>';
                     }).join('');
                 }
@@ -14237,7 +14368,122 @@ function sanitizeLegacyData() {
 }
 </script>
 
-<div style="position: absolute !important; top: 0px !important; left: 0px !important; height: 0px !important; width: 0px !important; display: initial !important;" data-lastpass-root=""></div></body></html>
+<div style="position: absolute !important; top: 0px !important; left: 0px !important; height: 0px !important; width: 0px !important; display: initial !important;" data-lastpass-root=""></div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  // Tooltip titles for dock items
+  document.querySelectorAll('.module-card[data-m]').forEach(function(card){
+    var h = card.querySelector('h3');
+    if (h && h.textContent) card.setAttribute('data-title', h.textContent.trim());
+  });
+});
+</script>
+
+</body></html>
     </template>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  // Tooltip titles for dock items
+  document.querySelectorAll('.module-card[data-m]').forEach(function(card){
+    var h = card.querySelector('h3');
+    if (h && h.textContent) card.setAttribute('data-title', h.textContent.trim());
+  });
+});
+
+<script>
+/* --- Home: évènements du jour (agendas cochés) --- */
+(function(){
+  function toDate(d){ try{return new Date(d);}catch(e){return null;} }
+  function sameDay(a,b){ return a && b && a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+  function pad2(n){ return String(n).padStart(2,'0'); }
+  function fmtHM(dt){ return pad2(dt.getHours())+':'+pad2(dt.getMinutes()); }
+  function esc(s){ return String(s||'').replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+  function readSelectedCalendarIds(){
+    try{
+      // CADIR stocke généralement les sélections dans localStorage; on récupère plusieurs clés possibles.
+      const keys = ['CADIR_EXTERNAL_CAL_SELECTIONS','CADIR_CAL_SELECTIONS','cadir_cal_selections','cadir_selected_calendars','selectedCalendars'];
+      for(const k of keys){
+        const v = localStorage.getItem(k);
+        if(v){
+          const obj = JSON.parse(v);
+          if(Array.isArray(obj)) return obj;
+          if(obj && Array.isArray(obj.google)) return [...obj.google, ...(obj.outlook||[])];
+          if(obj && Array.isArray(obj.selected)) return obj.selected;
+        }
+      }
+    }catch(e){}
+    return null; // null => pas d'info, on laisse tout
+  }
+
+  function readEvents(){
+    // événements synchronisés (clés tolérantes)
+    const grab = (k)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):null; }catch(e){ return null; } };
+    const data = grab('CADIR_EXTERNAL_CAL_CACHE') || grab('CADIR_CAL_CACHE') || grab('cadir_cal_cache') || {};
+    const g = data.googleEvents || data.gcalEvents || grab('gcalEvents') || [];
+    const o = data.outlookEvents || grab('outlookEvents') || [];
+    const gCals = data.googleCalendars || data.gcalCalendars || grab('gcalCalendars') || [];
+    const oCals = data.outlookCalendars || grab('outlookCalendars') || [];
+    return { g, o, gCals, oCals };
+  }
+
+  function normalize(ev, source){
+    const s = toDate(ev.start || ev.startDate || ev.date || ev.startTime || ev.dtStart);
+    const e = toDate(ev.end || ev.endDate || ev.endTime || ev.dtEnd);
+    const allDay = !!ev.allDay || !!ev.isAllDay || (ev.time === 'Journée') || (!ev.startTime && !ev.start && ev.date && typeof ev.date==='string' && ev.date.length<=10);
+    const calId = ev.calendarId || ev.calId || ev.calendar_id || ev.owner || ev.sourceCalendarId || ev.calendar || ev.agendaId || '';
+    const title = ev.title || ev.summary || ev.subject || '(sans titre)';
+    return { start:s, end:e, allDay, calId, title, source };
+  }
+
+  function renderHomeToday(){
+    const box = document.getElementById('homeEventsBody');
+    const wrap = document.getElementById('homeEvents');
+    if(!box || !wrap) return;
+
+    const sel = readSelectedCalendarIds(); // array or null
+    const { g, o } = readEvents();
+    const today = new Date();
+
+    let all = [];
+    (Array.isArray(g)?g:[]).forEach(ev=>all.push(normalize(ev,'google')));
+    (Array.isArray(o)?o:[]).forEach(ev=>all.push(normalize(ev,'outlook')));
+
+    if(sel && sel.length){
+      const set = new Set(sel.map(String));
+      all = all.filter(x => !x.calId || set.has(String(x.calId)));
+    }
+
+    all = all.filter(x => x.start && sameDay(x.start, today));
+
+    all.sort((a,b)=>{
+      // all-day first then time
+      if(a.allDay && !b.allDay) return -1;
+      if(!a.allDay && b.allDay) return 1;
+      return a.start - b.start;
+    });
+
+    if(!all.length){
+      box.innerHTML = '<div class="home-empty">Aucun événement aujourd\'hui (agendas cochés).</div>';
+      return;
+    }
+
+    box.innerHTML = all.slice(0,50).map(ev=>{
+      const when = ev.allDay ? 'Journée' : (fmtHM(ev.start) + (ev.end ? '–'+fmtHM(ev.end):''));
+      return '<div class="home-event-row">'
+        + '<div class="home-event-when">'+esc(when)+'</div>'
+        + '<div class="home-event-title">'+esc(ev.title)+'</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  // expose & auto refresh on load + when coming back home
+  window.__HOME_TODAY_REFRESH__ = renderHomeToday;
+  document.addEventListener('DOMContentLoaded', ()=>setTimeout(renderHomeToday, 250));
+})();
+</script>
+</script>
 
 </body></html>
