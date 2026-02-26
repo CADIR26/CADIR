@@ -6636,4 +6636,212 @@ function _v12RerenderSoon(){
 })();
 </script>
 
+
+<script>
+/* ===== V33 - Activités: afficher EXACTEMENT la date du champ "Début" (formulaire) =====
+   Votre formulaire affiche la bonne date (Début), mais le JSON contient d'autres dates -> confusion.
+   V33:
+   - Quand le formulaire "Modifier l'événement" est visible, on lit:
+       * Intitulé (valeur du champ)
+       * Début (valeur du champ)
+     puis on enregistre un mapping {titre -> dateDébut} dans localStorage de l'iframe.
+   - Les vignettes affichent en priorité ce mapping (donc la date est identique au champ Début).
+   - Format: "dddd dd mmmm" (ex: mardi 17 février).
+*/
+(function(){
+  function injectIntoPerdir(){
+    const fr = document.getElementById('frame-perdir');
+    if(!fr) return;
+    let doc, win;
+    try{ win = fr.contentWindow; doc = fr.contentDocument; }catch(e){ return; }
+    if(!doc || doc.__cadirV33Injected) return;
+
+    const st = doc.createElement('style');
+    st.textContent = `
+      .ap-inline-date{
+        color:#6b7280;
+        font-size:12px;
+        font-weight:800;
+        margin-left:8px;
+        white-space:nowrap;
+      }
+      .ap-inline-date::before{ content:"• "; font-weight:900; }
+    `;
+    doc.head.appendChild(st);
+
+    const fmt = new Intl.DateTimeFormat('fr-FR', { weekday:'long', day:'2-digit', month:'long' });
+
+    function parseToDate(v){
+      if (!v) return null;
+      const s = String(v).trim();
+      // dd / mm / yyyy (avec espaces)
+      let m = s.match(/^(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{4})$/);
+      if (m) return new Date(Number(m[3]), Number(m[2])-1, Number(m[1]));
+      // ISO yyyy-mm-dd
+      m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (m) return new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
+      // dd/mm (assume year)
+      m = s.match(/^(\d{1,2})\/(\d{1,2})$/);
+      if (m){
+        const y = new Date().getFullYear();
+        return new Date(y, Number(m[2])-1, Number(m[1]));
+      }
+      const t = Date.parse(s);
+      if (!Number.isNaN(t)) return new Date(t);
+      return null;
+    }
+    function niceDate(v){
+      const d = parseToDate(v);
+      if (!d) return null;
+      return fmt.format(d).replace(/\.$/, '');
+    }
+    function normalize(s){
+      return String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
+    }
+
+    // Persistent map stored in iframe localStorage
+    const MAP_KEY = 'cadir_ap_title_to_start';
+    function loadMap(){
+      try{ return JSON.parse(win.localStorage.getItem(MAP_KEY) || '{}') || {}; }catch(e){ return {}; }
+    }
+    function saveMap(m){
+      try{ win.localStorage.setItem(MAP_KEY, JSON.stringify(m || {})); }catch(e){}
+    }
+
+    function findCards(){
+      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
+      const cards = new Set();
+      pens.forEach(icon=>{
+        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
+        if (!p) return;
+        const hasTrash = !!p.querySelector('.fa-trash,.fa-trash-alt') || !!p.querySelector('button[title*="sup" i],a[title*="sup" i]');
+        if (!hasTrash) return;
+        let card = p;
+        for(let j=0;j<4;j++){
+          if (!card.parentElement) break;
+          const cs = doc.defaultView.getComputedStyle(card);
+          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
+          card = card.parentElement;
+        }
+        cards.add(card);
+      });
+      return Array.from(cards);
+    }
+
+    function getCardTitle(card){
+      const el = card.querySelector('h3,h4,.title,.card-title,strong') || card;
+      return normalize(el.textContent || '');
+    }
+
+    function upsertDate(card, dateStr){
+      if (!card || !dateStr) return;
+      const existing = card.querySelector('.ap-inline-date');
+      if (existing){ existing.textContent = dateStr; return; }
+      const span = doc.createElement('span');
+      span.className = 'ap-inline-date';
+      span.textContent = dateStr;
+
+      const parentsLine = Array.from(card.querySelectorAll('*')).find(n => normalize(n.textContent).includes('parents inform'));
+      if (parentsLine){ parentsLine.appendChild(span); return; }
+      const titleLine = card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
+      titleLine.appendChild(span);
+    }
+
+    function applyFromMap(){
+      const m = loadMap();
+      const cards = findCards();
+      cards.forEach(card=>{
+        const t = getCardTitle(card);
+        if (!t) return;
+        const d = m[t];
+        if (d) upsertDate(card, d);
+      });
+    }
+
+    // Read the edit form fields and update map
+    function readEditFormAndUpdateMap(){
+      // detect heading
+      const h = Array.from(doc.querySelectorAll('h1,h2,h3,h4')).find(x => normalize(x.textContent).includes("modifier l'événement") || normalize(x.textContent).includes("modifier l'evenement"));
+      if (!h) return;
+
+      const scope = h.closest('section, .container, .card, body') || doc.body;
+
+      // title input by label "Intitulé"
+      let titleInput = null;
+      const titleLb = Array.from(scope.querySelectorAll('label')).find(lb => normalize(lb.textContent).includes('intitul'));
+      if (titleLb){
+        const fid = titleLb.getAttribute('for');
+        titleInput = fid ? scope.querySelector('#'+CSS.escape(fid)) : titleLb.parentElement?.querySelector('input,textarea');
+      }
+      if (!titleInput) titleInput = scope.querySelector('input[name*="intitul" i], input[name*="title" i]');
+
+      // start date input by label "Début"
+      let dateInput = null;
+      const dateLb = Array.from(scope.querySelectorAll('label')).find(lb => normalize(lb.textContent) === 'début' || normalize(lb.textContent).includes('début'));
+      if (dateLb){
+        const fid = dateLb.getAttribute('for');
+        dateInput = fid ? scope.querySelector('#'+CSS.escape(fid)) : dateLb.parentElement?.querySelector('input');
+      }
+      if (!dateInput){
+        // many UIs use text input for date (dd/mm/yyyy)
+        dateInput = scope.querySelector('input[type="date"], input[name*="debut" i], input[name*="start" i], input[placeholder*="jj" i]');
+      }
+
+      const title = titleInput ? normalize(titleInput.value) : '';
+      const rawDate = dateInput ? String(dateInput.value || dateInput.getAttribute('value') || '').trim() : '';
+      const dNice = niceDate(rawDate);
+
+      if (!title || !dNice) return;
+
+      const m = loadMap();
+      m[title] = dNice;
+      saveMap(m);
+      applyFromMap();
+    }
+
+    // Hook: whenever DOM changes, if form is present, sync map
+    let raf = 0;
+    function schedule(){
+      if (raf) return;
+      raf = requestAnimationFrame(()=>{
+        raf = 0;
+        applyFromMap();
+        readEditFormAndUpdateMap();
+      });
+    }
+
+    const obs = new MutationObserver(()=>schedule());
+    obs.observe(doc.body, {childList:true, subtree:true});
+
+    // initial
+    schedule();
+    setTimeout(schedule, 400);
+    setTimeout(schedule, 1400);
+
+    doc.__cadirV33Injected = true;
+  }
+
+  document.getElementById('frame-perdir')?.addEventListener('load', function(){
+    setTimeout(injectIntoPerdir, 600);
+    setTimeout(injectIntoPerdir, 1400);
+  });
+
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === 'function'){
+    window.loadModule = function(name){
+      const r = _loadModule.apply(this, arguments);
+      if (name === 'perdir'){
+        setTimeout(injectIntoPerdir, 700);
+        setTimeout(injectIntoPerdir, 1600);
+      }
+      return r;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(injectIntoPerdir, 1200);
+  });
+})();
+</script>
+
 </body></html>
