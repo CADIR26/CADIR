@@ -3504,4 +3504,118 @@ function _v12RerenderSoon(){
 })();
 </script>
 
+
+<script>
+/* ===== V13 - SYNC GOOGLE AGENDA AUTOMATIQUE =====
+   Objectif: lancer la synchro Google Agenda automatiquement
+   - au chargement
+   - au retour Accueil
+   - puis périodiquement (toutes les 15 minutes par défaut)
+   Sans casser si l'utilisateur n'a pas activé Google Agenda.
+*/
+
+(function(){
+  const AUTO_SYNC_MINUTES = 15;   // <-- modifiable si besoin
+  let _autoSyncTimer = null;
+  let _autoSyncRunning = false;
+
+  function _v13GetSettingsSafe(){
+    try{ if (typeof getSettings === "function") return getSettings() || {}; }catch(e){}
+    // fallback: tenter les mêmes clés que v12
+    const keys = ['pilote_suite_settings','pilote_master_settings','pilote_settings','settings','cadir_settings'];
+    for (const k of keys){
+      try{
+        const raw = localStorage.getItem(k);
+        if (!raw) continue;
+        const obj = JSON.parse(raw);
+        if (obj && typeof obj === "object") return obj;
+      }catch(e){}
+    }
+    return {};
+  }
+
+  function _v13IsGcalEnabled(){
+    const s = _v13GetSettingsSafe();
+    // plusieurs noms possibles selon vos versions
+    const flag = !!(s.gcalEnabled || s.useGcal || s.gcal || s.googleCalendarEnabled);
+    // checkbox paramètres si présente
+    const cb = document.getElementById('s-gcal');
+    const cbOn = cb ? cb.checked : false;
+    return flag || cbOn;
+  }
+
+  function _v13CanSync(){
+    // On ne force pas l'auth, on déclenche juste la synchro si elle est possible.
+    // Si pas connecté, la fonction existante gère (status UI) sans casser.
+    return (typeof window.gcalFetchEvents === "function") && _v13IsGcalEnabled();
+  }
+
+  function _v13SyncNow(reason){
+    if (!_v13CanSync()) return;
+    if (_autoSyncRunning) return;
+    _autoSyncRunning = true;
+    try{
+      window.gcalFetchEvents();
+    }catch(e){
+      // noop
+    }finally{
+      setTimeout(()=>{ _autoSyncRunning = false; }, 1500);
+    }
+  }
+
+  function _v13StartAutoSync(){
+    if (_autoSyncTimer) return;
+    _autoSyncTimer = setInterval(function(){
+      _v13SyncNow("interval");
+    }, AUTO_SYNC_MINUTES * 60 * 1000);
+  }
+
+  function _v13StopAutoSync(){
+    if (_autoSyncTimer){
+      clearInterval(_autoSyncTimer);
+      _autoSyncTimer = null;
+    }
+  }
+
+  function _v13RefreshAutoSyncState(){
+    if (_v13CanSync()){
+      _v13StartAutoSync();
+    }else{
+      _v13StopAutoSync();
+    }
+  }
+
+  // Hook retour Accueil: on relance une synchro légère
+  const _goHome = window.goHome;
+  if (typeof _goHome === "function"){
+    window.goHome = function(){
+      const r = _goHome.apply(this, arguments);
+      setTimeout(function(){ _v13SyncNow("home"); }, 400);
+      return r;
+    };
+  }
+
+  // Si l'utilisateur active/désactive la case dans Paramètres
+  document.addEventListener('change', function(e){
+    if (e && e.target && e.target.id === 's-gcal'){
+      _v13RefreshAutoSyncState();
+      if (e.target.checked) setTimeout(()=>_v13SyncNow("toggle"), 300);
+    }
+  });
+
+  // Au chargement: refresh + synchro initiale
+  document.addEventListener('DOMContentLoaded', function(){
+    _v13RefreshAutoSyncState();
+    setTimeout(function(){ _v13SyncNow("init"); }, 800);
+    // re-check au cas où le module agenda charge après
+    setTimeout(function(){ _v13RefreshAutoSyncState(); _v13SyncNow("late"); }, 2500);
+  });
+
+  // Si un autre onglet met à jour les settings
+  window.addEventListener('storage', function(){
+    _v13RefreshAutoSyncState();
+  });
+})();
+</script>
+
 </body></html>
