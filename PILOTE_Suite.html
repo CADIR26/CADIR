@@ -474,21 +474,15 @@ body.home-no-events .welcome{
 }
 
 
-/* ===== V24 - Date sur vignettes Activités pédagogiques ===== */
-.ap-date-badge{
-  position:absolute;
-  top:10px;
-  right:12px;
-  background:#1f2937;
-  color:#fff;
-  font-size:11px;
+
+
+/* ===== V25 - Date inline Activités pédagogiques ===== */
+.ap-inline-date{
+  color:#6b7280;
+  font-size:12px;
   font-weight:700;
-  padding:4px 8px;
-  border-radius:10px;
-  letter-spacing:.3px;
-}
-.ap-card-has-date{
-  position:relative;
+  margin-left:8px;
+  white-space:nowrap;
 }
 
 </style>
@@ -5113,6 +5107,100 @@ function _v12RerenderSoon(){
     };
   }
 
+})();
+</script>
+
+
+<script>
+/* ===== V25 - Afficher la date à la suite de la description (Activités pédagogiques) ===== */
+(function(){
+
+  function extractDate(txt){
+    if (!txt) return null;
+    const m = txt.match(/\b(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)\b/);
+    return m ? m[1] : null;
+  }
+
+  function ensureInlineDate(root){
+    if (!root) return;
+
+    // cartes: on garde large pour matcher vos vignettes
+    const cards = root.querySelectorAll('.ap-card, .activity-card, .card, .note-card, .item-card');
+    cards.forEach(card => {
+      // supprimer l'ancien badge V24 si présent
+      const oldBadge = card.querySelector('.ap-date-badge');
+      if (oldBadge) oldBadge.remove();
+
+      // déjà injecté ?
+      if (card.querySelector('.ap-inline-date')) return;
+
+      // chercher une date: dataset/date element/text
+      let date = null;
+      if (card.dataset && card.dataset.date) date = String(card.dataset.date).trim();
+      if (!date){
+        const dEl = card.querySelector('.date, .ap-date, .meta-date');
+        if (dEl) date = dEl.textContent.trim();
+      }
+      if (!date){
+        date = extractDate(card.textContent || '');
+      }
+      if (!date) return;
+
+      // trouver la "description" : plusieurs possibilités selon votre module
+      const desc =
+        card.querySelector('.desc, .description, .content, .card-content, .note-body, .body, .text, .ap-desc') ||
+        card.querySelector('p') ||
+        card.querySelector('.tagline, small');
+
+      // si aucune description, on la met après le titre
+      const title =
+        card.querySelector('.title, .card-title, h3, h4, strong') ||
+        card.firstElementChild;
+
+      const target = desc || title;
+      if (!target) return;
+
+      // Injecter à la suite du texte (dans le même bloc)
+      const span = root.createElement ? root.createElement('span') : document.createElement('span');
+      span.className = 'ap-inline-date';
+      span.textContent = date;
+
+      // Si la description est vide (souvent), on la met après la ligne "Parents informés" si présente
+      const parentsLine = card.querySelector('.parents, .parents-line, .status, .badge, .tag, .pill, .meta');
+      if (parentsLine && parentsLine.textContent.toLowerCase().includes('parents')){
+        parentsLine.appendChild(span);
+      } else {
+        target.appendChild(span);
+      }
+    });
+  }
+
+  function apply(){
+    // module dans iframe PERDIR
+    const fr = document.getElementById('frame-perdir');
+    if (fr && fr.contentDocument){
+      ensureInlineDate(fr.contentDocument);
+    }
+    ensureInlineDate(document);
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    apply();
+    const obs = new MutationObserver(apply);
+    obs.observe(document.body, {childList:true, subtree:true});
+  });
+
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === 'function'){
+    window.loadModule = function(name){
+      const r = _loadModule.apply(this, arguments);
+      if (name === 'perdir'){
+        setTimeout(apply, 600);
+        setTimeout(apply, 1400);
+      }
+      return r;
+    };
+  }
 })();
 </script>
 
