@@ -4387,4 +4387,203 @@ function _v12RerenderSoon(){
 })();
 </script>
 
+
+<script>
+/* ===== V20 - CLIC SUR LIGNE EVENEMENT (Calendrier "liste compacte") =====
+   Votre module "Calendrier" n'est pas un FullCalendar cliquable : c'est une liste compacte par agenda.
+   V20 ajoute :
+   - Curseur "main" sur les lignes d'événements
+   - Clic -> ouvre une petite édition (prompt) et met à jour Google (PATCH) si OAuth2 est connecté
+   Fonctionnement :
+   - Dans l'iframe PERDIR, on détecte la ligne cliquée et on envoie son texte au parent
+   - Le parent retrouve l'événement dans s.gcalEvents via date+heure+début de titre
+*/
+
+(function(){
+  // ---------- Parent side: handle line-click from iframe ----------
+  function pad2(n){ return String(n).padStart(2,'0'); }
+  function normIsoFromDDMM(dd, mm){
+    const y = new Date().getFullYear();
+    return `${y}-${pad2(mm)}-${pad2(dd)}`;
+  }
+  function parseLineText(txt){
+    // Ex: "lun 02/03 • 17:00  Conseil de classe TMERCA2"
+    // or "jeu 26/02 • 15:45 hygzer zr zer 1234"
+    const t = (txt||'').replace(/\s+/g,' ').trim();
+    const m = t.match(/(\d{1,2})\/(\d{1,2})\s*[•\-]\s*(\d{1,2}:\d{2})\s*(.*)$/);
+    if (!m) return null;
+    const dd = parseInt(m[1],10);
+    const mm = parseInt(m[2],10);
+    const time = pad2(m[3].split(':')[0]) + ":" + m[3].split(':')[1];
+    const title = (m[4]||'').trim();
+    return { dateIso: normIsoFromDDMM(dd, mm), time, title };
+  }
+  function getSettingsSafe(){
+    try{ if (typeof getSettings === 'function') return getSettings() || {}; }catch(e){}
+    try{ if (typeof STORAGE_KEY !== 'undefined') return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; }catch(e){}
+    return {};
+  }
+  function findEventMatch(parsed){
+    const s = getSettingsSafe();
+    const events = []
+      .concat(Array.isArray(s.gcalEvents) ? s.gcalEvents : [])
+      .concat(Array.isArray(s.outlookEvents) ? s.outlookEvents : []);
+
+    // match strict: date + time + title startsWith (case-insensitive)
+    const titleKey = (parsed.title||'').toLowerCase();
+    let best = null;
+    for (const ev of events){
+      if (!ev) continue;
+      if (ev.date !== parsed.dateIso) continue;
+      const evTime = (ev.time||'').trim() || '00:00';
+      if (parsed.time && evTime !== parsed.time) continue;
+      const evTitle = (ev.title||'').trim();
+      if (!evTitle) continue;
+      const evKey = evTitle.toLowerCase();
+      if (titleKey && (evKey.startsWith(titleKey) || titleKey.startsWith(evKey) || evKey.includes(titleKey))) {
+        best = ev;
+        break;
+      }
+    }
+    // fallback: date+time only
+    if (!best){
+      best = events.find(ev => ev && ev.date === parsed.dateIso && ((ev.time||'').trim()||'00:00') === parsed.time) || null;
+    }
+    return best;
+  }
+
+  window.addEventListener('message', function(e){
+    if (!e || !e.data || e.data.type !== 'pilote-cal-line-click') return;
+    const parsed = parseLineText(e.data.text || '');
+    if (!parsed) return;
+
+    const ev = findEventMatch(parsed);
+    if (!ev) {
+      alert("Événement non retrouvé dans la synchro.\n\nPensez à cliquer sur « Synchroniser les événements » dans Paramétrages → Agendas externes.");
+      return;
+    }
+
+    // Edition simple
+    const curTitle = ev.title || '';
+    const newTitle = prompt('Modifier le titre :', curTitle);
+    if (newTitle === null) return;
+
+    const newTime = prompt('Heure début (HH:MM) — laissez vide pour journée entière :', (ev.time||'').trim());
+    if (newTime === null) return;
+
+    let newEndTime = '';
+    if ((newTime||'').trim()){
+      newEndTime = prompt('Heure fin (HH:MM) :', (ev.endTime||'').trim() || (newTime||'').trim());
+      if (newEndTime === null) return;
+    }
+
+    // Google update only if OAuth2 token exists; otherwise explain
+    if (!window._gcalAccessToken){
+      alert("Modification impossible : Google Agenda n'est pas connecté (OAuth2).\n\nConnectez-vous dans Paramétrages → Agendas externes → Connexion OAuth2.");
+      return;
+    }
+
+    // PATCH via fonction existante si présente
+    if (typeof window.gcalUpdateEvent === 'function'){
+      window.gcalUpdateEvent({
+        eventId: ev.id,
+        calId: ev.calId,
+        title: (newTitle||'').trim() || '(sans titre)',
+        date: ev.date,
+        time: (newTime||'').trim(),
+        endTime: (newEndTime||'').trim()
+      });
+    } else {
+      // fallback message protocol (si la fonction n'existe pas dans votre build)
+      window.postMessage({
+        type:'pilote-gcal-update',
+        eventId: ev.id,
+        calId: ev.calId,
+        title:(newTitle||'').trim() || '(sans titre)',
+        date: ev.date,
+        time:(newTime||'').trim(),
+        endTime:(newEndTime||'').trim()
+      }, '*');
+    }
+  });
+
+  // ---------- Iframe side: make rows clickable + send line text ----------
+  function injectIntoPerdir(){
+    const fr = document.getElementById('frame-perdir');
+    if(!fr) return;
+    let doc, win;
+    try{ win = fr.contentWindow; doc = win.document; }catch(e){ return; }
+    if(!doc || doc.__cadirListClickInjected) return;
+
+    const st = doc.createElement('style');
+    st.textContent = `
+      /* CADIR V20: rendre les lignes d'événements cliquables (liste compacte) */
+      .cal-list .cal-row, .calendar-list .row, .cal-item, .cal-line, .evt-row, .evt-line { cursor: pointer !important; }
+      /* fallback: toute ligne contenant "• HH:MM" */
+      .__cadir_clickable_event__ { cursor: pointer !important; }
+    `;
+    doc.head.appendChild(st);
+
+    function markClickable(){
+      // heuristique: trouver des blocs qui contiennent "• 12:34"
+      const nodes = Array.from(doc.querySelectorAll('div, li, p, span')).filter(n => {
+        if (!n || !n.textContent) return false;
+        const t = n.textContent.trim();
+        return /\d{1,2}\/\d{1,2}\s*[•\-]\s*\d{1,2}:\d{2}/.test(t) && t.length < 220;
+      });
+      nodes.forEach(n => {
+        // monter à un parent "ligne" raisonnable
+        let el = n;
+        for (let i=0;i<3;i++){
+          if (!el.parentElement) break;
+          if (el.parentElement.children.length > 1 && el.textContent.trim().length < 220) break;
+          el = el.parentElement;
+        }
+        el.classList.add('__cadir_clickable_event__');
+      });
+    }
+
+    doc.addEventListener('click', function(ev){
+      const el = ev.target && ev.target.closest ? ev.target.closest('.__cadir_clickable_event__') : null;
+      if (!el) return;
+      const text = (el.textContent || '').replace(/\s+/g,' ').trim();
+      if (!/\d{1,2}\/\d{1,2}\s*[•\-]\s*\d{1,2}:\d{2}/.test(text)) return;
+      // send to parent
+      try{
+        window.postMessage({ type:'pilote-cal-line-click', text:text }, '*');
+      }catch(e){}
+    }, true);
+
+    // watch DOM for calendar rendering
+    const obs = new MutationObserver(()=>{ markClickable(); });
+    obs.observe(doc.body, {childList:true, subtree:true});
+    setTimeout(markClickable, 600);
+    setTimeout(markClickable, 1400);
+
+    doc.__cadirListClickInjected = true;
+  }
+
+  document.getElementById('frame-perdir')?.addEventListener('load', function(){
+    setTimeout(injectIntoPerdir, 600);
+    setTimeout(injectIntoPerdir, 1400);
+  });
+
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === 'function'){
+    window.loadModule = function(name){
+      const r = _loadModule.apply(this, arguments);
+      if (name === 'perdir') {
+        setTimeout(injectIntoPerdir, 700);
+        setTimeout(injectIntoPerdir, 1600);
+      }
+      return r;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(injectIntoPerdir, 1200);
+  });
+})();
+</script>
+
 </body></html>
