@@ -3198,4 +3198,76 @@ setTimeout(function(){
 }, 1800);
 </script>
 
+
+<script>
+/* ===== V11 - MAJ AFFICHAGE EVENEMENTS ACCUEIL (Google Agenda) =====
+   Problème: l'accueil est affiché après coup (goHome) et la liste d'événements est en localStorage.
+   Solution: relancer le rendu à chaque retour accueil + après synchronisation.
+*/
+
+(function(){
+  // Réutiliser la fonction V10 si elle existe
+  function rerenderSoon(){
+    if (typeof sanitizeEventsInSettings === "function") { try{ sanitizeEventsInSettings(); }catch(e){} }
+    if (typeof renderHomeTodayEvents === "function") {
+      // double appel: immédiat + après repaint
+      try{ renderHomeTodayEvents(); }catch(e){}
+      setTimeout(function(){ try{ renderHomeTodayEvents(); }catch(e){} }, 120);
+      setTimeout(function(){ try{ renderHomeTodayEvents(); }catch(e){} }, 600);
+    }
+  }
+
+  // Hook goHome (retour accueil)
+  const _goHome = window.goHome;
+  if (typeof _goHome === "function"){
+    window.goHome = function(){
+      const r = _goHome.apply(this, arguments);
+      rerenderSoon();
+      return r;
+    };
+  } else {
+    // Si jamais goHome n'existe pas au moment du hook
+    window.addEventListener('load', rerenderSoon);
+  }
+
+  // Hook loadModule: quand on quitte un module et revient rapidement, on garde l'accueil à jour
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === "function"){
+    window.loadModule = function(){
+      const r = _loadModule.apply(this, arguments);
+      // rien à faire côté module, mais on garde un refresh léger au cas où l'accueil reste visible
+      setTimeout(function(){}, 0);
+      return r;
+    };
+  }
+
+  // Hook synchro Google/Outlook (si non déjà hooké correctement)
+  const _gcalFetch = window.gcalFetchEvents;
+  if (typeof _gcalFetch === "function" && !_gcalFetch.__v11Wrapped){
+    const wrapped = function(){
+      const r = _gcalFetch.apply(this, arguments);
+      setTimeout(rerenderSoon, 1400);
+      setTimeout(rerenderSoon, 3400);
+      return r;
+    };
+    wrapped.__v11Wrapped = true;
+    window.gcalFetchEvents = wrapped;
+  }
+  const _outlookFetch = window.outlookFetchEvents;
+  if (typeof _outlookFetch === "function" && !_outlookFetch.__v11Wrapped){
+    const wrapped2 = function(){
+      const r = _outlookFetch.apply(this, arguments);
+      setTimeout(rerenderSoon, 1400);
+      setTimeout(rerenderSoon, 3400);
+      return r;
+    };
+    wrapped2.__v11Wrapped = true;
+    window.outlookFetchEvents = wrapped2;
+  }
+
+  // 1er rendu (au chargement)
+  document.addEventListener('DOMContentLoaded', rerenderSoon);
+})();
+</script>
+
 </body></html>
