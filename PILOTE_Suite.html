@@ -4946,4 +4946,75 @@ function _v12RerenderSoon(){
 })();
 </script>
 
+
+<script>
+/* ===== V23 - DESACTIVER DEFINITIVEMENT LES PROMPTS ANCIENS =====
+   Le prompt "Modifier le titre" vient d'un ancien code (V18/V20) encore présent.
+   Fix robuste: on override window.prompt (parent + iframe PERDIR) uniquement pour ces invites,
+   en retournant null (équivalent Annuler) => aucun prompt ne s'affiche.
+   La nouvelle MODAL (V21) reste active.
+*/
+(function(){
+  const BLOCK_PATTERNS = [
+    'modifier le titre',
+    'heure début',
+    'heure debut',
+    'heure fin'
+  ];
+
+  function shouldBlock(msg){
+    const m = String(msg||'').toLowerCase();
+    return BLOCK_PATTERNS.some(p => m.includes(p));
+  }
+
+  // parent prompt override
+  (function(){
+    const _prompt = window.prompt;
+    if (!_prompt || _prompt.__v23Wrapped) return;
+    const wrapped = function(msg, defVal){
+      if (shouldBlock(msg)) return null;
+      return _prompt.call(window, msg, defVal);
+    };
+    wrapped.__v23Wrapped = true;
+    window.prompt = wrapped;
+  })();
+
+  // iframe prompt override
+  function patchIframePrompt(){
+    const fr = document.getElementById('frame-perdir');
+    if(!fr) return;
+    let w;
+    try{ w = fr.contentWindow; }catch(e){ return; }
+    if(!w || !w.prompt) return;
+    if (w.prompt.__v23Wrapped) return;
+
+    const _p = w.prompt;
+    const wrapped = function(msg, defVal){
+      if (shouldBlock(msg)) return null;
+      return _p.call(w, msg, defVal);
+    };
+    wrapped.__v23Wrapped = true;
+    w.prompt = wrapped;
+  }
+
+  document.getElementById('frame-perdir')?.addEventListener('load', function(){
+    setTimeout(patchIframePrompt, 250);
+    setTimeout(patchIframePrompt, 900);
+  });
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(patchIframePrompt, 900);
+  });
+
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === 'function'){
+    window.loadModule = function(name){
+      const r = _loadModule.apply(this, arguments);
+      if (name === 'perdir') setTimeout(patchIframePrompt, 700);
+      return r;
+    };
+  }
+})();
+</script>
+
 </body></html>
