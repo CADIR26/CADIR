@@ -3981,4 +3981,174 @@ function _v12RerenderSoon(){
 })();
 </script>
 
+
+<script>
+/* ===== V16 - FIX POPUP OAUTH/API + ORDRE AGENDAS VISIBLE =====
+   1) Supprime l'alerte "Connectez-vous via OAuth2..." lors d'un simple refresh / auto-sync.
+      -> On considère une synchro "user initiated" uniquement quand l'utilisateur clique sur le bouton Synchroniser.
+   2) Le réglage d'ordre s'affiche dès qu'au moins 1 agenda est coché (via DOM), même si gcalSel n'est pas encore persisté.
+*/
+
+(function(){
+  // ----- 1) Anti-popup: détecter action utilisateur -----
+  window.__gcalUserInitiated = false;
+
+  document.addEventListener('click', function(e){
+    const t = e.target && (e.target.closest ? e.target.closest('button') : e.target);
+    if (!t) return;
+    // Bouton Google sync (texte ou icône sync)
+    const txt = (t.textContent || '').toLowerCase();
+    const onclick = (t.getAttribute && t.getAttribute('onclick')) ? t.getAttribute('onclick') : '';
+    if (txt.includes('synchroniser') || onclick.includes('gcalFetchEvents')){
+      window.__gcalUserInitiated = true;
+      setTimeout(()=>{ window.__gcalUserInitiated = false; }, 1200);
+    }
+  }, true);
+
+  // Wrapper gcalFetchEvents: par défaut silencieux sauf si user initiated
+  const _gcalFetch = window.gcalFetchEvents;
+  if (typeof _gcalFetch === 'function' && !_gcalFetch.__v16Wrapped){
+    const wrapped = function(opts){
+      const user = !!window.__gcalUserInitiated;
+      // Si appelé sans opts, on met silent=true quand ce n'est pas l'utilisateur
+      if (!opts || typeof opts !== 'object'){
+        opts = user ? {silent:false} : {silent:true};
+      } else if (opts.silent === undefined){
+        opts.silent = !user;
+      }
+      return _gcalFetch.call(this, opts);
+    };
+    wrapped.__v16Wrapped = true;
+    window.gcalFetchEvents = wrapped;
+  }
+
+  // ----- 2) Ordre agendas: utiliser DOM checked si settings pas encore persistés -----
+  function getSettingsSafe(){
+    try{ if (typeof getSettings === 'function') return getSettings() || {}; }catch(e){}
+    try{ if (typeof STORAGE_KEY !== 'undefined') return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; }catch(e){}
+    return {};
+  }
+  function saveSettingsSafe(s){
+    try{ if (typeof STORAGE_KEY !== 'undefined') localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }catch(e){}
+  }
+
+  function readCheckedCalIdsFromDOM(){
+    const wrap = document.getElementById('gcal-list');
+    if (!wrap) return [];
+    const ids = [];
+    wrap.querySelectorAll('input[type="checkbox"]:checked').forEach(cb=>{
+      if (cb.value) ids.push(cb.value);
+      else if (cb.dataset && cb.dataset.id) ids.push(cb.dataset.id);
+    });
+    // Certaines versions mettent l'id dans l'attribut name
+    if (!ids.length){
+      wrap.querySelectorAll('input[type="checkbox"]:checked').forEach(cb=>{
+        if (cb.name) ids.push(cb.name);
+      });
+    }
+    // unique
+    return Array.from(new Set(ids));
+  }
+
+  function getCalNameById(id, s){
+    const cals = (s && Array.isArray(s.gcalCals)) ? s.gcalCals : (window._gcalCalsData || []);
+    const found = (cals||[]).find(c => c && c.id === id);
+    return found ? found.name : id;
+  }
+
+  function renderGcalOrderUI(){
+    const wrap = document.getElementById('gcal-order-wrap');
+    const list = document.getElementById('gcal-order-list');
+    if (!wrap || !list) return;
+
+    const s = getSettingsSafe();
+    const enabled = !!(s.gcalEnabled || s.useGcal || s.gcal || s.googleCalendarEnabled) ||
+      (document.getElementById('s-gcal') && document.getElementById('s-gcal').checked);
+
+    if (!enabled){ wrap.style.display='none'; return; }
+
+    // sel: settings -> sinon DOM checked
+    let sel = Array.isArray(s.gcalSel) ? s.gcalSel.slice() : [];
+    if (!sel.length) sel = readCheckedCalIdsFromDOM();
+    if (!sel.length){ wrap.style.display='none'; return; }
+
+    wrap.style.display='block';
+
+    const order = Array.isArray(s.gcalSelOrder) ? s.gcalSelOrder.slice() : [];
+    const setOrder = new Set(order);
+    const merged = order.filter(id => sel.includes(id)).concat(sel.filter(id => !setOrder.has(id)));
+
+    list.innerHTML = '';
+    merged.forEach((id) => {
+      const li = document.createElement('li');
+      li.className = 'order-item';
+      li.draggable = true;
+      li.dataset.id = id;
+      li.innerHTML = `
+        <i class="fas fa-grip-lines order-grip"></i>
+        <div class="order-icon" style="background:#3498db;"><i class="fas fa-calendar-alt"></i></div>
+        <div class="order-label">${getCalNameById(id, s)}</div>
+      `;
+
+      li.addEventListener('dragstart', () => { li.classList.add('dragging'); });
+      li.addEventListener('dragend', () => {
+        li.classList.remove('dragging');
+        persistOrder();
+        try{ if (typeof pushGcalToModules === 'function') pushGcalToModules(); }catch(e){}
+      });
+      li.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        const dragging = list.querySelector('.dragging');
+        if (!dragging || dragging === li) return;
+        const rect = li.getBoundingClientRect();
+        const after = (e.clientY - rect.top) > rect.height/2;
+        list.insertBefore(dragging, after ? li.nextSibling : li);
+      });
+
+      list.appendChild(li);
+    });
+
+    function persistOrder(){
+      const ids = Array.from(list.querySelectorAll('.order-item')).map(li => li.dataset.id).filter(Boolean);
+      const s2 = getSettingsSafe();
+      s2.gcalSelOrder = ids;
+      // aussi gcalSel pour compat
+      const checked = readCheckedCalIdsFromDOM();
+      if (checked.length){
+        const set = new Set(ids);
+        s2.gcalSel = ids.filter(id => checked.includes(id)).concat(checked.filter(id => !set.has(id)));
+      }
+      saveSettingsSafe(s2);
+    }
+  }
+
+  // Rafraîchir l'UI quand:
+  // - on ouvre les paramètres
+  // - on coche/décoche un agenda
+  const _openSettings = window.openSettings;
+  if (typeof _openSettings === 'function'){
+    window.openSettings = function(){
+      const r = _openSettings.apply(this, arguments);
+      setTimeout(renderGcalOrderUI, 350);
+      return r;
+    };
+  }
+  document.addEventListener('change', function(e){
+    if (!e || !e.target) return;
+    // changement sur checkbox agenda
+    if (e.target.closest && e.target.closest('#gcal-list')){
+      setTimeout(renderGcalOrderUI, 80);
+    }
+    if (e.target.id === 's-gcal'){
+      setTimeout(renderGcalOrderUI, 250);
+    }
+  }, true);
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(renderGcalOrderUI, 600);
+  });
+
+})();
+</script>
+
 </body></html>
