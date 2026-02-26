@@ -8913,4 +8913,146 @@ Principe:
 })();
 </script>
 
+
+<script>
+/* ===== V50 - Activités pédagogiques: supprimer doublon "parents informés" + bouton modifier stylisé ===== */
+(function(){
+  function injectPerdirV50(){
+    const fr = document.getElementById('frame-perdir');
+    if(!fr) return;
+    let doc;
+    try{ doc = fr.contentDocument; }catch(e){ return; }
+    if(!doc || doc.__cadirV50Applied) return;
+
+    const st = doc.createElement('style');
+    st.textContent = `
+      /* Header layout: left content + right actions */
+      .cadir-ap-head{ display:flex !important; align-items:flex-start !important; justify-content:space-between !important; gap:12px !important; }
+      .cadir-ap-left{ flex:1 1 auto !important; min-width:0 !important; }
+      .cadir-ap-actions{ flex:0 0 auto !important; margin-left:auto !important; display:flex !important; align-items:center !important; justify-content:flex-end !important; }
+
+      /* Bouton modifier stylisé */
+      .cadir-ap-edit-btn{
+        width:34px !important;
+        height:34px !important;
+        border-radius:10px !important;
+        border:1px solid rgba(15,23,42,.10) !important;
+        background:#f8fafc !important;
+        box-shadow:0 6px 16px rgba(0,0,0,.06) !important;
+        display:inline-flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        cursor:pointer !important;
+        transition: transform .08s ease, background .15s ease;
+      }
+      .cadir-ap-edit-btn:hover{ transform: translateY(-1px); background:#ffffff !important; }
+      .cadir-ap-edit-btn:active{ transform: translateY(0px); }
+
+      /* Icône dans le bouton */
+      .cadir-ap-edit-btn .fa-pen,
+      .cadir-ap-edit-btn .fa-pencil,
+      .cadir-ap-edit-btn .fa-edit{ font-size:14px !important; opacity:.9 !important; }
+
+      /* Supprimer toute ligne "Parents informés" existante (icone + texte) */
+      .cadir-ap-card .cadir-ap-old-parents{ display:none !important; }
+    `;
+    doc.head.appendChild(st);
+
+    function normalize(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
+
+    function findCards(){
+      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
+      const cards = new Set();
+      pens.forEach(icon=>{
+        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
+        if (!p) return;
+        let card = p;
+        for(let j=0;j<4;j++){
+          if (!card.parentElement) break;
+          const cs = doc.defaultView.getComputedStyle(card);
+          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
+          card = card.parentElement;
+        }
+        cards.add(card);
+      });
+      return Array.from(cards);
+    }
+
+    function removeParentsLines(card){
+      const nodes = Array.from(card.querySelectorAll('*'));
+      nodes.forEach(n=>{
+        if (n.classList && n.classList.contains('cadir-ap-badge')) return;
+        const txt = normalize(n.textContent || '');
+        // if element is basically the "parents informés" line, hide it
+        if (txt === 'parents informés' || txt === 'parents informes' || txt.includes('parents inform')){
+          // only hide if small and not containing title/date
+          if ((n.textContent || '').trim().length <= 40){
+            n.classList.add('cadir-ap-old-parents');
+          }
+        }
+      });
+    }
+
+    function styleEditButton(card){
+      const editBtn = card.querySelector('.fa-pen,.fa-pencil,.fa-edit')?.closest('button,a');
+      if (!editBtn) return null;
+      editBtn.classList.add('cadir-ap-edit-btn');
+      editBtn.setAttribute('title','Modifier');
+      editBtn.setAttribute('aria-label','Modifier');
+      return editBtn;
+    }
+
+    function enforceRightAlignment(card){
+      const head = card.querySelector('.cadir-ap-head');
+      if (!head) return;
+      const actions = head.querySelector('.cadir-ap-actions');
+      if (!actions) return;
+      const editBtn = styleEditButton(card);
+      if (editBtn && editBtn.parentElement !== actions){
+        actions.appendChild(editBtn);
+      }
+    }
+
+    let raf=0;
+    function apply(){
+      raf=0;
+      const cards = findCards();
+      cards.forEach(card=>{
+        removeParentsLines(card);
+        enforceRightAlignment(card);
+      });
+    }
+    function schedule(){ if (raf) return; raf = requestAnimationFrame(apply); }
+
+    const obs = new MutationObserver(()=>schedule());
+    obs.observe(doc.body, {childList:true, subtree:true});
+    schedule();
+    setTimeout(schedule, 350);
+    setTimeout(schedule, 1200);
+
+    doc.__cadirV50Applied = true;
+  }
+
+  document.getElementById('frame-perdir')?.addEventListener('load', function(){
+    setTimeout(injectPerdirV50, 700);
+    setTimeout(injectPerdirV50, 1600);
+  });
+
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === 'function'){
+    window.loadModule = function(name){
+      const r = _loadModule.apply(this, arguments);
+      if (name === 'perdir'){
+        setTimeout(injectPerdirV50, 900);
+      }
+      return r;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(injectPerdirV50, 1300);
+  });
+})();
+</script>
+
 </body></html>
