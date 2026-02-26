@@ -1245,7 +1245,7 @@ function saveSettings() {
             document.getElementById('gcal-auth-status').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
         var tokenClient = google.accounts.oauth2.initTokenClient({
             client_id: clientId,
-            scope: 'https://www.googleapis.com/auth/calendar.readonly',
+            scope: 'https://www.googleapis.com/auth/calendar.events',
             callback: function(resp) {
                 if (resp.error) {
                     document.getElementById('gcal-auth-status').innerHTML = '<span style="color:#e74c3c;"><i class="fas fa-times"></i> ' + (resp.error_description || resp.error) + '</span>';
@@ -4172,6 +4172,143 @@ function _v12RerenderSoon(){
     document.addEventListener('DOMContentLoaded', function(){
       setTimeout(_callOrderUI, 600);
     });
+  }
+})();
+</script>
+
+
+<script>
+/* ===== V18 - Edition d'événements par clic dans le module Calendrier (Google) =====
+   - Nécessite OAuth2 scope: calendar.events (déjà mis à jour dans V18)
+   - Fonctionne si un FullCalendar est présent dans l'iframe PERDIR.
+   - Au clic, propose modifier Titre + heures, puis PATCH Google via piloter-gcal-update.
+*/
+(function(){
+  function _formatHHMM(d){
+    if(!d) return '';
+    const hh = String(d.getHours()).padStart(2,'0');
+    const mm = String(d.getMinutes()).padStart(2,'0');
+    return hh+':'+mm;
+  }
+  function _formatYYYYMMDD(d){
+    if(!d) return '';
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const da = String(d.getDate()).padStart(2,'0');
+    return y+'-'+m+'-'+da;
+  }
+
+  function injectIntoPerdir(){
+    const fr = document.getElementById('frame-perdir');
+    if(!fr || !fr.contentWindow) return;
+
+    let w;
+    try{ w = fr.contentWindow; }catch(e){ return; }
+    if (w.__cadirCalEditInjected) return;
+
+    function findCalendarInstance(){
+      const candidates = [
+        w.calendar, w.cal, w.fcCalendar, w._calendar, w.__calendar, w.__fc, w.fullCalendar, w.perdirCalendar
+      ].filter(Boolean);
+
+      function isFc(obj){
+        return obj && typeof obj.setOption === 'function' && typeof obj.getEvents === 'function';
+      }
+      for (const c of candidates){
+        if (isFc(c)) return c;
+      }
+      // heuristic scan: try common property names
+      try{
+        const keys = Object.keys(w);
+        for (let i=0;i<keys.length;i++){
+          const k = keys[i];
+          const v = w[k];
+          if (isFc(v)) return v;
+        }
+      }catch(e){}
+      return null;
+    }
+
+    function attach(){
+      const cal = findCalendarInstance();
+      if(!cal) return false;
+
+      // Keep existing handler if present
+      let prev = null;
+      try{ prev = cal.getOption ? cal.getOption('eventClick') : null; }catch(e){ prev = null; }
+
+      cal.setOption('eventClick', function(info){
+        try{
+          if (prev) { try{ prev(info); }catch(e){} }
+          const ev = info && info.event;
+          if(!ev) return;
+
+          // only Google events that have an id
+          const eventId = ev.id || (ev.extendedProps && ev.extendedProps.id);
+          const calId = (ev.extendedProps && (ev.extendedProps.calId || ev.extendedProps.calendarId)) || null;
+
+          if (!eventId) return;
+
+          // Build default values
+          const curTitle = ev.title || '';
+          const start = ev.start;
+          const end = ev.end;
+          const date = start ? _formatYYYYMMDD(start) : '';
+          const time = start ? _formatHHMM(start) : '';
+          const endTime = end ? _formatHHMM(end) : '';
+
+          // UI simple (prompt) — rapide et robuste
+          const newTitle = prompt('Modifier le titre :', curTitle);
+          if (newTitle === null) return;
+
+          const newTime = prompt('Heure début (HH:MM) — laissez vide pour "journée entière" :', time);
+          if (newTime === null) return;
+
+          let newEndTime = '';
+          if (newTime && newTime.trim()){
+            newEndTime = prompt('Heure fin (HH:MM) :', endTime || newTime);
+            if (newEndTime === null) return;
+          }
+
+          // Send to parent for PATCH
+          window.postMessage({
+            type: 'pilote-gcal-update',
+            eventId: eventId,
+            calId: calId,
+            title: (newTitle || '').trim() || '(sans titre)',
+            date: date,
+            time: (newTime || '').trim(),
+            endTime: (newEndTime || '').trim()
+          }, '*');
+        }catch(e){}
+      });
+
+      w.__cadirCalEditInjected = true;
+      return true;
+    }
+
+    // try now, then retry a bit (calendar may init after load)
+    if (attach()) return;
+    let tries = 0;
+    const t = setInterval(()=>{
+      tries++;
+      if (attach() || tries>20) clearInterval(t);
+    }, 400);
+  }
+
+  // Inject on PERDIR load + when module becomes active
+  document.getElementById('frame-perdir')?.addEventListener('load', function(){
+    setTimeout(injectIntoPerdir, 600);
+  });
+
+  // Also attempt when switching to PERDIR
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === 'function'){
+    window.loadModule = function(name){
+      const r = _loadModule.apply(this, arguments);
+      if (name === 'perdir') setTimeout(injectIntoPerdir, 800);
+      return r;
+    };
   }
 })();
 </script>
