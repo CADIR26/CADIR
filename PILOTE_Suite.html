@@ -3055,4 +3055,147 @@ function handleHomeEvents(){
 document.addEventListener("DOMContentLoaded", handleHomeEvents);
 </script>
 
+
+<script>
+/* ===== V10 - FILTRE EVENEMENTS COURTS + ACCUEIL EVENEMENTS DU JOUR =====
+   Règle: masquer/ignorer tout événement dont le titre (trim) fait <= 3 caractères.
+   Objectif: les "créneaux" (ex: "hyg", "TRM") ne polluent ni la liste, ni l'accueil.
+*/
+
+function _evtTitleOk(t){
+  t = (t || "").trim();
+  return t.length > 3;
+}
+
+function sanitizeEventsInSettings(){
+  try{
+    if (typeof getSettings !== "function" || typeof STORAGE_KEY === "undefined") return;
+    const s = getSettings() || {};
+    let changed = false;
+
+    if (Array.isArray(s.gcalEvents)) {
+      const before = s.gcalEvents.length;
+      s.gcalEvents = s.gcalEvents.filter(ev => _evtTitleOk(ev && ev.title));
+      if (s.gcalEvents.length !== before) changed = true;
+    }
+    if (Array.isArray(s.outlookEvents)) {
+      const before = s.outlookEvents.length;
+      s.outlookEvents = s.outlookEvents.filter(ev => _evtTitleOk(ev && ev.title));
+      if (s.outlookEvents.length !== before) changed = true;
+    }
+
+    if (changed){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+      // repousser vers les modules si dispo
+      if (typeof pushGcalToModules === "function") try{ pushGcalToModules(); } catch(e){}
+      if (typeof pushOutlookToModules === "function") try{ pushOutlookToModules(); } catch(e){}
+    }
+  }catch(e){}
+}
+
+/* Hook après synchro Google/Outlook (sans réécrire vos fonctions) */
+(function(){
+  const ogGcal = window.gcalFetchEvents;
+  if (typeof ogGcal === "function"){
+    window.gcalFetchEvents = function(){
+      const r = ogGcal.apply(this, arguments);
+      // la fetch est async → on sanitize après un court délai, puis re-check
+      setTimeout(sanitizeEventsInSettings, 1200);
+      setTimeout(sanitizeEventsInSettings, 3200);
+      return r;
+    };
+  }
+  const ogOutlook = window.outlookFetchEvents;
+  if (typeof ogOutlook === "function"){
+    window.outlookFetchEvents = function(){
+      const r = ogOutlook.apply(this, arguments);
+      setTimeout(sanitizeEventsInSettings, 1200);
+      setTimeout(sanitizeEventsInSettings, 3200);
+      return r;
+    };
+  }
+})();
+
+/* ===== ACCUEIL: afficher les événements DU JOUR sous le logo (ordre chrono) ===== */
+function renderHomeTodayEvents(){
+  try{
+    if (typeof getSettings !== "function") return;
+
+    const s = getSettings() || {};
+    const events = []
+      .concat(Array.isArray(s.gcalEvents) ? s.gcalEvents : [])
+      .concat(Array.isArray(s.outlookEvents) ? s.outlookEvents : [])
+      .filter(ev => ev && _evtTitleOk(ev.title));
+
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth()+1).padStart(2,'0');
+    const dd = String(now.getDate()).padStart(2,'0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    const todayEvents = events.filter(ev => ev.date === todayStr);
+
+    todayEvents.sort((a,b)=>{
+      const ta = (a.time || "23:59");
+      const tb = (b.time || "23:59");
+      return (todayStr + " " + ta).localeCompare(todayStr + " " + tb);
+    });
+
+    const welcomeHeader = document.querySelector('.welcome-header');
+    if(!welcomeHeader) return;
+
+    const old = document.getElementById('home-today-events');
+    if(old) old.remove();
+
+    if(todayEvents.length){
+      document.body.classList.remove('home-no-events');
+
+      const box = document.createElement('div');
+      box.id = 'home-today-events';
+      box.style.marginTop = '14px';
+      box.style.textAlign = 'center';
+
+      const title = document.createElement('div');
+      title.innerHTML = '<strong style="font-size:.82rem;letter-spacing:.8px;">ÉVÉNEMENTS DU JOUR</strong>';
+      title.style.marginBottom = '8px';
+      title.style.color = '#1f2937';
+      box.appendChild(title);
+
+      todayEvents.forEach(ev=>{
+        const line = document.createElement('div');
+        const time = (ev.time || '').trim();
+        const txt = (ev.title || '').trim();
+        line.textContent = (time ? (time + ' — ') : '') + txt;
+        line.style.fontSize = '.88rem';
+        line.style.color = '#1f2937';
+        line.style.marginBottom = '4px';
+        box.appendChild(line);
+      });
+
+      welcomeHeader.appendChild(box);
+    }else{
+      document.body.classList.add('home-no-events');
+    }
+  }catch(e){}
+}
+
+/* Exécutions */
+document.addEventListener('DOMContentLoaded', function(){
+  sanitizeEventsInSettings();
+  renderHomeTodayEvents();
+});
+
+/* Si une synchro modifie le localStorage dans un autre contexte, MAJ accueil */
+window.addEventListener('storage', function(){
+  sanitizeEventsInSettings();
+  renderHomeTodayEvents();
+});
+
+/* Petit re-check au cas où les modules alimentent les settings après coup */
+setTimeout(function(){
+  sanitizeEventsInSettings();
+  renderHomeTodayEvents();
+}, 1800);
+</script>
+
 </body></html>
