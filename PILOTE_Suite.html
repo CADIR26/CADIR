@@ -6151,4 +6151,240 @@ function _v12RerenderSoon(){
 })();
 </script>
 
+
+<script>
+/* ===== V31 - Dates stables + format "dddd dd mmmm" (Activités pédagogiques) =====
+   - Stabilise l'affichage (réinjection throttlée) pour éviter l'effet "apparaît/disparaît"
+   - Formate les dates en FR : "jeudi 26 février" (weekday long + day 2-digit + month long)
+*/
+(function(){
+  function injectIntoPerdir(){
+    const fr = document.getElementById('frame-perdir');
+    if(!fr) return;
+    let doc, win;
+    try{ win = fr.contentWindow; doc = fr.contentDocument; }catch(e){ return; }
+    if(!doc || doc.__cadirV31Injected) return;
+
+    const st = doc.createElement('style');
+    st.textContent = `
+      .ap-inline-date{
+        color:#6b7280;
+        font-size:12px;
+        font-weight:800;
+        margin-left:8px;
+        white-space:nowrap;
+      }
+      .ap-inline-date::before{ content:"• "; font-weight:900; }
+    `;
+    doc.head.appendChild(st);
+
+    const fmt = new Intl.DateTimeFormat('fr-FR', { weekday:'long', day:'2-digit', month:'long' });
+
+    function parseToDate(v){
+      if (!v) return null;
+      const s = String(v).trim();
+      // ISO yyyy-mm-dd
+      let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (m) return new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
+      // dd/mm/yyyy
+      m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      if (m) return new Date(Number(m[3]), Number(m[2])-1, Number(m[1]));
+      // dd/mm (assume current year)
+      m = s.match(/^(\d{2})\/(\d{2})$/);
+      if (m){
+        const y = new Date().getFullYear();
+        return new Date(y, Number(m[2])-1, Number(m[1]));
+      }
+      // fallback Date.parse
+      const t = Date.parse(s);
+      if (!Number.isNaN(t)) return new Date(t);
+      return null;
+    }
+
+    function niceDate(v){
+      const d = parseToDate(v);
+      if (!d) return null;
+      // Lowercase weekday already in fr; ensure no trailing dot
+      return fmt.format(d).replace(/\.$/, '');
+    }
+
+    function normalize(s){
+      return String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
+    }
+    function pickTitle(o){
+      return o?.title ?? o?.titre ?? o?.intitule ?? o?.intitulé ?? o?.name ?? o?.libelle ?? o?.label ?? null;
+    }
+    function pickStart(o){
+      return o?.start ?? o?.debut ?? o?.dateDebut ?? o?.date_début ?? o?.date_debut ?? o?.startDate ?? o?.date ?? null;
+    }
+
+    function extractActivitiesFromValue(val){
+      if (!val) return null;
+      const t = String(val).trim();
+      if (!(t.startsWith('{') || t.startsWith('['))) return null;
+      let data;
+      try{ data = JSON.parse(t); }catch(e){ return null; }
+
+      if (Array.isArray(data) && data.length){
+        const o = data[0];
+        if (pickTitle(o) && pickStart(o)) return data;
+      }
+      if (data && typeof data === 'object'){
+        const candidates = ['activites','activities','items','list','events','rows','data'];
+        for (const k of candidates){
+          const arr = data[k];
+          if (Array.isArray(arr) && arr.length && pickTitle(arr[0]) && pickStart(arr[0])) return arr;
+        }
+        for (const k of Object.keys(data)){
+          const v = data[k];
+          if (Array.isArray(v) && v.length && pickTitle(v[0]) && pickStart(v[0])) return v;
+        }
+      }
+      return null;
+    }
+
+    function scanLocalStorageForActivities(){
+      const ls = win.localStorage;
+      let best = null;
+      let bestLen = 0;
+      try{
+        for (let i=0;i<ls.length;i++){
+          const k = ls.key(i);
+          const v = ls.getItem(k);
+          const arr = extractActivitiesFromValue(v);
+          if (arr && arr.length > bestLen){
+            best = arr;
+            bestLen = arr.length;
+          }
+        }
+      }catch(e){}
+      return best || [];
+    }
+
+    function findCards(){
+      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
+      const cards = new Set();
+      pens.forEach(icon=>{
+        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
+        if (!p) return;
+        const hasTrash = !!p.querySelector('.fa-trash,.fa-trash-alt') || !!p.querySelector('button[title*="sup" i],a[title*="sup" i]');
+        if (!hasTrash) return;
+        let card = p;
+        for(let j=0;j<4;j++){
+          if (!card.parentElement) break;
+          const cs = doc.defaultView.getComputedStyle(card);
+          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
+          card = card.parentElement;
+        }
+        cards.add(card);
+      });
+      return Array.from(cards);
+    }
+
+    function getCardTitle(card){
+      const el = card.querySelector('h3,h4,.title,.card-title,strong') || card;
+      return normalize(el.textContent || '');
+    }
+
+    function upsertDate(card, dateStr){
+      if (!card || !dateStr) return;
+
+      // stocker pour stabilité
+      card.setAttribute('data-cadir-start', dateStr);
+
+      // supprimer un ancien span si le card a été re-render et dupliqué
+      const existing = card.querySelector('.ap-inline-date');
+      if (existing){
+        existing.textContent = dateStr;
+        return;
+      }
+
+      const span = doc.createElement('span');
+      span.className = 'ap-inline-date';
+      span.textContent = dateStr;
+
+      const parentsLine = Array.from(card.querySelectorAll('*')).find(n => normalize(n.textContent).includes('parents inform'));
+      if (parentsLine){
+        parentsLine.appendChild(span);
+        return;
+      }
+      const titleLine = card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
+      titleLine.appendChild(span);
+    }
+
+    // throttling to avoid flicker
+    let rafId = 0;
+    function scheduleApply(){
+      if (rafId) return;
+      rafId = requestAnimationFrame(()=>{
+        rafId = 0;
+        applyDates();
+      });
+    }
+
+    function applyDates(){
+      const activities = scanLocalStorageForActivities();
+      if (!activities.length) return;
+
+      const idx = new Map();
+      activities.forEach(a=>{
+        const t = normalize(pickTitle(a));
+        const dRaw = pickStart(a);
+        const dNice = niceDate(dRaw);
+        if (t && dNice && !idx.has(t)) idx.set(t, dNice);
+      });
+
+      const cards = findCards();
+      cards.forEach(card=>{
+        // If the card got rerendered, but still has stored date, restore it
+        const stored = card.getAttribute('data-cadir-start');
+        if (stored) upsertDate(card, stored);
+
+        const t = getCardTitle(card);
+        if (!t) return;
+        let d = idx.get(t);
+        if (!d){
+          for (const [k,v] of idx.entries()){
+            if (k && (k.includes(t) || t.includes(k))){ d = v; break; }
+          }
+        }
+        if (d) upsertDate(card, d);
+      });
+    }
+
+    // observe for rerenders and re-apply smoothly
+    const obs = new MutationObserver(()=>scheduleApply());
+    obs.observe(doc.body, {childList:true, subtree:true});
+
+    // initial apply (and a couple retries for async)
+    scheduleApply();
+    setTimeout(scheduleApply, 350);
+    setTimeout(scheduleApply, 1200);
+
+    doc.__cadirV31Injected = true;
+  }
+
+  document.getElementById('frame-perdir')?.addEventListener('load', function(){
+    setTimeout(injectIntoPerdir, 600);
+    setTimeout(injectIntoPerdir, 1400);
+  });
+
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === 'function'){
+    window.loadModule = function(name){
+      const r = _loadModule.apply(this, arguments);
+      if (name === 'perdir'){
+        setTimeout(injectIntoPerdir, 700);
+        setTimeout(injectIntoPerdir, 1600);
+      }
+      return r;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(injectIntoPerdir, 1200);
+  });
+})();
+</script>
+
 </body></html>
