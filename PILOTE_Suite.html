@@ -7648,4 +7648,146 @@ Principe:
 })();
 </script>
 
+
+<script>
+/* ===== V43 - Activités pédagogiques: tri du plus récent au plus ancien =====
+   - Trie les vignettes selon la date de début affichée (celle à côté de l'intitulé)
+   - Fonctionne même si le module rerender (MutationObserver + debounce)
+*/
+(function(){
+  function injectSortIntoPerdir(){
+    const fr = document.getElementById('frame-perdir');
+    if(!fr) return;
+    let doc;
+    try{ doc = fr.contentDocument; }catch(e){ return; }
+    if(!doc || doc.__cadirV43SortInjected) return;
+
+    function parseDateFromCard(card){
+      // Prefer our injected date span
+      const s = card.querySelector('.ap-inline-date')?.textContent?.trim() || '';
+      // expected: "• 19/02/2026" OR "mardi 19 février" depending earlier versions,
+      // but V42 shows dd/mm/yyyy; handle both.
+      let m = s.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if (m){
+        const d = new Date(Number(m[3]), Number(m[2])-1, Number(m[1]));
+        return d.getTime();
+      }
+      // fallback: try ISO in attributes/text
+      const t = (card.textContent || '') + ' ' + (card.innerHTML || '');
+      m = t.match(/\b(\d{4})-(\d{2})-(\d{2})\b/);
+      if (m){
+        const d = new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
+        return d.getTime();
+      }
+      // fallback: try french long date (very permissive) using Date.parse
+      const ts = Date.parse(s);
+      if (!Number.isNaN(ts)) return ts;
+      return -Infinity;
+    }
+
+    function findCardsAndContainer(){
+      // Cards heuristic: those that have pen+trash buttons (like earlier)
+      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
+      const cards = new Set();
+      let commonParent = null;
+
+      pens.forEach(icon=>{
+        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
+        if (!p) return;
+        const hasTrash = !!p.querySelector('.fa-trash,.fa-trash-alt') || !!p.querySelector('button[title*="sup" i],a[title*="sup" i]');
+        if (!hasTrash) return;
+
+        let card = p;
+        for(let j=0;j<4;j++){
+          if (!card.parentElement) break;
+          const cs = doc.defaultView.getComputedStyle(card);
+          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
+          card = card.parentElement;
+        }
+        cards.add(card);
+
+        // guess container: nearest parent that contains multiple cards
+        const parent = card.parentElement;
+        if (parent){
+          if (!commonParent) commonParent = parent;
+          else if (commonParent !== parent){
+            // if different parents, keep a higher ancestor if possible
+            const a = commonParent.closest('div,section,main,body') || commonParent;
+            const b = parent.closest('div,section,main,body') || parent;
+            // choose the one that contains the other
+            if (a.contains(b)) commonParent = a;
+            else if (b.contains(a)) commonParent = b;
+          }
+        }
+      });
+
+      const cardsArr = Array.from(cards);
+      if (!cardsArr.length) return {container:null, cards:[]};
+
+      // If commonParent doesn't directly contain all cards, climb up until it does
+      let container = commonParent || cardsArr[0].parentElement;
+      for (let i=0;i<6 && container && cardsArr.some(c=>c.parentElement !== container); i++){
+        container = container.parentElement;
+      }
+      // final fallback: direct parent of first card
+      if (!container) container = cardsArr[0].parentElement;
+
+      return {container, cards: cardsArr};
+    }
+
+    let raf = 0;
+    function sortNow(){
+      raf = 0;
+      const {container, cards} = findCardsAndContainer();
+      if (!container || cards.length < 2) return;
+
+      // Ensure we only sort siblings in the same container
+      const siblings = cards.filter(c => c.parentElement === container);
+      if (siblings.length < 2) return;
+
+      const sorted = [...siblings].sort((a,b)=>parseDateFromCard(b)-parseDateFromCard(a));
+      // Re-append in order (stable for DOM)
+      sorted.forEach(el=>container.appendChild(el));
+    }
+
+    function scheduleSort(){
+      if (raf) return;
+      raf = requestAnimationFrame(sortNow);
+    }
+
+    // Observe rerenders
+    const obs = new MutationObserver(()=>scheduleSort());
+    obs.observe(doc.body, {childList:true, subtree:true});
+
+    // initial + retries
+    scheduleSort();
+    setTimeout(scheduleSort, 350);
+    setTimeout(scheduleSort, 1200);
+
+    doc.__cadirV43SortInjected = true;
+  }
+
+  document.getElementById('frame-perdir')?.addEventListener('load', function(){
+    setTimeout(injectSortIntoPerdir, 500);
+    setTimeout(injectSortIntoPerdir, 1200);
+  });
+
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === 'function'){
+    window.loadModule = function(name){
+      const r = _loadModule.apply(this, arguments);
+      if (name === 'perdir'){
+        setTimeout(injectSortIntoPerdir, 700);
+        setTimeout(injectSortIntoPerdir, 1600);
+      }
+      return r;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(injectSortIntoPerdir, 1200);
+  });
+})();
+</script>
+
 </body></html>
