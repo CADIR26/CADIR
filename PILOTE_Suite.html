@@ -367,6 +367,112 @@ body.home-no-events .welcome{
   letter-spacing: 0.5px !important;
 }
 
+
+/* ===== V21 - MODAL EDIT EVENEMENT ===== */
+#evtEditBackdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+#evtEditModal{
+  width: min(520px, calc(100vw - 32px));
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.25);
+  overflow: hidden;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+#evtEditModal .hdr{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #eee;
+}
+#evtEditModal .hdr .t{
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: .3px;
+}
+#evtEditModal .hdr button{
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 10px;
+}
+#evtEditModal .body{
+  padding: 14px 16px 10px 16px;
+}
+#evtEditModal label{
+  display:block;
+  font-size: 12px;
+  font-weight: 700;
+  color:#333;
+  margin: 10px 0 6px;
+}
+#evtEditModal input{
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  outline: none;
+  font-size: 14px;
+}
+#evtEditModal input:focus{ border-color:#b9b9b9; }
+#evtEditModal .row{
+  display:flex;
+  gap: 10px;
+}
+#evtEditModal .row > div{ flex:1; }
+#evtEditModal .meta{
+  margin-top: 6px;
+  font-size: 12px;
+  color:#666;
+  line-height: 1.35;
+}
+#evtEditModal .warn{
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color:#7c2d12;
+  font-size: 12px;
+  display:none;
+}
+#evtEditModal .ftr{
+  padding: 12px 16px 16px 16px;
+  display:flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+#evtEditModal .btn{
+  border: none;
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 800;
+}
+#evtEditModal .btn.secondary{
+  background:#f2f2f2;
+  color:#333;
+}
+#evtEditModal .btn.primary{
+  background:#d6452f;
+  color:#fff;
+}
+#evtEditModal .btn.primary[disabled]{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
 </style>
     <script src="CADIR_fichiers/client" async="" defer="defer"></script>
 <style id="googleidentityservice_button_styles">.qJTHM{-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;color:#202124;direction:ltr;-webkit-touch-callout:none;font-family:"Roboto-Regular",arial,sans-serif;-webkit-font-smoothing:antialiased;font-weight:400;margin:0;overflow:hidden;-webkit-text-size-adjust:100%}.ynRLnc{left:-9999px;position:absolute;top:-9999px}.L6cTce{display:none}.bltWBb{overflow-wrap:break-word;word-break:break-word}.hSRGPd{color:#1a73e8;cursor:pointer;font-weight:500;text-decoration:none}.Bz112c-W3lGp{height:16px;width:16px}.Bz112c-E3DyYd{height:20px;width:20px}.Bz112c-r9oPif{height:24px;width:24px}.Bz112c-u2z5K{height:36px;width:36px}.Bz112c-uaxL4e{border-radius:10px}.LgbsSe-Bz112c{display:block}.S9gUrf-YoZ4jf{border:none;margin:0;padding:0}.S9gUrf-YoZ4jf *{border:none;margin:0;padding:0}.fFW7wc-ibnC6b>.aZ2wEe>div{border-color:#4285f4}.P1ekSe-ZMv3u{transition:height linear .2s}.P1ekSe-ZMv3u>div:nth-child(1){background-color:#1a73e8!important;transition:width linear .3s}.P1ekSe-ZMv3u>div:nth-child(2){background-image:linear-gradient(to right,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(to right,#1a73e8,#1a73e8)!important}.P1ekSe-ZMv3u>div:nth-child(3){background-image:linear-gradient(to right,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(to right,#1a73e8,#1a73e8)!important}.haAclf{display:inline-block}.nsm7Bb-HzV7m-LgbsSe{border-radius:4px;-moz-box-sizing:border-box;box-sizing:border-box;transition:background-color .218s,border-color .218s;-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;-webkit-appearance:none;background-color:#fff;background-image:none;border:1px solid #dadce0;color:#3c4043;cursor:pointer;font-family:"Google Sans",arial,sans-serif;font-size:14px;height:40px;letter-spacing:.25px;outline:none;overflow:hidden;padding:0 12px;position:relative;text-align:center;vertical-align:middle;white-space:nowrap;width:auto}@media screen and (-ms-high-contrast:active){.nsm7Bb-HzV7m-LgbsSe{border:2px solid windowText;color:windowText}}@media screen and (preferes-contrast:more){.nsm7Bb-HzV7m-LgbsSe{color:#000}}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe{font-size:14px;height:32px;letter-spacing:.25px;padding:0 10px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe{font-size:11px;height:20px;letter-spacing:.3px;padding:0 8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe{padding:0;width:40px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe{width:32px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe{width:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK{border-radius:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.pSzOP-SxQuSe{border-radius:16px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.purZT-SxQuSe{border-radius:10px}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc{border:none;color:#fff}.nsm7Bb-HzV7m-LgbsSe.MFS4be-v3pZbf-Ia7Qfc{background-color:#1a73e8}.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{background-color:#202124;color:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{color:#fff}}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:18px;margin-right:8px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:14px;min-width:14px;width:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:10px;min-width:10px;width:10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin-left:8px;margin-right:-4px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:10px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:4px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:3px;border-bottom-left-radius:3px;display:-moz-box;display:flex;-moz-box-pack:center;justify-content:center;-moz-box-align:center;align-items:center;background-color:#fff;height:36px;margin-left:-10px;margin-right:12px;min-width:36px;width:36px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c,.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:28px;margin-left:-8px;margin-right:10px;min-width:28px;width:28px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:16px;margin-left:-6px;margin-right:8px;min-width:16px;width:16px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:3px;margin-left:2px;margin-right:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:8px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-bN97Pc-sM5MNb{display:-moz-box;display:flex;-moz-box-align:center;align-items:center;-moz-box-orient:horizontal;-moz-box-direction:normal;flex-direction:row;-moz-box-pack:justify;justify-content:space-between;flex-wrap:nowrap;height:100%;position:relative;width:100%}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX{-moz-box-pack:center;justify-content:center}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{-moz-box-flex:1;flex-grow:1;font-family:"Google Sans",arial,sans-serif;font-weight:500;overflow:hidden;text-overflow:ellipsis;vertical-align:top}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-weight:300}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX .nsm7Bb-HzV7m-LgbsSe-BPrWId{-moz-box-flex:0;flex-grow:0}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-MJoBVe{transition:background-color .218s;bottom:0;left:0;position:absolute;right:0;top:0}.nsm7Bb-HzV7m-LgbsSe:hover,.nsm7Bb-HzV7m-LgbsSe:focus{box-shadow:none;border-color:rgb(210,227,252);outline:none}.nsm7Bb-HzV7m-LgbsSe:focus-within{outline:2px solid #00639b;border-color:transparent}.nsm7Bb-HzV7m-LgbsSe:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.08)}.nsm7Bb-HzV7m-LgbsSe:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.1)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.24)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.32)}.nsm7Bb-HzV7m-LgbsSe .n1UuX-DkfjY{border-radius:50%;display:-moz-box;display:flex;height:20px;margin-left:-4px;margin-right:8px;min-width:20px;width:20px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-family:"Roboto";font-size:12px;text-align:left}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .ssJRIf,.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .fmcmS{overflow:hidden;text-overflow:ellipsis}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{display:-moz-box;display:flex;-moz-box-align:center;align-items:center;color:#5f6368;fill:#5f6368;font-size:11px;font-weight:400}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#e8eaed;fill:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff,.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#000;fill:#000}}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .Bz112c{height:18px;margin:-3px -3px -3px 2px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:0;border-bottom-left-radius:0;border-top-right-radius:3px;border-bottom-right-radius:3px;margin-left:12px;margin-right:-10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.L5Fo6c-sM5MNb{border:0;display:block;left:0;position:relative;top:0}.L5Fo6c-bF1uUb{border-radius:4px;bottom:0;cursor:pointer;left:0;position:absolute;right:0;top:0}.L5Fo6c-bF1uUb:focus{border:none;outline:none}sentinel{}
@@ -4582,6 +4688,241 @@ function _v12RerenderSoon(){
 
   document.addEventListener('DOMContentLoaded', function(){
     setTimeout(injectIntoPerdir, 1200);
+  });
+})();
+</script>
+
+
+<!-- ===== V21 - Modal Edition Evénement ===== -->
+<div id="evtEditBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
+  <div id="evtEditModal">
+    <div class="hdr">
+      <div class="t">Modifier l’événement</div>
+      <button id="evtEditCloseBtn" aria-label="Fermer">✕</button>
+    </div>
+    <div class="body">
+      <div class="meta" id="evtEditMeta"></div>
+
+      <label for="evtEditTitle">Titre</label>
+      <input id="evtEditTitle" type="text" placeholder="Titre de l’événement" />
+
+      <div class="row">
+        <div>
+          <label for="evtEditStart">Début (HH:MM)</label>
+          <input id="evtEditStart" type="text" inputmode="numeric" placeholder="08:30" />
+        </div>
+        <div>
+          <label for="evtEditEnd">Fin (HH:MM)</label>
+          <input id="evtEditEnd" type="text" inputmode="numeric" placeholder="09:15" />
+        </div>
+      </div>
+
+      <div class="warn" id="evtEditWarn"></div>
+    </div>
+    <div class="ftr">
+      <button class="btn secondary" id="evtEditCancelBtn">Annuler</button>
+      <button class="btn primary" id="evtEditSaveBtn">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ===== V21 - Edition via MODAL (une seule popup) ===== */
+(function(){
+  const $ = (id)=>document.getElementById(id);
+  const backdrop = $('evtEditBackdrop');
+  const meta = $('evtEditMeta');
+  const titleI = $('evtEditTitle');
+  const startI = $('evtEditStart');
+  const endI = $('evtEditEnd');
+  const warn = $('evtEditWarn');
+  const btnSave = $('evtEditSaveBtn');
+  const btnCancel = $('evtEditCancelBtn');
+  const btnClose = $('evtEditCloseBtn');
+
+  // contexte de l'événement en cours
+  let ctx = null;
+
+  function showWarn(msg){
+    if (!warn) return;
+    warn.textContent = msg || '';
+    warn.style.display = msg ? 'block' : 'none';
+  }
+
+  function openModal(){
+    if (!backdrop) return;
+    backdrop.style.display = 'flex';
+    backdrop.setAttribute('aria-hidden','false');
+    setTimeout(()=>{ try{ titleI && titleI.focus(); }catch(e){} }, 20);
+  }
+
+  function closeModal(){
+    if (!backdrop) return;
+    backdrop.style.display = 'none';
+    backdrop.setAttribute('aria-hidden','true');
+    showWarn('');
+    ctx = null;
+  }
+
+  function normTime(v){
+    v = (v||'').trim();
+    if (!v) return '';
+    const m = v.match(/^(\d{1,2}):(\d{2})$/);
+    if (!m) return null;
+    const hh = String(parseInt(m[1],10)).padStart(2,'0');
+    const mm = m[2];
+    if (parseInt(hh,10) > 23 || parseInt(mm,10) > 59) return null;
+    return hh+":"+mm;
+  }
+
+  function canEditGoogle(){
+    return !!window._gcalAccessToken;
+  }
+
+  function setSaveEnabled(on){
+    if (!btnSave) return;
+    btnSave.disabled = !on;
+  }
+
+  function populateModal(context){
+    ctx = context;
+    const calName = ctx.calName ? ` — ${ctx.calName}` : '';
+    meta.textContent = `Date : ${ctx.date}${calName}`;
+
+    titleI.value = ctx.title || '';
+    startI.value = ctx.time || '';
+    endI.value = ctx.endTime || '';
+
+    if (!canEditGoogle()){
+      showWarn("Google Agenda n’est pas connecté (OAuth2). Connectez-vous dans Paramétrages → Agendas externes pour pouvoir modifier.");
+      setSaveEnabled(false);
+    }else{
+      showWarn("");
+      setSaveEnabled(true);
+    }
+  }
+
+  function save(){
+    if (!ctx) return;
+
+    const newTitle = (titleI.value||'').trim() || '(sans titre)';
+    const t1 = normTime(startI.value);
+    const t2 = normTime(endI.value);
+
+    if (t1 === null){
+      showWarn("Heure de début invalide. Format attendu : HH:MM");
+      return;
+    }
+    if (t2 === null){
+      showWarn("Heure de fin invalide. Format attendu : HH:MM");
+      return;
+    }
+    if (t1 && t2 && t2 < t1){
+      showWarn("Heure de fin avant l'heure de début.");
+      return;
+    }
+
+    if (!canEditGoogle()){
+      showWarn("Impossible d’enregistrer : OAuth2 non connecté.");
+      return;
+    }
+
+    // Appel update existant si disponible
+    const payload = {
+      eventId: ctx.id,
+      calId: ctx.calId,
+      title: newTitle,
+      date: ctx.date,
+      time: t1 || '',
+      endTime: t2 || ''
+    };
+
+    try{
+      if (typeof window.gcalUpdateEvent === 'function'){
+        window.gcalUpdateEvent(payload);
+      }else{
+        window.postMessage(Object.assign({type:'pilote-gcal-update'}, payload), '*');
+      }
+      closeModal();
+    }catch(e){
+      showWarn("Erreur lors de l’enregistrement.");
+    }
+  }
+
+  // UI events
+  btnCancel && btnCancel.addEventListener('click', closeModal);
+  btnClose && btnClose.addEventListener('click', closeModal);
+  backdrop && backdrop.addEventListener('click', (e)=>{ if (e.target === backdrop) closeModal(); });
+  document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') closeModal(); });
+
+  btnSave && btnSave.addEventListener('click', save);
+
+  // Override listener: on reçoit un clic ligne (V20) -> on retrouve l'événement puis modal
+  function getSettingsSafe(){
+    try{ if (typeof getSettings === 'function') return getSettings() || {}; }catch(e){}
+    try{ if (typeof STORAGE_KEY !== 'undefined') return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; }catch(e){}
+    return {};
+  }
+  function pad2(n){ return String(n).padStart(2,'0'); }
+  function normIsoFromDDMM(dd, mm){
+    const y = new Date().getFullYear();
+    return `${y}-${pad2(mm)}-${pad2(dd)}`;
+  }
+  function parseLineText(txt){
+    const t = (txt||'').replace(/\s+/g,' ').trim();
+    const m = t.match(/(\d{1,2})\/(\d{1,2})\s*[•\-]\s*(\d{1,2}:\d{2})\s*(.*)$/);
+    if (!m) return null;
+    const dd = parseInt(m[1],10);
+    const mm = parseInt(m[2],10);
+    const time = pad2(m[3].split(':')[0]) + ":" + m[3].split(':')[1];
+    const title = (m[4]||'').trim();
+    return { dateIso: normIsoFromDDMM(dd, mm), time, title };
+  }
+  function findEventMatch(parsed){
+    const s = getSettingsSafe();
+    const events = []
+      .concat(Array.isArray(s.gcalEvents) ? s.gcalEvents : [])
+      .concat(Array.isArray(s.outlookEvents) ? s.outlookEvents : []);
+
+    const titleKey = (parsed.title||'').toLowerCase();
+    for (const ev of events){
+      if (!ev || !ev.date) continue;
+      if (ev.date !== parsed.dateIso) continue;
+      const evTime = (ev.time||'').trim() || '00:00';
+      if (parsed.time && evTime !== parsed.time) continue;
+      const evTitle = (ev.title||'').trim();
+      if (!evTitle) continue;
+      const evKey = evTitle.toLowerCase();
+      if (!titleKey || evKey.startsWith(titleKey) || titleKey.startsWith(evKey) || evKey.includes(titleKey)) return ev;
+    }
+    return events.find(ev => ev && ev.date === parsed.dateIso && ((ev.time||'').trim()||'00:00') === parsed.time) || null;
+  }
+
+  window.addEventListener('message', function(e){
+    if (!e || !e.data) return;
+    if (e.data.type !== 'pilote-cal-line-click') return;
+
+    const parsed = parseLineText(e.data.text || '');
+    if (!parsed) return;
+
+    const ev = findEventMatch(parsed);
+    if (!ev) {
+      showWarn("");
+      alert("Événement non retrouvé dans la synchro.\n\nCliquez sur « Synchroniser les événements » dans Paramétrages → Agendas externes.");
+      return;
+    }
+
+    populateModal({
+      id: ev.id,
+      calId: ev.calId,
+      calName: ev.calName,
+      title: ev.title,
+      date: ev.date,
+      time: (ev.time||'').trim(),
+      endTime: (ev.endTime||'').trim()
+    });
+    openModal();
   });
 })();
 </script>
