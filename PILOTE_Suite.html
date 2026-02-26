@@ -7049,4 +7049,219 @@ function _v12RerenderSoon(){
 })();
 </script>
 
+
+<script>
+/* ===== V35 - Synchro totale vers pilote_data.json (miroir localStorage des iframes) =====
+Objectif: TOUTES les données saisies (dans les modules/iframes) doivent finir dans pilote_data.json.
+Problème en ligne: parfois l'accès direct à frame.contentWindow.localStorage est instable (blob/sandbox/timing).
+Solution:
+1) Bridge injecté dans chaque iframe (PERDIR/EXAM/ORAL/AED/BIBASE) :
+   - wrap localStorage.setItem/removeItem/clear -> postMessage au parent
+   - handler "pilote-ls-apply" pour restaurer après import
+   - dump initial "pilote-ls-dump"
+2) Parent:
+   - stocke un miroir persistant dans SON localStorage: __mirror__<fid>__<key>
+   - collectAllModulesData inclut le miroir (même si accès direct échoue)
+   - distributeToModules restaure via message (même si accès direct échoue)
+3) Déclenche une sauvegarde auto (local folder) quand une iframe change.
+*/
+(function(){
+  const FRAMES = ['frame-perdir', 'frame-exam', 'frame-oral', 'frame-aed', 'frame-bibase'];
+  const MIRROR_PREFIX = '__mirror__';
+
+  function mirrorKey(fid, k){ return MIRROR_PREFIX + fid + '__' + k; }
+  function isMirrorKey(k){ return typeof k === 'string' && k.startsWith(MIRROR_PREFIX); }
+
+  // --- Parent: listen to iframe storage events and keep mirror ---
+  window.addEventListener('message', function(e){
+    const d = e && e.data;
+    if (!d || !d.type) return;
+    if (!d.fid || FRAMES.indexOf(d.fid) === -1) return;
+
+    if (d.type === 'pilote-ls-set'){
+      try{ localStorage.setItem(mirrorKey(d.fid, d.key), String(d.value)); }catch(err){}
+      // trigger autosave if local folder is enabled
+      try{ if (typeof lfMarkDirty === 'function') lfMarkDirty(); }catch(err){}
+      return;
+    }
+    if (d.type === 'pilote-ls-remove'){
+      try{ localStorage.removeItem(mirrorKey(d.fid, d.key)); }catch(err){}
+      try{ if (typeof lfMarkDirty === 'function') lfMarkDirty(); }catch(err){}
+      return;
+    }
+    if (d.type === 'pilote-ls-clear'){
+      try{
+        const toDel = [];
+        for (let i=0;i<localStorage.length;i++){
+          const k = localStorage.key(i);
+          if (k && k.startsWith(MIRROR_PREFIX + d.fid + '__')) toDel.push(k);
+        }
+        toDel.forEach(k=>localStorage.removeItem(k));
+      }catch(err){}
+      try{ if (typeof lfMarkDirty === 'function') lfMarkDirty(); }catch(err){}
+      return;
+    }
+    if (d.type === 'pilote-ls-dump'){
+      // payload: {fid, data:{k:v,...}}
+      try{
+        const data = d.data || {};
+        Object.keys(data).forEach(k=>{
+          localStorage.setItem(mirrorKey(d.fid, k), String(data[k]));
+        });
+      }catch(err){}
+      return;
+    }
+  });
+
+  // --- Inject bridge into iframe when accessible ---
+  function injectBridge(fid){
+    const fr = document.getElementById(fid);
+    if (!fr) return;
+    let doc, win;
+    try{ win = fr.contentWindow; doc = fr.contentDocument; }catch(e){ return; }
+    if (!doc || doc.__piloteBridgeInjected) return;
+
+    const s = doc.createElement('script');
+    s.textContent = `
+      (function(){
+        const FID = ${JSON.stringify(fid)};
+        function safePost(msg){ try{ parent.postMessage(msg, '*'); }catch(e){} }
+
+        // dump at start
+        try{
+          const dump = {};
+          for (let i=0;i<localStorage.length;i++){
+            const k = localStorage.key(i);
+            dump[k] = localStorage.getItem(k);
+          }
+          safePost({type:'pilote-ls-dump', fid:FID, data: dump});
+        }catch(e){}
+
+        // wrap localStorage mutations
+        try{
+          const _set = localStorage.setItem.bind(localStorage);
+          const _rem = localStorage.removeItem.bind(localStorage);
+          const _clr = localStorage.clear.bind(localStorage);
+
+          localStorage.setItem = function(k,v){
+            _set(k,v);
+            safePost({type:'pilote-ls-set', fid:FID, key:String(k), value:String(v)});
+          };
+          localStorage.removeItem = function(k){
+            _rem(k);
+            safePost({type:'pilote-ls-remove', fid:FID, key:String(k)});
+          };
+          localStorage.clear = function(){
+            _clr();
+            safePost({type:'pilote-ls-clear', fid:FID});
+          };
+        }catch(e){}
+
+        // apply from parent (import)
+        window.addEventListener('message', function(ev){
+          const d = ev && ev.data;
+          if (!d || d.type !== 'pilote-ls-apply' || d.fid !== FID) return;
+          try{
+            const items = d.items || {};
+            // clear existing then apply
+            localStorage.clear();
+            Object.keys(items).forEach(k=>localStorage.setItem(k, items[k]));
+            safePost({type:'pilote-ls-dump', fid:FID, data: items});
+          }catch(e){}
+        });
+      })();
+    `;
+    doc.documentElement.appendChild(s);
+    doc.__piloteBridgeInjected = true;
+  }
+
+  // Hook iframe load events (ensure bridge exists quickly)
+  FRAMES.forEach(fid=>{
+    const fr = document.getElementById(fid);
+    if (!fr) return;
+    fr.addEventListener('load', function(){
+      setTimeout(()=>injectBridge(fid), 200);
+      setTimeout(()=>injectBridge(fid), 900);
+      setTimeout(()=>injectBridge(fid), 1800);
+    });
+  });
+
+  // periodic ensure (handles iframe recreated in blob)
+  setInterval(()=>{ FRAMES.forEach(injectBridge); }, 1200);
+  document.addEventListener('DOMContentLoaded', ()=>setTimeout(()=>FRAMES.forEach(injectBridge), 900));
+
+  // --- Patch collectAllModulesData to include mirror keys ---
+  if (typeof window.collectAllModulesData === 'function' && !window.collectAllModulesData.__v35Wrapped){
+    const _origCollect = window.collectAllModulesData;
+    const wrapped = function(){
+      const allData = _origCollect() || {};
+
+      // add mirror of iframes (guarantees data presence)
+      try{
+        for (let i=0;i<localStorage.length;i++){
+          const k = localStorage.key(i);
+          if (isMirrorKey(k)){
+            allData[k] = localStorage.getItem(k);
+          }
+        }
+      }catch(e){}
+      return allData;
+    };
+    wrapped.__v35Wrapped = true;
+    window.collectAllModulesData = wrapped;
+  }
+
+  // --- Patch distributeToModules: if direct access fails, use postMessage apply ---
+  if (typeof window.distributeToModules === 'function' && !window.distributeToModules.__v35Wrapped){
+    const _origDist = window.distributeToModules;
+    const wrappedDist = function(record){
+      // call original first (works when accessible)
+      try{ _origDist(record); }catch(e){}
+
+      // build per-frame items from record (supports __frame__key and mirror keys)
+      FRAMES.forEach(fid=>{
+        const items = {};
+        Object.keys(record||{}).forEach(k=>{
+          const p1 = '__' + fid + '__';
+          const p2 = MIRROR_PREFIX + fid + '__';
+          if (k.startsWith(p1)){
+            items[k.slice(p1.length)] = record[k];
+          } else if (k.startsWith(p2)){
+            items[k.slice(p2.length)] = record[k];
+          }
+        });
+
+        // also store mirror locally
+        try{
+          Object.keys(items).forEach(k=>localStorage.setItem(mirrorKey(fid,k), String(items[k])));
+        }catch(e){}
+
+        // send to iframe to apply
+        const fr = document.getElementById(fid);
+        try{
+          fr && fr.contentWindow && fr.contentWindow.postMessage({type:'pilote-ls-apply', fid: fid, items: items}, '*');
+        }catch(e){}
+      });
+    };
+    wrappedDist.__v35Wrapped = true;
+    window.distributeToModules = wrappedDist;
+  }
+
+  // --- Ensure lfMarkDirty exists (if not) so bridge can trigger autosave pipeline ---
+  if (typeof window.lfMarkDirty !== 'function'){
+    window.lfMarkDirty = function(){
+      try{
+        window._lfDirty = true;
+        if (typeof window.lfWriteToFolder === 'function'){
+          // debounce existing mechanism
+          if (window._lfDebTimer) clearTimeout(window._lfDebTimer);
+          window._lfDebTimer = setTimeout(()=>{ try{ lfWriteToFolder(); }catch(e){} }, 800);
+        }
+      }catch(e){}
+    };
+  }
+
+})();
+</script>
+
 </body></html>
