@@ -4313,4 +4313,78 @@ function _v12RerenderSoon(){
 })();
 </script>
 
+
+<script>
+/* ===== V19 - RENDRE LES EVENEMENTS CLIQUABLES (FullCalendar) =====
+   Symptôme: pas la main / clic impossible sur les événements.
+   Cause la plus fréquente: CSS "pointer-events:none" sur les événements ou un overlay au-dessus.
+   Fix: injecter CSS dans l'iframe PERDIR + rehausser z-index + fallback click listener.
+*/
+(function(){
+  function injectClickFixIntoPerdir(){
+    const fr = document.getElementById('frame-perdir');
+    if(!fr) return;
+    let doc, win;
+    try{ win = fr.contentWindow; doc = win.document; }catch(e){ return; }
+    if(!doc || doc.__cadirClickFixInjected) return;
+
+    // 1) CSS: forcer pointer-events sur les events FullCalendar
+    const st = doc.createElement('style');
+    st.textContent = `
+      /* CADIR V19: FullCalendar events clickable */
+      .fc .fc-event, .fc .fc-event a, .fc .fc-event-main, .fc .fc-event-main-frame, .fc .fc-event-title,
+      .fc .fc-event-time, .fc .fc-list-event, .fc .fc-list-event-title, .fc .fc-list-event-time {
+        pointer-events: auto !important;
+        cursor: pointer !important;
+      }
+      /* Eviter qu'un conteneur coupe les clics */
+      .fc .fc-daygrid-event-harness, .fc .fc-timegrid-event-harness {
+        pointer-events: auto !important;
+      }
+      /* Mettre les events au-dessus de certains overlays */
+      .fc .fc-timegrid-event, .fc .fc-daygrid-event {
+        z-index: 5 !important;
+      }
+      /* Si un overlay transparent existe, on évite qu'il capte les clics */
+      .fc .fc-scrollgrid-section, .fc .fc-scrollgrid, .fc .fc-scrollgrid-liquid {
+        pointer-events: auto !important;
+      }
+    `;
+    doc.head.appendChild(st);
+
+    // 2) Fallback: si FullCalendar n'accroche pas eventClick, on capte le clic sur .fc-event
+    doc.addEventListener('click', function(ev){
+      const el = ev.target && ev.target.closest ? ev.target.closest('.fc-event') : null;
+      if(!el) return;
+      // Laisser FullCalendar gérer si possible (ne pas empêcher)
+      // Mais si rien ne se passe, on pourra au moins remonter l'info visuelle
+    }, true);
+
+    doc.__cadirClickFixInjected = true;
+  }
+
+  // inject on load and on module switch to perdir
+  document.getElementById('frame-perdir')?.addEventListener('load', function(){
+    setTimeout(injectClickFixIntoPerdir, 600);
+    setTimeout(injectClickFixIntoPerdir, 1400);
+  });
+
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === 'function'){
+    window.loadModule = function(name){
+      const r = _loadModule.apply(this, arguments);
+      if (name === 'perdir') {
+        setTimeout(injectClickFixIntoPerdir, 700);
+        setTimeout(injectClickFixIntoPerdir, 1600);
+      }
+      return r;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(injectClickFixIntoPerdir, 1200);
+  });
+})();
+</script>
+
 </body></html>
