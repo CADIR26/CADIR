@@ -8699,4 +8699,218 @@ Principe:
 })();
 </script>
 
+
+<script>
+/* ===== V49 - Activités pédagogiques: une seule info parents + pas de description =====
+  - Ne garde QUE: Intitulé + Date (début) + badge "PARENTS INFORMÉS" (si applicable) + bouton Modifier
+  - Supprime/masque toute ligne texte existante "Parents informés" pour éviter le doublon
+  - Masque toute description/contenu (y compris message)
+*/
+(function(){
+  function injectPerdirV49(){
+    const fr = document.getElementById('frame-perdir');
+    if(!fr) return;
+    let doc;
+    try{ doc = fr.contentDocument; }catch(e){ return; }
+    if(!doc || doc.__cadirV49Applied) return;
+
+    const st = doc.createElement('style');
+    st.textContent = `
+      .cadir-ap-card{ padding:10px 14px !important; }
+      .cadir-ap-head{ display:flex !important; align-items:center !important; justify-content:space-between !important; gap:10px !important; }
+      .cadir-ap-left{ display:flex !important; flex-direction:column !important; gap:6px !important; min-width:0 !important; }
+      .cadir-ap-titleline{ display:flex !important; align-items:baseline !important; gap:8px !important; flex-wrap:wrap !important; }
+      .cadir-ap-date{ color:#6b7280 !important; font-size:12px !important; font-weight:800 !important; white-space:nowrap !important; }
+      .cadir-ap-meta{ display:flex !important; align-items:center !important; gap:8px !important; flex-wrap:wrap !important; }
+      .cadir-ap-badge{
+        background: rgba(16,185,129,.12) !important;
+        color:#059669 !important;
+        border: 1px solid rgba(16,185,129,.25) !important;
+        font-weight:900 !important;
+        font-size:11px !important;
+        padding: 3px 8px !important;
+        border-radius: 999px !important;
+        text-transform:uppercase !important;
+        white-space:nowrap !important;
+      }
+      .cadir-ap-actions{ display:flex !important; align-items:center !important; gap:8px !important; margin-left:auto !important; flex:0 0 auto !important; }
+
+      /* Pas de suppression dans la vignette */
+      .cadir-ap-card .fa-trash,
+      .cadir-ap-card .fa-trash-alt,
+      .cadir-ap-card .bi-trash,
+      .cadir-ap-card button[title*="sup" i],
+      .cadir-ap-card a[title*="sup" i]{ display:none !important; visibility:hidden !important; pointer-events:none !important; }
+
+      /* Masquer tout contenu/description/message dans la vignette */
+      .cadir-ap-card .ql-editor,
+      .cadir-ap-card [contenteditable="true"],
+      .cadir-ap-card textarea,
+      .cadir-ap-card .richtext,
+      .cadir-ap-card .wysiwyg,
+      .cadir-ap-card p,
+      .cadir-ap-card pre,
+      .cadir-ap-card .description,
+      .cadir-ap-card [class*="desc" i],
+      .cadir-ap-card [data-field*="message" i]{ display:none !important; }
+    `;
+    doc.head.appendChild(st);
+
+    function normalize(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
+
+    function findCards(){
+      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
+      const cards = new Set();
+      pens.forEach(icon=>{
+        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
+        if (!p) return;
+        let card = p;
+        for(let j=0;j<4;j++){
+          if (!card.parentElement) break;
+          const cs = doc.defaultView.getComputedStyle(card);
+          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
+          card = card.parentElement;
+        }
+        cards.add(card);
+      });
+      return Array.from(cards);
+    }
+
+    function detectParentsInformed(card){
+      const t = normalize(card.textContent || '');
+      if (t.includes('parents inform')) return true;
+      if (t.includes('message envoyé aux parents') || t.includes('message envoye aux parents')) return true;
+      if (card.querySelector('.fa-check, .fa-check-circle, .bi-check, .lucide-check')) return true;
+      return false;
+    }
+
+    function getTitleNode(card){
+      return card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
+    }
+    function getDateNode(card){
+      return card.querySelector('.cadir-ap-date') || card.querySelector('.ap-inline-date');
+    }
+
+    function removeDuplicateParentsText(card){
+      // Remove/hide any element that literally shows "Parents informés"
+      const nodes = Array.from(card.querySelectorAll('*'));
+      nodes.forEach(n=>{
+        if (n.classList && (n.classList.contains('cadir-ap-badge'))) return;
+        const txt = normalize(n.textContent || '');
+        if (txt === 'parents informés' || txt === 'parents informes' || txt.startsWith('parents inform')){
+          // don't remove title node (contains other text), so only if element is small
+          if ((n.textContent || '').trim().length <= 30){
+            n.style.display = 'none';
+          }
+        }
+      });
+    }
+
+    function hideEverythingExceptHeader(card, head){
+      // hide direct children except header
+      Array.from(card.children).forEach(ch=>{
+        if (ch === head) return;
+        // keep action buttons if they are outside header (rare)
+        if (ch.querySelector && ch.querySelector('.fa-pen,.fa-pencil,.fa-edit')) return;
+        ch.style.display = 'none';
+      });
+    }
+
+    function ensureLayout(card){
+      card.classList.add('cadir-ap-card');
+
+      const editBtn = card.querySelector('.fa-pen,.fa-pencil,.fa-edit')?.closest('button,a');
+
+      // Build header if missing
+      let head = card.querySelector('.cadir-ap-head');
+      if (!head){
+        head = doc.createElement('div');
+        head.className = 'cadir-ap-head';
+        const left = doc.createElement('div');
+        left.className = 'cadir-ap-left';
+        const actions = doc.createElement('div');
+        actions.className = 'cadir-ap-actions';
+        const titleLine = doc.createElement('div');
+        titleLine.className = 'cadir-ap-titleline';
+        const meta = doc.createElement('div');
+        meta.className = 'cadir-ap-meta';
+
+        card.insertBefore(head, card.firstChild);
+        head.appendChild(left);
+        head.appendChild(actions);
+        left.appendChild(titleLine);
+        left.appendChild(meta);
+      }
+
+      const left = head.querySelector('.cadir-ap-left');
+      const actions = head.querySelector('.cadir-ap-actions');
+      const titleLine = head.querySelector('.cadir-ap-titleline');
+      const meta = head.querySelector('.cadir-ap-meta');
+
+      const titleNode = getTitleNode(card);
+      const dateNode = getDateNode(card);
+
+      if (titleNode && titleLine && !titleLine.contains(titleNode)) titleLine.appendChild(titleNode);
+      if (dateNode){
+        dateNode.classList.add('cadir-ap-date');
+        dateNode.textContent = (dateNode.textContent || '').replace(/^•\s*/,'').trim();
+        if (titleLine && !titleLine.contains(dateNode)) titleLine.appendChild(dateNode);
+      }
+
+      // Single badge (create if needed)
+      if (meta){
+        let badge = meta.querySelector('.cadir-ap-badge');
+        if (!badge){
+          badge = doc.createElement('span');
+          badge.className = 'cadir-ap-badge';
+          badge.textContent = 'PARENTS INFORMÉS';
+          meta.appendChild(badge);
+        }
+        badge.style.display = detectParentsInformed(card) ? 'inline-flex' : 'none';
+      }
+
+      if (editBtn && actions && editBtn.parentElement !== actions) actions.appendChild(editBtn);
+
+      removeDuplicateParentsText(card);
+      hideEverythingExceptHeader(card, head);
+    }
+
+    let raf=0;
+    function apply(){
+      raf=0;
+      findCards().forEach(ensureLayout);
+    }
+    function schedule(){ if (raf) return; raf = requestAnimationFrame(apply); }
+
+    const obs = new MutationObserver(()=>schedule());
+    obs.observe(doc.body, {childList:true, subtree:true});
+    schedule();
+    setTimeout(schedule, 350);
+    setTimeout(schedule, 1200);
+
+    doc.__cadirV49Applied = true;
+  }
+
+  document.getElementById('frame-perdir')?.addEventListener('load', function(){
+    setTimeout(injectPerdirV49, 700);
+    setTimeout(injectPerdirV49, 1600);
+  });
+
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === 'function'){
+    window.loadModule = function(name){
+      const r = _loadModule.apply(this, arguments);
+      if (name === 'perdir'){
+        setTimeout(injectPerdirV49, 900);
+      }
+      return r;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(injectPerdirV49, 1300);
+  });
+})();
+</script>
+
 </body></html>
