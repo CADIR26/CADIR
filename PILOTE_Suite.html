@@ -4927,4 +4927,23 @@ function _v12RerenderSoon(){
 })();
 </script>
 
+
+<script>
+/* ===== V22 - BLOQUER LES ANCIENS PROMPTS =====
+   Problème: un ancien listener "message" ouvre encore un prompt (titre) avant la modal.
+   Fix: intercepter en CAPTURE les messages 'pilote-cal-line-click' et stopper la propagation.
+*/
+(function(){
+  window.addEventListener('message', function(e){
+    try{
+      if (e && e.data && e.data.type === 'pilote-cal-line-click'){
+        // Empêche les autres listeners (anciens) de se déclencher
+        if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+        if (typeof e.stopPropagation === 'function') e.stopPropagation();
+      }
+    }catch(err){}
+  }, true); // capture
+})();
+</script>
+
 </body></html>
