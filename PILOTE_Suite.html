@@ -7648,4 +7648,320 @@ Principe:
 })();
 </script>
 
+
+<script>
+/* ===== V40 - Activités pédagogiques : date à côté du titre = champ "Début" (définitif) =====
+Principe:
+1) Quand l'écran "Modifier l'événement" est ouvert dans PERDIR, on lit:
+   - Intitulé (titre)
+   - Début (date affichée)
+2) On scanne les données Activités dans le localStorage (même source que pilote_data.json),
+   on retrouve l'objet activité correspondant au titre, et on DÉTECTE automatiquement
+   quel champ de l'objet contient exactement la date de Début (match date).
+   -> On mémorise la clé détectée (ex: dateDebut, debut, startDate, etc.) dans le parent localStorage.
+3) Dans la liste des vignettes, on affiche STRICTEMENT cette clé (donc la même date que le champ "Début").
+   Si la clé n'est pas encore connue, on attend la première ouverture d'une activité (crayon) pour l'apprendre,
+   puis ça devient automatique pour toutes les activités.
+*/
+(function(){
+  const START_KEY_STORAGE = 'cadir_ap_detected_start_key_v1';
+
+  function normalize(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
+
+  // --- date parsing helpers (accepts dd/mm/yyyy, yyyy-mm-dd, dd / mm / yyyy) ---
+  function parseToDate(v){
+    if (!v) return null;
+    const s = String(v).trim();
+    let m = s.match(/^(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{4})$/);
+    if (m) return new Date(Number(m[3]), Number(m[2])-1, Number(m[1]));
+    m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
+    const t = Date.parse(s);
+    if (!Number.isNaN(t)) return new Date(t);
+    return null;
+  }
+  function sameDay(a,b){
+    if (!a || !b) return false;
+    return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+  }
+  const fmt = new Intl.DateTimeFormat('fr-FR', { weekday:'long', day:'2-digit', month:'long' });
+  function niceDate(v){
+    const d = parseToDate(v);
+    if (!d) return null;
+    return fmt.format(d).replace(/\.$/, '');
+  }
+
+  // --- scan localStorage (of iframe) to find activities array ---
+  function pickTitle(o){
+    return (o && (o.title ?? o.titre ?? o.intitule ?? o['intitulé'] ?? o.name ?? o.libelle ?? o.label)) || null;
+  }
+  function extractActivitiesFromValue(val){
+    if (!val) return null;
+    const t = String(val).trim();
+    if (!(t.startsWith('{') || t.startsWith('['))) return null;
+    let data;
+    try{ data = JSON.parse(t); }catch(e){ return null; }
+
+    function looksLike(a){
+      return a && typeof a === 'object' && pickTitle(a);
+    }
+
+    if (Array.isArray(data) && data.length && looksLike(data[0])) return data;
+    if (data && typeof data === 'object'){
+      const candidates = ['activites','activities','items','list','events','rows','data'];
+      for (const k of candidates){
+        const arr = data[k];
+        if (Array.isArray(arr) && arr.length && looksLike(arr[0])) return arr;
+      }
+      for (const k of Object.keys(data)){
+        const v = data[k];
+        if (Array.isArray(v) && v.length && looksLike(v[0])) return v;
+      }
+    }
+    return null;
+  }
+
+  function scanLocalStorageForActivities(ls){
+    let best = null, bestLen = 0;
+    try{
+      for (let i=0;i<ls.length;i++){
+        const k = ls.key(i);
+        const v = ls.getItem(k);
+        const arr = extractActivitiesFromValue(v);
+        if (arr && arr.length > bestLen){
+          best = arr; bestLen = arr.length;
+        }
+      }
+    }catch(e){}
+    return best || [];
+  }
+
+  // --- inject logic into PERDIR iframe only (where activities live) ---
+  function injectIntoPerdir(){
+    const fr = document.getElementById('frame-perdir');
+    if (!fr) return;
+    let win, doc;
+    try{ win = fr.contentWindow; doc = fr.contentDocument; }catch(e){ return; }
+    if (!win || !doc) return;
+    if (win.__cadirV40Injected) return;
+
+    // style for inline date on cards
+    const st = doc.createElement('style');
+    st.textContent = `
+      .ap-inline-date{
+        color:#6b7280;
+        font-size:12px;
+        font-weight:800;
+        margin-left:8px;
+        white-space:nowrap;
+      }
+      .ap-inline-date::before{ content:"• "; font-weight:900; }
+    `;
+    doc.head.appendChild(st);
+
+    function getDetectedKey(){
+      try{ return localStorage.getItem(START_KEY_STORAGE) || ''; }catch(e){ return ''; }
+    }
+    function setDetectedKey(k){
+      try{ localStorage.setItem(START_KEY_STORAGE, k); }catch(e){}
+    }
+
+    function findCards(){
+      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
+      const cards = new Set();
+      pens.forEach(icon=>{
+        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
+        if (!p) return;
+        const hasTrash = !!p.querySelector('.fa-trash,.fa-trash-alt') || !!p.querySelector('button[title*="sup" i],a[title*="sup" i]');
+        if (!hasTrash) return;
+        let card = p;
+        for(let j=0;j<4;j++){
+          if (!card.parentElement) break;
+          const cs = doc.defaultView.getComputedStyle(card);
+          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
+          card = card.parentElement;
+        }
+        cards.add(card);
+      });
+      return Array.from(cards);
+    }
+
+    function getCardTitle(card){
+      const el = card.querySelector('h3,h4,.title,.card-title,strong') || card;
+      return normalize(el.textContent || '');
+    }
+
+    function upsertDate(card, dateStr){
+      if (!card || !dateStr) return;
+      const existing = card.querySelector('.ap-inline-date');
+      if (existing){ existing.textContent = dateStr; return; }
+      const span = doc.createElement('span');
+      span.className = 'ap-inline-date';
+      span.textContent = dateStr;
+
+      const parentsLine = Array.from(card.querySelectorAll('*')).find(n => normalize(n.textContent).includes('parents inform'));
+      if (parentsLine){ parentsLine.appendChild(span); return; }
+      const titleLine = card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
+      titleLine.appendChild(span);
+    }
+
+    function applyDatesFromDetectedKey(){
+      const key = getDetectedKey();
+      if (!key) return; // not learned yet
+      const activities = scanLocalStorageForActivities(win.localStorage);
+      if (!activities.length) return;
+
+      const idx = new Map();
+      activities.forEach(a=>{
+        const t = normalize(pickTitle(a));
+        const raw = a && a[key];
+        const dn = niceDate(raw);
+        if (t && dn) idx.set(t, dn);
+      });
+
+      const cards = findCards();
+      cards.forEach(card=>{
+        const t = getCardTitle(card);
+        if (!t) return;
+        let d = idx.get(t);
+        if (!d){
+          for (const [k,v] of idx.entries()){
+            if (k && (k.includes(t) || t.includes(k))){ d = v; break; }
+          }
+        }
+        if (d) upsertDate(card, d);
+      });
+    }
+
+    // Learn the real start-date key by matching the edit form "Début" value against the stored object fields
+    function learnStartKeyFromEditForm(){
+      const heads = Array.from(doc.querySelectorAll('h1,h2,h3,h4'));
+      const isEdit = heads.some(h => normalize(h.textContent).includes("modifier l'événement") || normalize(h.textContent).includes("modifier l'evenement"));
+      if (!isEdit) return;
+
+      const scope = doc.body;
+
+      // title field (Intitulé)
+      const labels = Array.from(scope.querySelectorAll('label'));
+      const titleLb = labels.find(lb => normalize(lb.textContent).includes('intitul'));
+      let titleInput = null;
+      if (titleLb){
+        const fid = titleLb.getAttribute('for');
+        titleInput = fid ? scope.querySelector('#'+CSS.escape(fid)) : titleLb.parentElement?.querySelector('input,textarea');
+      }
+      if (!titleInput) titleInput = scope.querySelector('input[name*="intitul" i], input[name*="title" i]');
+
+      // date field (Début)
+      const dateLb  = labels.find(lb => normalize(lb.textContent) === 'début' || normalize(lb.textContent).includes('début'));
+      let dateInput = null;
+      if (dateLb){
+        const fid = dateLb.getAttribute('for');
+        dateInput = fid ? scope.querySelector('#'+CSS.escape(fid)) : dateLb.parentElement?.querySelector('input');
+      }
+      if (!dateInput) dateInput = scope.querySelector('input[type="date"], input[name*="debut" i], input[name*="start" i]');
+
+      const title = titleInput ? normalize(titleInput.value) : '';
+      const rawStart = dateInput ? String(dateInput.value || dateInput.getAttribute('value') || '').trim() : '';
+      const startDate = parseToDate(rawStart);
+      if (!title || !startDate) return;
+
+      const activities = scanLocalStorageForActivities(win.localStorage);
+      if (!activities.length) return;
+
+      // find matching activity by title
+      let target = activities.find(a => normalize(pickTitle(a)) === title);
+      if (!target){
+        target = activities.find(a => normalize(pickTitle(a)).includes(title) || title.includes(normalize(pickTitle(a))));
+      }
+      if (!target) return;
+
+      // scan candidate keys for exact day match
+      let bestKey = null;
+      let bestScore = -1e9;
+
+      Object.keys(target).forEach(k=>{
+        const v = target[k];
+        const d = parseToDate(v);
+        if (!d) return;
+        if (!sameDay(d, startDate)) return;
+
+        // score: prefer explicit "debut/start/dateDebut"
+        let sc = 0;
+        if (/^(start|debut|début|dateDebut|date_debut|startDate)$/i.test(k)) sc += 20;
+        if (/start|debut|début/i.test(k)) sc += 12;
+        if (/date/i.test(k)) sc += 4;
+        if (/creation|created|updated|echeance|échéance|due|deadline|fin|end/i.test(k)) sc -= 50;
+
+        if (sc > bestScore){ bestScore = sc; bestKey = k; }
+      });
+
+      // If not found by exact match, fallback: choose the highest-score date-like key (but avoid creation/échéance)
+      if (!bestKey){
+        Object.keys(target).forEach(k=>{
+          const v = target[k];
+          const d = parseToDate(v);
+          if (!d) return;
+          let sc = 0;
+          if (/^(start|debut|début|dateDebut|date_debut|startDate)$/i.test(k)) sc += 10;
+          if (/start|debut|début/i.test(k)) sc += 6;
+          if (/date/i.test(k)) sc += 2;
+          if (/creation|created|updated|echeance|échéance|due|deadline|fin|end/i.test(k)) sc -= 30;
+          if (sc > bestScore){ bestScore = sc; bestKey = k; }
+        });
+      }
+
+      if (bestKey){
+        setDetectedKey(bestKey);
+        // apply immediately everywhere
+        applyDatesFromDetectedKey();
+      }
+    }
+
+    // Observe changes (list re-render + edit screen)
+    let raf = 0;
+    function schedule(){
+      if (raf) return;
+      raf = requestAnimationFrame(()=>{
+        raf = 0;
+        learnStartKeyFromEditForm();
+        applyDatesFromDetectedKey();
+      });
+    }
+
+    const obs = new MutationObserver(()=>schedule());
+    obs.observe(doc.body, {childList:true, subtree:true});
+    doc.addEventListener('input', schedule, true);
+    doc.addEventListener('change', schedule, true);
+
+    // initial
+    setTimeout(schedule, 400);
+    setTimeout(schedule, 1400);
+
+    win.__cadirV40Injected = true;
+  }
+
+  document.getElementById('frame-perdir')?.addEventListener('load', function(){
+    setTimeout(injectIntoPerdir, 400);
+    setTimeout(injectIntoPerdir, 1200);
+  });
+
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === 'function'){
+    window.loadModule = function(name){
+      const r = _loadModule.apply(this, arguments);
+      if (name === 'perdir'){
+        setTimeout(injectIntoPerdir, 700);
+        setTimeout(injectIntoPerdir, 1600);
+      }
+      return r;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(injectIntoPerdir, 1200);
+  });
+
+})();
+</script>
+
 </body></html>
