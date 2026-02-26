@@ -4151,4 +4151,29 @@ function _v12RerenderSoon(){
 })();
 </script>
 
+
+<script>
+/* ===== V17 - Hook renderGcalList pour afficher l'ordre ===== */
+(function(){
+  function _callOrderUI(){
+    try{ if (typeof renderGcalOrderUI === 'function') renderGcalOrderUI(); }catch(e){}
+  }
+  const _render = window.renderGcalList;
+  if (typeof _render === 'function' && !_render.__v17Wrapped){
+    const wrapped = function(){
+      const r = _render.apply(this, arguments);
+      setTimeout(_callOrderUI, 60);
+      setTimeout(_callOrderUI, 250);
+      return r;
+    };
+    wrapped.__v17Wrapped = true;
+    window.renderGcalList = wrapped;
+  } else {
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(_callOrderUI, 600);
+    });
+  }
+})();
+</script>
+
 </body></html>
