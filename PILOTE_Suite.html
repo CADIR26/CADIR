@@ -8053,4 +8053,261 @@ Principe:
 })();
 </script>
 
+
+<script>
+/* ===== V46 - Ajustements demandés =====
+1) Activités pédagogiques (PERDIR)
+   - Garder uniquement l'icône MODIFIER dans la vignette (à droite)
+   - Masquer toute icône SUPPRIMER dans la vignette (suppression uniquement dans "Modifier")
+   - Continuer à masquer le texte "Message à adresser aux parents" dans les vignettes
+   - Tri inverse chronologique (plus récent -> plus ancien) conservé/renforcé
+2) Accueil
+   - Mettre les événements du jour dans une VIGNETTE (card) sous le logo (si présents)
+*/
+(function(){
+  /* ---------- ACCUEIL: vignette événements du jour ---------- */
+  function wrapHomeTodayEvents(){
+    // Heuristiques: on cherche une liste/containeur déjà généré pour "aujourd'hui"
+    const candidates = [
+      document.getElementById('todayEvents'),
+      document.querySelector('#homeTodayEvents'),
+      document.querySelector('.today-events'),
+      document.querySelector('.home-today-events'),
+      document.querySelector('[data-role="today-events"]')
+    ].filter(Boolean);
+
+    let box = candidates[0];
+    if (!box){
+      // fallback: chercher un bloc contenant "AUJOURD" + items
+      const all = Array.from(document.querySelectorAll('div,section,article,ul'));
+      box = all.find(el => /aujourd/i.test(el.textContent || '') && (el.querySelector('li') || (el.children && el.children.length>=2)));
+    }
+    if (!box) return;
+
+    // déjà wrap ?
+    if (box.closest('.cadir-home-card')) return;
+
+    const card = document.createElement('div');
+    card.className = 'cadir-home-card';
+    const title = document.createElement('div');
+    title.className = 'cadir-home-card-title';
+    title.textContent = "ÉVÉNEMENTS DU JOUR";
+    const body = document.createElement('div');
+    body.className = 'cadir-home-card-body';
+
+    // déplacer box dans body
+    const parent = box.parentElement;
+    if (!parent) return;
+    parent.insertBefore(card, box);
+    card.appendChild(title);
+    card.appendChild(body);
+    body.appendChild(box);
+
+    // style
+    if (!document.getElementById('cadir-home-card-style')){
+      const st = document.createElement('style');
+      st.id = 'cadir-home-card-style';
+      st.textContent = `
+        .cadir-home-card{
+          background:#fff;
+          border-radius:14px;
+          box-shadow:0 8px 22px rgba(0,0,0,.06);
+          border:1px solid rgba(15,23,42,.08);
+          padding:14px 16px;
+          max-width: 720px;
+          margin: 14px auto 0 auto;
+        }
+        .cadir-home-card-title{
+          font-weight:900;
+          letter-spacing:.04em;
+          font-size:12px;
+          color:#0f172a;
+          margin-bottom:10px;
+          text-transform:uppercase;
+        }
+        .cadir-home-card-body{
+          font-size:14px;
+          color:#0f172a;
+        }
+        .cadir-home-card-body ul{ margin:0; padding-left:18px; }
+        .cadir-home-card-body li{ margin:6px 0; }
+      `;
+      document.head.appendChild(st);
+    }
+  }
+
+  /* ---------- PERDIR: vignettes activités ---------- */
+  function injectPerdirCardTweaks(){
+    const fr = document.getElementById('frame-perdir');
+    if(!fr) return;
+    let doc;
+    try{ doc = fr.contentDocument; }catch(e){ return; }
+    if(!doc || doc.__cadirV46Applied) return;
+
+    const st = doc.createElement('style');
+    st.textContent = `
+      /* Layout: titre+date à gauche, actions à droite */
+      .cadir-ap-head{
+        display:flex !important;
+        align-items:center !important;
+        justify-content:space-between !important;
+        gap:10px !important;
+      }
+      .cadir-ap-left{
+        display:flex !important;
+        align-items:baseline !important;
+        gap:8px !important;
+        flex-wrap:wrap !important;
+        min-width:0 !important;
+      }
+      .cadir-ap-actions{
+        display:flex !important;
+        align-items:center !important;
+        gap:8px !important;
+        margin-left:auto !important;
+        flex:0 0 auto !important;
+      }
+
+      /* Dans les vignettes: masquer toute action de suppression */
+      .cadir-ap-card .fa-trash,
+      .cadir-ap-card .fa-trash-alt,
+      .cadir-ap-card .bi-trash,
+      .cadir-ap-card button[title*="sup" i],
+      .cadir-ap-card a[title*="sup" i]{
+        display:none !important;
+        visibility:hidden !important;
+        pointer-events:none !important;
+      }
+
+      /* Masquer le texte "Message à adresser aux parents" dans les vignettes (encore plus strict) */
+      .cadir-ap-card .ql-editor,
+      .cadir-ap-card .message,
+      .cadir-ap-card .content,
+      .cadir-ap-card [class*="message" i],
+      .cadir-ap-card [data-field*="message" i],
+      .cadir-ap-card textarea{
+        display:none !important;
+      }
+    `;
+    doc.head.appendChild(st);
+
+    function normalize(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
+
+    function findCards(){
+      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
+      const cards = new Set();
+      pens.forEach(icon=>{
+        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
+        if (!p) return;
+        let card = p;
+        for(let j=0;j<4;j++){
+          if (!card.parentElement) break;
+          const cs = doc.defaultView.getComputedStyle(card);
+          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
+          card = card.parentElement;
+        }
+        cards.add(card);
+      });
+      return Array.from(cards);
+    }
+
+    function parseDate(card){
+      const dateEl = card.querySelector('.cadir-ap-date, .ap-inline-date');
+      const t = (dateEl ? dateEl.textContent : '') || '';
+      const m = t.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if (m){
+        const d = new Date(Number(m[3]), Number(m[2])-1, Number(m[1]));
+        return d.getTime();
+      }
+      return -Infinity;
+    }
+
+    function ensureHeader(card){
+      card.classList.add('cadir-ap-card');
+      // header exists ?
+      let head = card.querySelector('.cadir-ap-head');
+      if (!head) return; // created by v45; if not, ignore
+
+      // actions: find edit button (pen) inside card
+      const editBtn = card.querySelector('.fa-pen,.fa-pencil,.fa-edit')?.closest('button,a');
+      // ensure left container
+      let left = head.querySelector('.cadir-ap-left');
+      if (!left){
+        left = doc.createElement('div');
+        left.className = 'cadir-ap-left';
+        // move first child (title wrapper) into left if needed
+        const first = head.firstElementChild;
+        if (first) left.appendChild(first);
+        head.insertBefore(left, head.firstChild);
+      }
+
+      // move edit button to actions
+      if (editBtn){
+        let actions = head.querySelector('.cadir-ap-actions');
+        if (!actions){
+          actions = doc.createElement('div');
+          actions.className = 'cadir-ap-actions';
+          head.appendChild(actions);
+        }
+        actions.appendChild(editBtn);
+      }
+    }
+
+    function sortCardsNewestFirst(){
+      // Try to sort siblings if they share same parent
+      const cards = findCards();
+      if (cards.length < 2) return;
+      const parent = cards[0].parentElement;
+      if (!parent) return;
+      const siblings = cards.filter(c => c.parentElement === parent);
+      if (siblings.length < 2) return;
+      siblings.sort((a,b)=>parseDate(b)-parseDate(a));
+      siblings.forEach(c=>parent.appendChild(c));
+    }
+
+    let raf=0;
+    function apply(){
+      raf=0;
+      const cards = findCards();
+      cards.forEach(ensureHeader);
+      sortCardsNewestFirst();
+    }
+    function schedule(){ if (raf) return; raf = requestAnimationFrame(apply); }
+
+    const obs = new MutationObserver(()=>schedule());
+    obs.observe(doc.body, {childList:true, subtree:true});
+    schedule();
+    setTimeout(schedule, 350);
+    setTimeout(schedule, 1200);
+
+    doc.__cadirV46Applied = true;
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    wrapHomeTodayEvents();
+    setTimeout(wrapHomeTodayEvents, 1200);
+    setTimeout(injectPerdirCardTweaks, 900);
+  });
+
+  document.getElementById('frame-perdir')?.addEventListener('load', function(){
+    setTimeout(injectPerdirCardTweaks, 500);
+    setTimeout(injectPerdirCardTweaks, 1400);
+  });
+
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === 'function'){
+    window.loadModule = function(name){
+      const r = _loadModule.apply(this, arguments);
+      if (name === 'perdir'){
+        setTimeout(injectPerdirCardTweaks, 800);
+      }
+      if (name === 'home' || name === 'cadir'){
+        setTimeout(wrapHomeTodayEvents, 800);
+      }
+      return r;
+    };
+  }
+})();
+</script>
+
 </body></html>
