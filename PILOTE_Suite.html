@@ -5592,4 +5592,563 @@ function _v12RerenderSoon(){
 })();
 </script>
 
+
+<script>
+/* ===== V29 - Date début sur vignettes (robuste) + obligatoire titre/date =====
+   Stratégie:
+   1) Détecter les "vignettes" par la présence des boutons crayon + corbeille.
+   2) Chercher une date de début dans:
+      - dataset de la carte ou des boutons
+      - attributs (onclick/aria/title) contenant une date
+      - inputs hidden
+      - HTML texte (yyyy-mm-dd ou dd/mm/yyyy)
+   3) Si introuvable: au clic sur le crayon, mémoriser la carte -> quand le formulaire "Modifier l'événement"
+      apparaît, lire la date Début et l'injecter sur la carte (sans matching par titre).
+*/
+(function(){
+  function injectIntoPerdir(){
+    const fr = document.getElementById('frame-perdir');
+    if(!fr) return;
+    let doc;
+    try{ doc = fr.contentDocument; }catch(e){ return; }
+    if(!doc || doc.__cadirV29Injected) return;
+
+    const st = doc.createElement('style');
+    st.textContent = `
+      .ap-inline-date{
+        color:#6b7280;
+        font-size:12px;
+        font-weight:800;
+        margin-left:8px;
+        white-space:nowrap;
+      }
+      .ap-invalid{ outline:2px solid #ef4444 !important; border-color:#ef4444 !important; }
+      .ap-required-hint{ color:#b91c1c; font-size:12px; font-weight:900; margin-left:6px; }
+    `;
+    doc.head.appendChild(st);
+
+    function isoToFr(iso){
+      const m = String(iso||'').trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (!m) return String(iso||'').trim();
+      return `${m[3]}/${m[2]}/${m[1]}`;
+    }
+    function anyDateFromString(s){
+      s = String(s||'');
+      let m = s.match(/\b(\d{4})-(\d{2})-(\d{2})\b/);
+      if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+      m = s.match(/\b(\d{2})\/(\d{2})\/(\d{4})\b/);
+      if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+      m = s.match(/\b(\d{2})\/(\d{2})\b/);
+      if (m){
+        const y = new Date().getFullYear();
+        return `${y}-${m[2]}-${m[1]}`;
+      }
+      return null;
+    }
+
+    function findCardElements(){
+      // carte = conteneur qui contient crayon + poubelle
+      const pens = Array.from(doc.querySelectorAll('.fa-pen, .fa-pencil, .fa-edit'));
+      const cards = new Set();
+      pens.forEach(icon=>{
+        const btn = icon.closest('button,a');
+        if(!btn) return;
+        // vérifier présence corbeille dans le même bloc
+        const parent = btn.closest('div, li, article, section');
+        if(!parent) return;
+        const hasTrash = !!parent.querySelector('.fa-trash, .fa-trash-alt, .fa-delete-left') ||
+                         !!parent.querySelector('button[title*="sup" i], a[title*="sup" i]');
+        if(!hasTrash) return;
+        // remonter à une carte "vraie" (avec border / shadow)
+        let card = parent;
+        for(let i=0;i<4;i++){
+          if(!card.parentElement) break;
+          const cs = doc.defaultView.getComputedStyle(card);
+          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none'){
+            break;
+          }
+          card = card.parentElement;
+        }
+        cards.add(card);
+      });
+      return Array.from(cards);
+    }
+      }
+      // we'll do in JS below (no python)
+    }
+
+    function pickIsoFromDatasets(el){
+      if (!el || !el.dataset) return null;
+      const keys = Object.keys(el.dataset);
+      const key = keys.find(k => /start|debut|date/i.test(k) && !/due|echeance/i.test(k));
+      if (key && el.dataset[key]){
+        const iso = anyDateFromString(el.dataset[key]);
+        if (iso) return iso;
+      }
+      return null;
+    }
+
+    function extractStartIso(card){
+      // 1) dataset card
+      let iso = pickIsoFromDatasets(card);
+      if (iso) return iso;
+
+      // 2) dataset buttons within (edit button)
+      const editBtn = card.querySelector('.fa-pen, .fa-pencil, .fa-edit')?.closest('button,a');
+      iso = pickIsoFromDatasets(editBtn);
+      if (iso) return iso;
+
+      // 3) hidden inputs with date-like values
+      const hidden = Array.from(card.querySelectorAll('input[type="hidden"]'))
+        .map(i => anyDateFromString(i.value))
+        .find(Boolean);
+      if (hidden) return hidden;
+
+      // 4) scan attributes for date
+      const scanEls = [card, ...(editBtn ? [editBtn] : []), ...Array.from(card.querySelectorAll('button,a,div,span'))].slice(0, 80);
+      for (const el of scanEls){
+        if (!el || !el.getAttribute) continue;
+        const attrs = ['onclick','data-date','data-start','title','aria-label'];
+        for (const a of attrs){
+          const v = el.getAttribute(a);
+          const d = anyDateFromString(v);
+          if (d) return d;
+        }
+      }
+
+      // 5) scan innerHTML text (last resort)
+      iso = anyDateFromString(card.innerHTML);
+      if (iso) return iso;
+      iso = anyDateFromString(card.textContent);
+      if (iso) return iso;
+
+      return null;
+    }
+
+    function appendDate(card, iso){
+      if (!card || !iso) return;
+      if (card.querySelector('.ap-inline-date')) return;
+      const dateFr = isoToFr(iso);
+      const span = doc.createElement('span');
+      span.className = 'ap-inline-date';
+      span.textContent = dateFr;
+
+      // append after "Parents informés" line if exists
+      const line = Array.from(card.querySelectorAll('*')).find(n => (n.textContent||'').toLowerCase().includes('parents inform'));
+      if (line){
+        line.appendChild(span);
+        return;
+      }
+      // otherwise after title line
+      const titleLine = card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
+      titleLine.appendChild(span);
+    }
+
+    // --- Live binding: when user clicks edit, remember card and inject date from form
+    let lastCard = null;
+
+    function hookEditClicks(card){
+      const editBtn = card.querySelector('.fa-pen, .fa-pencil, .fa-edit')?.closest('button,a');
+      if (!editBtn || editBtn.__cadirV29Hooked) return;
+      editBtn.__cadirV29Hooked = true;
+      editBtn.addEventListener('click', function(){
+        lastCard = card;
+        // after UI opens, read date "Début"
+        setTimeout(()=>{
+          const labels = Array.from(doc.querySelectorAll('label'));
+          const lb = labels.find(x => (x.textContent||'').trim().toLowerCase() === 'début' || (x.textContent||'').toLowerCase().includes('début'));
+          let dateInput = null;
+          if (lb){
+            const fid = lb.getAttribute('for');
+            dateInput = fid ? doc.querySelector('#'+CSS.escape(fid)) : (lb.parentElement && lb.parentElement.querySelector('input'));
+          }
+          if (!dateInput){
+            dateInput = doc.querySelector('input[type="date"], input[name*="debut" i], input[name*="start" i]');
+          }
+          if (dateInput && dateInput.value){
+            appendDate(lastCard, dateInput.value);
+          }
+        }, 450);
+      }, true);
+    }
+
+    function renderDates(){
+      const cards = findCardElements();
+      cards.forEach(card=>{
+        // try extract immediately
+        const iso = extractStartIso(card);
+        if (iso) appendDate(card, iso);
+        hookEditClicks(card);
+      });
+    }
+
+    // --- Required title/date in edit form
+    function enforceRequired(){
+      const labels = Array.from(doc.querySelectorAll('label'));
+      const titleLb = labels.find(x => (x.textContent||'').toLowerCase().includes('intitul'));
+      const dateLb = labels.find(x => (x.textContent||'').trim().toLowerCase() === 'début' || (x.textContent||'').toLowerCase().includes('début'));
+
+      let titleInput = null, dateInput = null;
+      if (titleLb){
+        const fid = titleLb.getAttribute('for');
+        titleInput = fid ? doc.querySelector('#'+CSS.escape(fid)) : (titleLb.parentElement && titleLb.parentElement.querySelector('input,textarea'));
+      }
+      if (!titleInput) titleInput = doc.querySelector('input[name*="intitul" i], input[name*="title" i]');
+
+      if (dateLb){
+        const fid = dateLb.getAttribute('for');
+        dateInput = fid ? doc.querySelector('#'+CSS.escape(fid)) : (dateLb.parentElement && dateLb.parentElement.querySelector('input'));
+      }
+      if (!dateInput) dateInput = doc.querySelector('input[type="date"], input[name*="debut" i], input[name*="start" i]');
+
+      if (titleInput){
+        titleInput.required = true;
+        if (titleLb && !titleLb.querySelector('.ap-required-hint')){
+          const s = doc.createElement('span'); s.className='ap-required-hint'; s.textContent='*'; titleLb.appendChild(s);
+        }
+      }
+      if (dateInput){
+        dateInput.required = true;
+        if (dateLb && !dateLb.querySelector('.ap-required-hint')){
+          const s = doc.createElement('span'); s.className='ap-required-hint'; s.textContent='*'; dateLb.appendChild(s);
+        }
+      }
+
+      const saveBtn = Array.from(doc.querySelectorAll('button, input[type="submit"]'))
+        .find(b => (b.textContent||b.value||'').toLowerCase().includes('enregistrer'));
+      if (saveBtn && !saveBtn.__cadirV29SaveHooked){
+        saveBtn.__cadirV29SaveHooked = true;
+        saveBtn.addEventListener('click', function(ev){
+          let ok = true;
+          if (titleInput){
+            titleInput.classList.remove('ap-invalid');
+            if (!String(titleInput.value||'').trim()){ ok=false; titleInput.classList.add('ap-invalid'); }
+          }
+          if (dateInput){
+            dateInput.classList.remove('ap-invalid');
+            if (!String(dateInput.value||'').trim()){ ok=false; dateInput.classList.add('ap-invalid'); }
+          }
+          if (!ok){
+            ev.preventDefault(); ev.stopPropagation();
+            alert('Veuillez renseigner le titre et la date de début.');
+          }
+        }, true);
+      }
+    }
+
+    function applyAll(){
+      renderDates();
+      enforceRequired();
+    }
+
+    applyAll();
+    const obs = new MutationObserver(()=>applyAll());
+    obs.observe(doc.body, {childList:true, subtree:true});
+
+    doc.__cadirV29Injected = true;
+  }
+
+  document.getElementById('frame-perdir')?.addEventListener('load', function(){
+    setTimeout(injectIntoPerdir, 500);
+    setTimeout(injectIntoPerdir, 1300);
+  });
+
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === 'function'){
+    window.loadModule = function(name){
+      const r = _loadModule.apply(this, arguments);
+      if (name === 'perdir'){
+        setTimeout(injectIntoPerdir, 700);
+        setTimeout(injectIntoPerdir, 1600);
+      }
+      return r;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(injectIntoPerdir, 1200);
+  });
+})();
+</script>
+
+
+<script>
+/* ===== V30 - Activités pédagogiques depuis pilote_data.json (via localStorage synchronisé) =====
+   L'activité est stockée dans le JSON de synchronisation (pilote_data.json) qui restaure le localStorage de l'iframe PERDIR.
+   -> On scanne le localStorage de l'iframe pour retrouver la liste des activités + leur date de début,
+      puis on injecte la date sur les vignettes (sans ouvrir l'édition).
+   + Rend obligatoire Intitulé + Début
+   + Supprime/masque le champ Date d'échéance.
+*/
+(function(){
+  function injectIntoPerdir(){
+    const fr = document.getElementById('frame-perdir');
+    if(!fr) return;
+    let doc, win;
+    try{ win = fr.contentWindow; doc = fr.contentDocument; }catch(e){ return; }
+    if(!doc || doc.__cadirV30Injected) return;
+
+    const st = doc.createElement('style');
+    st.textContent = `
+      .ap-inline-date{
+        color:#6b7280;
+        font-size:12px;
+        font-weight:800;
+        margin-left:8px;
+        white-space:nowrap;
+      }
+      .ap-invalid{ outline:2px solid #ef4444 !important; border-color:#ef4444 !important; }
+      .ap-required-hint{ color:#b91c1c; font-size:12px; font-weight:900; margin-left:6px; }
+      .cadir-hide-due{ display:none !important; }
+      /* dates compactes */
+      input[type="date"]{ width:140px !important; max-width:140px !important; }
+    `;
+    doc.head.appendChild(st);
+
+    const pad2 = (n)=>String(n).padStart(2,'0');
+    function isoToFr(iso){
+      const m = String(iso||'').trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (!m) return String(iso||'').trim();
+      return `${m[3]}/${m[2]}/${m[1]}`;
+    }
+    function normalize(s){
+      return String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
+    }
+
+    function pickTitle(o){
+      return o?.title ?? o?.titre ?? o?.intitule ?? o?.intitulé ?? o?.name ?? o?.libelle ?? o?.label ?? null;
+    }
+    function pickStart(o){
+      return o?.start ?? o?.debut ?? o?.dateDebut ?? o?.date_début ?? o?.date_debut ?? o?.startDate ?? o?.date ?? null;
+    }
+
+    function extractActivitiesFromValue(val){
+      if (!val) return null;
+      const t = String(val).trim();
+      if (!(t.startsWith('{') || t.startsWith('['))) return null;
+      let data;
+      try{ data = JSON.parse(t); }catch(e){ return null; }
+
+      // Direct array
+      if (Array.isArray(data) && data.length){
+        const o = data[0];
+        if (pickTitle(o) && pickStart(o)) return data;
+      }
+
+      // Object containing list
+      if (data && typeof data === 'object'){
+        const candidates = ['activites','activities','items','list','events','rows','data'];
+        for (const k of candidates){
+          const arr = data[k];
+          if (Array.isArray(arr) && arr.length && pickTitle(arr[0]) && pickStart(arr[0])) return arr;
+        }
+        // deep: search one level
+        for (const k of Object.keys(data)){
+          const v = data[k];
+          if (Array.isArray(v) && v.length && pickTitle(v[0]) && pickStart(v[0])) return v;
+        }
+      }
+      return null;
+    }
+
+    function scanLocalStorageForActivities(){
+      const ls = win.localStorage;
+      let best = null;
+      let bestLen = 0;
+      try{
+        for (let i=0;i<ls.length;i++){
+          const k = ls.key(i);
+          const v = ls.getItem(k);
+          const arr = extractActivitiesFromValue(v);
+          if (arr && arr.length > bestLen){
+            best = arr;
+            bestLen = arr.length;
+          }
+        }
+      }catch(e){}
+      return best || [];
+    }
+
+    function getCardTitle(card){
+      const el = card.querySelector('h3,h4,.title,.card-title,strong') || card;
+      return normalize(el.textContent || '');
+    }
+
+    function findCards(){
+      // Vignettes visibles dans la liste des activités (heuristique)
+      // On cible les cartes qui ont crayon + poubelle (comme vos captures)
+      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
+      const cards = new Set();
+      pens.forEach(icon=>{
+        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
+        if (!p) return;
+        const hasTrash = !!p.querySelector('.fa-trash,.fa-trash-alt') || !!p.querySelector('button[title*="sup" i],a[title*="sup" i]');
+        if (!hasTrash) return;
+        let card = p;
+        for(let j=0;j<4;j++){
+          if (!card.parentElement) break;
+          const cs = doc.defaultView.getComputedStyle(card);
+          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
+          card = card.parentElement;
+        }
+        cards.add(card);
+      });
+      return Array.from(cards);
+    }
+
+    function appendDateToCard(card, iso){
+      if (!card || !iso) return;
+      if (card.querySelector('.ap-inline-date')) return;
+      const span = doc.createElement('span');
+      span.className = 'ap-inline-date';
+      span.textContent = isoToFr(iso);
+
+      const parentsLine = Array.from(card.querySelectorAll('*')).find(n => normalize(n.textContent).includes('parents inform'));
+      if (parentsLine){
+        parentsLine.appendChild(span);
+        return;
+      }
+      const titleLine = card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
+      titleLine.appendChild(span);
+    }
+
+    function injectDates(){
+      const activities = scanLocalStorageForActivities();
+      if (!activities.length) return;
+
+      // index by title
+      const idx = new Map();
+      activities.forEach(a=>{
+        const t = normalize(pickTitle(a));
+        const d = pickStart(a);
+        if (t && d && !idx.has(t)) idx.set(t, d);
+      });
+
+      const cards = findCards();
+      cards.forEach(card=>{
+        const t = getCardTitle(card);
+        if (!t) return;
+        let d = idx.get(t);
+        // fallback: includes match
+        if (!d){
+          for (const [k,v] of idx.entries()){
+            if (k && (k.includes(t) || t.includes(k))){ d = v; break; }
+          }
+        }
+        if (d) appendDateToCard(card, d);
+      });
+    }
+
+    function hideDueDate(){
+      const labels = Array.from(doc.querySelectorAll('label,.field-label,.form-label'));
+      labels.forEach(lb=>{
+        const t = normalize(lb.textContent);
+        if (t.includes('échéance') || t.includes('echeance') || t.includes('due')){
+          const row = lb.closest('.field,.form-group,.row,.grid,.input-group') || lb.parentElement;
+          if (row) row.classList.add('cadir-hide-due');
+          lb.classList.add('cadir-hide-due');
+          const inp = (row||lb).querySelector?.('input,select,textarea');
+          if (inp){
+            const wrap = inp.closest('.field,.form-group,.row,.grid,.input-group') || inp.parentElement;
+            if (wrap) wrap.classList.add('cadir-hide-due');
+            inp.classList.add('cadir-hide-due');
+          }
+        }
+      });
+      doc.querySelectorAll('input[name*="echeance" i],input[id*="echeance" i],input[name*="due" i],input[id*="due" i]').forEach(inp=>{
+        inp.classList.add('cadir-hide-due');
+        const wrap = inp.closest('.field,.form-group,.row,.grid,.input-group') || inp.parentElement;
+        if (wrap) wrap.classList.add('cadir-hide-due');
+      });
+    }
+
+    function enforceRequired(){
+      const labels = Array.from(doc.querySelectorAll('label'));
+      const titleLb = labels.find(x => normalize(x.textContent).includes('intitul'));
+      const dateLb  = labels.find(x => normalize(x.textContent) === 'début' || normalize(x.textContent).includes('début'));
+
+      let titleInput = null, dateInput = null;
+      if (titleLb){
+        const fid = titleLb.getAttribute('for');
+        titleInput = fid ? doc.querySelector('#'+CSS.escape(fid)) : titleLb.parentElement?.querySelector('input,textarea');
+      }
+      if (!titleInput) titleInput = doc.querySelector('input[name*="intitul" i], input[name*="title" i]');
+
+      if (dateLb){
+        const fid = dateLb.getAttribute('for');
+        dateInput = fid ? doc.querySelector('#'+CSS.escape(fid)) : dateLb.parentElement?.querySelector('input');
+      }
+      if (!dateInput) dateInput = doc.querySelector('input[type="date"], input[name*="debut" i], input[name*="start" i]');
+
+      if (titleInput){
+        titleInput.required = true;
+        if (titleLb && !titleLb.querySelector('.ap-required-hint')){
+          const s = doc.createElement('span'); s.className='ap-required-hint'; s.textContent='*'; titleLb.appendChild(s);
+        }
+      }
+      if (dateInput){
+        dateInput.required = true;
+        if (dateLb && !dateLb.querySelector('.ap-required-hint')){
+          const s = doc.createElement('span'); s.className='ap-required-hint'; s.textContent='*'; dateLb.appendChild(s);
+        }
+      }
+
+      const saveBtn = Array.from(doc.querySelectorAll('button, input[type="submit"]'))
+        .find(b => normalize(b.textContent||b.value).includes('enregistrer'));
+      if (saveBtn && !saveBtn.__cadirV30SaveHooked){
+        saveBtn.__cadirV30SaveHooked = true;
+        saveBtn.addEventListener('click', function(ev){
+          let ok = true;
+          if (titleInput){
+            titleInput.classList.remove('ap-invalid');
+            if (!String(titleInput.value||'').trim()){ ok=false; titleInput.classList.add('ap-invalid'); }
+          }
+          if (dateInput){
+            dateInput.classList.remove('ap-invalid');
+            if (!String(dateInput.value||'').trim()){ ok=false; dateInput.classList.add('ap-invalid'); }
+          }
+          if (!ok){
+            ev.preventDefault(); ev.stopPropagation();
+            alert('Veuillez renseigner le titre et la date de début.');
+          }
+        }, true);
+      }
+    }
+
+    function applyAll(){
+      injectDates();
+      hideDueDate();
+      enforceRequired();
+    }
+
+    applyAll();
+    const obs = new MutationObserver(()=>applyAll());
+    obs.observe(doc.body, {childList:true, subtree:true});
+
+    doc.__cadirV30Injected = true;
+  }
+
+  document.getElementById('frame-perdir')?.addEventListener('load', function(){
+    setTimeout(injectIntoPerdir, 600);
+    setTimeout(injectIntoPerdir, 1400);
+  });
+
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === 'function'){
+    window.loadModule = function(name){
+      const r = _loadModule.apply(this, arguments);
+      if (name === 'perdir'){
+        setTimeout(injectIntoPerdir, 700);
+        setTimeout(injectIntoPerdir, 1600);
+      }
+      return r;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(injectIntoPerdir, 1200);
+  });
+})();
+</script>
+
 </body></html>
