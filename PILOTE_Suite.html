@@ -3270,4 +3270,238 @@ setTimeout(function(){
 })();
 </script>
 
+
+<script>
+/* ===== V12 - ACCUEIL EVENEMENTS (ROBUSTE) =====
+   - Lit les événements depuis getSettings() si dispo, sinon depuis plusieurs clés localStorage.
+   - Normalise les dates (YYYY-MM-DD, DD/MM/YYYY, "jeu 26/02", etc.).
+   - Affiche les événements du jour (ordre chrono) sous le logo.
+   - Conserve le masquage des titres <= 3 caractères (déjà en place via sanitizeEventsInSettings quand possible).
+*/
+
+function _v12TitleOk(t){
+  t = (t || "").trim();
+  return t.length > 3;
+}
+
+function _v12TryParseSettings(){
+  // 1) via getSettings()
+  try{
+    if (typeof getSettings === "function") {
+      const s = getSettings();
+      if (s && typeof s === "object") return s;
+    }
+  }catch(e){}
+
+  // 2) via clés connues
+  const keys = ['pilote_suite_settings','pilote_master_settings','pilote_settings','settings','cadir_settings'];
+  for (const k of keys){
+    try{
+      const raw = localStorage.getItem(k);
+      if (!raw) continue;
+      const obj = JSON.parse(raw);
+      if (obj && typeof obj === "object") return obj;
+    }catch(e){}
+  }
+
+  // 3) scan heuristique: trouver un objet contenant gcalEvents
+  try{
+    for (let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      const raw = localStorage.getItem(k);
+      if (!raw || raw[0] !== '{') continue;
+      try{
+        const obj = JSON.parse(raw);
+        if (obj && obj.gcalEvents && Array.isArray(obj.gcalEvents)) return obj;
+      }catch(e2){}
+    }
+  }catch(e){}
+
+  return {};
+}
+
+function _v12Pad2(n){ return String(n).padStart(2,'0'); }
+
+function _v12TodayParts(){
+  const d = new Date();
+  return { y:d.getFullYear(), m:_v12Pad2(d.getMonth()+1), d:_v12Pad2(d.getDate()) };
+}
+
+function _v12NormDateAny(x){
+  // Retourne {iso:'YYYY-MM-DD', md:'MM-DD'} ou null
+  if (!x) return null;
+  let s = String(x).trim();
+
+  // Si ISO avec time
+  if (/^\d{4}-\d{2}-\d{2}T/.test(s)) s = s.split('T')[0];
+
+  // ISO yyyy-mm-dd
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)){
+    return { iso:s, md:s.substring(5) };
+  }
+
+  // dd/mm/yyyy
+  let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m){
+    const dd=_v12Pad2(m[1]), mm=_v12Pad2(m[2]), yy=m[3];
+    const iso = `${yy}-${mm}-${dd}`;
+    return { iso, md:`${mm}-${dd}` };
+  }
+
+  // dd/mm (sans année) ou "jeu 26/02" etc.
+  m = s.match(/(\d{1,2})\/(\d{1,2})/);
+  if (m){
+    const dd=_v12Pad2(m[1]), mm=_v12Pad2(m[2]);
+    const {y} = _v12TodayParts();
+    const iso = `${y}-${mm}-${dd}`;
+    return { iso, md:`${mm}-${dd}` };
+  }
+
+  // Fallback: Date.parse
+  const t = Date.parse(s);
+  if (!Number.isNaN(t)){
+    const d = new Date(t);
+    const iso = `${d.getFullYear()}-${_v12Pad2(d.getMonth()+1)}-${_v12Pad2(d.getDate())}`;
+    return { iso, md: iso.substring(5) };
+  }
+
+  return null;
+}
+
+function _v12NormTimeAny(x){
+  if (!x) return '';
+  const s = String(x).trim();
+  // HH:MM from strings like "12:30"
+  const m = s.match(/(\d{1,2}):(\d{2})/);
+  if (m) return _v12Pad2(m[1]) + ":" + m[2];
+  // if "1230"
+  const m2 = s.match(/^(\d{2})(\d{2})$/);
+  if (m2) return m2[1]+":"+m2[2];
+  return '';
+}
+
+function _v12CollectEvents(){
+  const s = _v12TryParseSettings();
+  const g = Array.isArray(s.gcalEvents) ? s.gcalEvents : [];
+  const o = Array.isArray(s.outlookEvents) ? s.outlookEvents : [];
+  const all = g.concat(o);
+
+  // Normalisation structure
+  const out = [];
+  all.forEach(ev=>{
+    if (!ev) return;
+    const title = (ev.title || ev.summary || ev.subject || '').trim();
+    if (!_v12TitleOk(title)) return;
+
+    // date possible: ev.date, ev.startDate, ev.start, ev.startDT
+    const dateRaw = ev.date || ev.startDate || ev.start || (ev.start && ev.start.date) || (ev.start && ev.start.dateTime) || ev.startDT || ev.startDateTime;
+    const nd = _v12NormDateAny(dateRaw);
+    if (!nd) return;
+
+    const timeRaw = ev.time || ev.startTime || (ev.start && ev.start.dateTime) || ev.startDT || ev.startDateTime;
+    const time = _v12NormTimeAny(timeRaw);
+
+    out.push({
+      title,
+      iso: nd.iso,
+      md: nd.md,
+      time,
+      calName: ev.calName || ev.calendar || ev.source || '',
+      color: ev.color || ev.bg || ''
+    });
+  });
+
+  return out;
+}
+
+function _v12RenderHomeToday(){
+  const welcomeHeader = document.querySelector('.welcome-header');
+  if (!welcomeHeader) return;
+
+  const old = document.getElementById('home-today-events');
+  if (old) old.remove();
+
+  const {y,m,d} = _v12TodayParts();
+  const todayIso = `${y}-${m}-${d}`;
+  const todayMd = `${m}-${d}`;
+
+  const events = _v12CollectEvents();
+
+  // match strict ISO OR match month-day (au cas où l'année diffère / est absente)
+  const todayEvents = events.filter(e => e.iso === todayIso || e.md === todayMd);
+
+  todayEvents.sort((a,b)=>{
+    const ta = a.time || "23:59";
+    const tb = b.time || "23:59";
+    return (todayIso + " " + ta).localeCompare(todayIso + " " + tb);
+  });
+
+  if (todayEvents.length){
+    document.body.classList.remove('home-no-events');
+
+    const box = document.createElement('div');
+    box.id = 'home-today-events';
+    box.style.marginTop = '14px';
+    box.style.textAlign = 'center';
+
+    const title = document.createElement('div');
+    title.innerHTML = '<strong style="font-size:.82rem;letter-spacing:.8px;">ÉVÉNEMENTS DU JOUR</strong>';
+    title.style.marginBottom = '8px';
+    title.style.color = '#1f2937';
+    box.appendChild(title);
+
+    todayEvents.forEach(ev=>{
+      const line = document.createElement('div');
+      line.textContent = (ev.time ? (ev.time + ' — ') : '') + ev.title;
+      line.style.fontSize = '.88rem';
+      line.style.color = '#1f2937';
+      line.style.marginBottom = '4px';
+      box.appendChild(line);
+    });
+
+    welcomeHeader.appendChild(box);
+  }else{
+    document.body.classList.add('home-no-events');
+  }
+}
+
+function _v12RerenderSoon(){
+  try{
+    // si vos fonctions V10 existent, on les laisse travailler aussi
+    if (typeof sanitizeEventsInSettings === "function") { sanitizeEventsInSettings(); }
+  }catch(e){}
+  try{ _v12RenderHomeToday(); }catch(e){}
+  setTimeout(function(){ try{ _v12RenderHomeToday(); }catch(e){} }, 120);
+  setTimeout(function(){ try{ _v12RenderHomeToday(); }catch(e){} }, 800);
+}
+
+/* Hook retour Accueil */
+(function(){
+  const _goHome = window.goHome;
+  if (typeof _goHome === "function"){
+    window.goHome = function(){
+      const r = _goHome.apply(this, arguments);
+      _v12RerenderSoon();
+      return r;
+    };
+  }
+  // Après synchro
+  const _gcalFetch = window.gcalFetchEvents;
+  if (typeof _gcalFetch === "function" && !_gcalFetch.__v12Wrapped){
+    const wrapped = function(){
+      const r = _gcalFetch.apply(this, arguments);
+      setTimeout(_v12RerenderSoon, 1400);
+      setTimeout(_v12RerenderSoon, 3400);
+      return r;
+    };
+    wrapped.__v12Wrapped = true;
+    window.gcalFetchEvents = wrapped;
+  }
+
+  document.addEventListener('DOMContentLoaded', _v12RerenderSoon);
+  window.addEventListener('storage', _v12RerenderSoon);
+  setTimeout(_v12RerenderSoon, 1800);
+})();
+</script>
+
 </body></html>
