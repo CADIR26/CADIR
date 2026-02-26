@@ -9055,4 +9055,174 @@ Principe:
 })();
 </script>
 
+
+<script>
+/* ===== V51 - Fix vignettes blanches quand on filtre "Message envoyé aux parents" =====
+Cause: nos masquages CSS trop larges cachent le contenu de certaines cartes (titre/date) après rerender/filtre.
+Fix:
+- Ne plus masquer globalement p/div/etc. dans .cadir-ap-card
+- Masquer uniquement le bloc "Message à adresser aux parents" / editeur (ql-editor, textarea, contenteditable)
+- Reconstruit le header (titre+date+badge) même si le module rend autrement après filtre
+*/
+(function(){
+  function injectFix(){
+    const fr = document.getElementById('frame-perdir');
+    if(!fr) return;
+    let doc;
+    try{ doc = fr.contentDocument; }catch(e){ return; }
+    if(!doc || doc.__cadirV51Applied) return;
+
+    const st = doc.createElement('style');
+    st.textContent = `
+      /* Cancel overly broad hiding from older versions */
+      .cadir-ap-card p,
+      .cadir-ap-card pre,
+      .cadir-ap-card .description,
+      .cadir-ap-card [class*="desc" i]{ display: revert !important; }
+
+      /* Only hide message editor/long message content */
+      .cadir-ap-card .ql-editor,
+      .cadir-ap-card [contenteditable="true"],
+      .cadir-ap-card textarea,
+      .cadir-ap-card .richtext,
+      .cadir-ap-card .wysiwyg,
+      .cadir-ap-card [data-field*="message" i]{ display:none !important; }
+    `;
+    doc.head.appendChild(st);
+
+    function normalize(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
+
+    function findCards(){
+      // cards are those having edit icon
+      const icons = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
+      const cards = new Set();
+      icons.forEach(ic=>{
+        let card = ic.closest('div,li,article,section');
+        if (!card) return;
+        for(let j=0;j<4;j++){
+          if (!card.parentElement) break;
+          const cs = doc.defaultView.getComputedStyle(card);
+          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
+          card = card.parentElement;
+        }
+        cards.add(card);
+      });
+      return Array.from(cards);
+    }
+
+    function detectParentsInformed(card){
+      const t = normalize(card.textContent || '');
+      if (t.includes('parents inform')) return true;
+      if (t.includes('message envoyé aux parents') || t.includes('message envoye aux parents')) return true;
+      if (card.querySelector('.fa-check, .fa-check-circle, .bi-check, .lucide-check')) return true;
+      return false;
+    }
+
+    function getTitle(card){
+      const el = card.querySelector('h3,h4,.title,.card-title,strong');
+      if (el && (el.textContent||'').trim()) return el;
+      // fallback: first text node span/div with short text
+      const cand = Array.from(card.querySelectorAll('div,span,p,strong')).find(n => {
+        const tx = (n.textContent||'').trim();
+        return tx && tx.length <= 40 && !/parents inform|message envoyé|message envoye|lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche/i.test(tx);
+      });
+      return cand || null;
+    }
+
+    function getDateEl(card){
+      return card.querySelector('.cadir-ap-date') || card.querySelector('.ap-inline-date') || Array.from(card.querySelectorAll('div,span')).find(n => /\b\d{1,2}\/\d{1,2}\/\d{4}\b/.test(n.textContent||'') || /(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)/i.test(n.textContent||''));
+    }
+
+    function ensureHeader(card){
+      card.classList.add('cadir-ap-card');
+      let head = card.querySelector('.cadir-ap-head');
+      if (!head){
+        head = doc.createElement('div');
+        head.className = 'cadir-ap-head';
+        const left = doc.createElement('div');
+        left.className = 'cadir-ap-left';
+        const actions = doc.createElement('div');
+        actions.className = 'cadir-ap-actions';
+        const titleLine = doc.createElement('div');
+        titleLine.className = 'cadir-ap-titleline';
+        const meta = doc.createElement('div');
+        meta.className = 'cadir-ap-meta';
+        card.insertBefore(head, card.firstChild);
+        head.appendChild(left);
+        head.appendChild(actions);
+        left.appendChild(titleLine);
+        left.appendChild(meta);
+      }
+      const titleLine = head.querySelector('.cadir-ap-titleline');
+      const meta = head.querySelector('.cadir-ap-meta');
+      const actions = head.querySelector('.cadir-ap-actions');
+
+      const titleNode = getTitle(card);
+      if (titleNode && titleLine && !titleLine.contains(titleNode)) titleLine.appendChild(titleNode);
+
+      const dateNode = getDateEl(card);
+      if (dateNode){
+        dateNode.classList.add('cadir-ap-date');
+        dateNode.textContent = (dateNode.textContent||'').replace(/^•\s*/,'').trim();
+        if (titleLine && !titleLine.contains(dateNode)) titleLine.appendChild(dateNode);
+      }
+
+      // badge
+      if (meta){
+        let badge = meta.querySelector('.cadir-ap-badge');
+        if (!badge){
+          badge = doc.createElement('span');
+          badge.className = 'cadir-ap-badge';
+          badge.textContent = 'PARENTS INFORMÉS';
+          meta.appendChild(badge);
+        }
+        badge.style.display = detectParentsInformed(card) ? 'inline-flex' : 'none';
+      }
+
+      // style edit button and keep in actions
+      const editBtn = card.querySelector('.fa-pen,.fa-pencil,.fa-edit')?.closest('button,a');
+      if (editBtn){
+        editBtn.classList.add('cadir-ap-edit-btn');
+        if (actions && editBtn.parentElement !== actions) actions.appendChild(editBtn);
+      }
+    }
+
+    let raf=0;
+    function apply(){
+      raf=0;
+      findCards().forEach(ensureHeader);
+    }
+    function schedule(){ if (raf) return; raf = requestAnimationFrame(apply); }
+
+    const obs = new MutationObserver(()=>schedule());
+    obs.observe(doc.body, {childList:true, subtree:true});
+    schedule();
+    setTimeout(schedule, 350);
+    setTimeout(schedule, 1200);
+
+    doc.__cadirV51Applied = true;
+  }
+
+  document.getElementById('frame-perdir')?.addEventListener('load', function(){
+    setTimeout(injectFix, 700);
+    setTimeout(injectFix, 1600);
+  });
+
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === 'function'){
+    window.loadModule = function(name){
+      const r = _loadModule.apply(this, arguments);
+      if (name === 'perdir'){
+        setTimeout(injectFix, 900);
+      }
+      return r;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(injectFix, 1300);
+  });
+})();
+</script>
+
 </body></html>
