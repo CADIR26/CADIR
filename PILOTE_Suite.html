@@ -5231,4 +5231,159 @@ function _v12RerenderSoon(){
 })();
 </script>
 
+
+<script>
+/* ===== V27 - Activités pédagogiques: afficher DATE DE DÉBUT + supprimer DATE D'ÉCHÉANCE =====
+   Note: le module vit dans l'iframe PERDIR (frame-perdir) -> injection CSS/JS dans l'iframe.
+*/
+(function(){
+  function isoToFr(s){
+    // yyyy-mm-dd -> dd/mm/yyyy
+    const m = String(s||'').trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return String(s||'').trim();
+    return `${m[3]}/${m[2]}/${m[1]}`;
+  }
+
+  function injectIntoPerdir(){
+    const fr = document.getElementById('frame-perdir');
+    if (!fr) return;
+    let doc;
+    try{ doc = fr.contentDocument; }catch(e){ return; }
+    if (!doc || doc.__cadirV27Injected) return;
+
+    // 1) CSS dans l'iframe: réduire largeur des dates + masquer champ échéance par défaut
+    const st = doc.createElement('style');
+    st.textContent = `
+      /* CADIR V27 - dates compactes */
+      input[type="date"]{ width:140px !important; max-width:140px !important; }
+      .date-field input[type="date"]{ width:140px !important; max-width:140px !important; }
+
+      /* Masquer tout champ/ligne/label contenant "échéance" */
+      .cadir-hide-due{ display:none !important; }
+
+      /* Date début inline sur la vignette */
+      .ap-inline-date{
+        color:#6b7280;
+        font-size:12px;
+        font-weight:700;
+        margin-left:8px;
+        white-space:nowrap;
+      }
+    `;
+    doc.head.appendChild(st);
+
+    function hideDueDate(){
+      // cacher label + champ qui contiennent "échéance"
+      const labels = Array.from(doc.querySelectorAll('label, .field-label, .form-label, .lbl'));
+      labels.forEach(lb=>{
+        const t = (lb.textContent||'').toLowerCase();
+        if (t.includes("échéance") || t.includes("echeance") || t.includes("due")){
+          const row = lb.closest('.field, .form-group, .row, .grid, .input-group') || lb.parentElement;
+          if (row) row.classList.add('cadir-hide-due');
+          else lb.classList.add('cadir-hide-due');
+
+          // cacher l'input le plus proche
+          const input = (row||lb).querySelector?.('input, select, textarea');
+          if (input){
+            const wrap = input.closest('.field, .form-group, .row, .grid, .input-group') || input.parentElement;
+            if (wrap) wrap.classList.add('cadir-hide-due');
+            else input.classList.add('cadir-hide-due');
+          }
+        }
+      });
+
+      // cacher aussi par attributs (si connus)
+      doc.querySelectorAll('input[name*="echeance" i], input[id*="echeance" i], input[name*="due" i], input[id*="due" i]').forEach(inp=>{
+        const row = inp.closest('.field, .form-group, .row, .grid, .input-group') || inp.parentElement;
+        if (row) row.classList.add('cadir-hide-due');
+        inp.classList.add('cadir-hide-due');
+      });
+    }
+
+    function getStartDateFromDataset(card){
+      if (!card || !card.dataset) return null;
+      const keys = Object.keys(card.dataset);
+      // privilégier start/debut
+      const startKey = keys.find(k => /start|debut|begin/i.test(k) && !/due|echeance/i.test(k));
+      if (startKey) return card.dataset[startKey];
+      // sinon une clé date (mais pas due)
+      const dateKey = keys.find(k => /date/i.test(k) && !/due|echeance/i.test(k));
+      if (dateKey) return card.dataset[dateKey];
+      return null;
+    }
+
+    function appendStartDateToCards(){
+      const cards = doc.querySelectorAll('.ap-card, .activity-card, .card, .item-card, .note-card');
+      cards.forEach(card=>{
+        if (card.querySelector('.ap-inline-date')) return;
+
+        // trouver date de début
+        let date = getStartDateFromDataset(card);
+        if (date) date = isoToFr(date);
+
+        // fallback: chercher dans un input hidden
+        if (!date){
+          const hidden = card.querySelector('input[type="hidden"][name*="date" i], input[type="hidden"][name*="start" i]');
+          if (hidden && hidden.value) date = isoToFr(hidden.value);
+        }
+
+        if (!date) return;
+
+        // cible: la description si existe, sinon la 2e ligne (souvent un statut)
+        const target =
+          card.querySelector('.description, .desc, .content, .card-content, .body, .text') ||
+          card.querySelector('.meta, .status, .tags, small') ||
+          card.querySelector('p') ||
+          card;
+
+        const span = doc.createElement('span');
+        span.className = 'ap-inline-date';
+        span.textContent = date;
+
+        // Si target est le card lui-même, on l'ajoute sous le titre: on cherche une ligne existante
+        if (target === card){
+          const line = card.querySelector('.meta, .status, small, p') || card;
+          line.appendChild(span);
+        }else{
+          target.appendChild(span);
+        }
+      });
+    }
+
+    function applyAll(){
+      hideDueDate();
+      appendStartDateToCards();
+    }
+
+    applyAll();
+    const obs = new MutationObserver(()=>applyAll());
+    obs.observe(doc.body, {childList:true, subtree:true});
+
+    doc.__cadirV27Injected = true;
+  }
+
+  // inject on load + when entering PERDIR
+  document.getElementById('frame-perdir')?.addEventListener('load', function(){
+    setTimeout(injectIntoPerdir, 500);
+    setTimeout(injectIntoPerdir, 1400);
+  });
+
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === 'function'){
+    window.loadModule = function(name){
+      const r = _loadModule.apply(this, arguments);
+      if (name === 'perdir') {
+        setTimeout(injectIntoPerdir, 700);
+        setTimeout(injectIntoPerdir, 1700);
+      }
+      return r;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(injectIntoPerdir, 1200);
+  });
+})();
+</script>
+
 </body></html>
