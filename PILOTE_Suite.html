@@ -7264,4 +7264,388 @@ Solution:
 })();
 </script>
 
+
+<script>
+/* ===== V39 - SYNCHRO TOTALE "UN SEUL FICHIER" (pilot_data.json) =====
+Objectif utilisateur:
+- Toutes les données saisies (y compris dans les modules/iframes) doivent être stockées dans UN fichier: pilote_data.json
+- Ce fichier est écrit soit:
+  (A) dans un dossier par défaut (si l'utilisateur a autorisé un dossier via File System Access API),
+  (B) dans le dossier choisi par l'utilisateur,
+  (C) sinon via téléchargement (fallback) -> on obtient quand même un seul fichier transportable.
+Principe:
+1) Bridge LocalStorage pour chaque iframe: on WRAP setItem/removeItem/clear + dump initial -> postMessage parent
+   => le parent tient un "miroir" complet, donc export = complet.
+2) Export: on collecte TOUT (settings + data modules + miroir) et on écrit pilote_data.json (autosave debounced).
+3) Import: on lit pilote_data.json et on restaure parent + modules via postMessage (pilote-ls-apply).
+*/
+(function(){
+  const FILE_NAME = 'pilote_data.json';
+  const FRAMES = ['frame-perdir','frame-exam','frame-oral','frame-dhg','frame-aed','frame-bibase','frame-donnees'];
+  const MIRROR_PREFIX = '__mirror__';
+  const HANDLE_DB = 'cadir_fs_handles_v1';
+  const HANDLE_KEY = 'syncFolderHandle';
+
+  function mirrorKey(fid, k){ return MIRROR_PREFIX + fid + '__' + k; }
+  function isMirrorKey(k){ return typeof k === 'string' && k.startsWith(MIRROR_PREFIX); }
+  function nowIso(){ try{ return new Date().toISOString(); }catch(e){ return '';} }
+
+  // -------------------- IndexedDB helper to store folder handle (persistent) --------------------
+  function idbOpen(){
+    return new Promise((resolve,reject)=>{
+      const req = indexedDB.open(HANDLE_DB, 1);
+      req.onupgradeneeded = ()=>{
+        const db = req.result;
+        if (!db.objectStoreNames.contains('kv')) db.createObjectStore('kv');
+      };
+      req.onsuccess = ()=>resolve(req.result);
+      req.onerror = ()=>reject(req.error);
+    });
+  }
+  async function idbSet(key, val){
+    const db = await idbOpen();
+    return new Promise((resolve,reject)=>{
+      const tx = db.transaction('kv','readwrite');
+      tx.objectStore('kv').put(val, key);
+      tx.oncomplete = ()=>resolve(true);
+      tx.onerror = ()=>reject(tx.error);
+    });
+  }
+  async function idbGet(key){
+    const db = await idbOpen();
+    return new Promise((resolve,reject)=>{
+      const tx = db.transaction('kv','readonly');
+      const req = tx.objectStore('kv').get(key);
+      req.onsuccess = ()=>resolve(req.result);
+      req.onerror = ()=>reject(req.error);
+    });
+  }
+
+  // -------------------- File System Access API: write/read --------------------
+  async function getSavedFolderHandle(){
+    try{ return await idbGet(HANDLE_KEY); }catch(e){ return null; }
+  }
+  async function setSavedFolderHandle(handle){
+    try{ await idbSet(HANDLE_KEY, handle); }catch(e){}
+  }
+
+  async function ensurePermission(handle){
+    if (!handle) return false;
+    try{
+      const opts = { mode: 'readwrite' };
+      let p = await handle.queryPermission(opts);
+      if (p === 'granted') return true;
+      p = await handle.requestPermission(opts);
+      return p === 'granted';
+    }catch(e){ return false; }
+  }
+
+  async function writeJsonToFolder(handle, obj){
+    const ok = await ensurePermission(handle);
+    if (!ok) throw new Error('no-permission');
+    const fileHandle = await handle.getFileHandle(FILE_NAME, { create:true });
+    const writable = await fileHandle.createWritable();
+    await writable.write(new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'}));
+    await writable.close();
+    return true;
+  }
+
+  async function readJsonFromFolder(handle){
+    const ok = await ensurePermission(handle);
+    if (!ok) throw new Error('no-permission');
+    const fileHandle = await handle.getFileHandle(FILE_NAME, { create:false });
+    const file = await fileHandle.getFile();
+    const txt = await file.text();
+    return JSON.parse(txt);
+  }
+
+  function downloadJson(obj){
+    const blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = FILE_NAME;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1500);
+  }
+
+  // -------------------- Bridge iframe -> parent mirror --------------------
+  function injectBridgeIntoFrame(fid){
+    const fr = document.getElementById(fid);
+    if (!fr) return;
+    let win, doc;
+    try{ win = fr.contentWindow; doc = fr.contentDocument; }catch(e){ return; }
+    if (!win || !doc) return;
+    if (win.__piloteBridgeInjectedV39) return;
+
+    // Inject via Function in the iframe context (does not touch module source)
+    try{
+      const fn = win.Function(`
+        (function(){
+          if (window.__piloteBridgeInjectedV39) return;
+          window.__piloteBridgeInjectedV39 = true;
+          const FID = ${JSON.stringify(fid)};
+          function safePost(msg){ try{ parent.postMessage(msg, '*'); }catch(e){} }
+
+          function dump(){
+            try{
+              const data = {};
+              for (let i=0;i<localStorage.length;i++){
+                const k = localStorage.key(i);
+                data[k] = localStorage.getItem(k);
+              }
+              safePost({type:'pilote-ls-dump', fid:FID, data});
+            }catch(e){}
+          }
+          dump();
+
+          try{
+            const _set = localStorage.setItem.bind(localStorage);
+            const _rem = localStorage.removeItem.bind(localStorage);
+            const _clr = localStorage.clear.bind(localStorage);
+
+            localStorage.setItem = function(k,v){
+              _set(k,v);
+              safePost({type:'pilote-ls-set', fid:FID, key:String(k), value:String(v)});
+            };
+            localStorage.removeItem = function(k){
+              _rem(k);
+              safePost({type:'pilote-ls-remove', fid:FID, key:String(k)});
+            };
+            localStorage.clear = function(){
+              _clr();
+              safePost({type:'pilote-ls-clear', fid:FID});
+            };
+          }catch(e){}
+
+          window.addEventListener('message', function(ev){
+            const d = ev && ev.data;
+            if (!d || d.type !== 'pilote-ls-apply' || d.fid !== FID) return;
+            try{
+              const items = d.items || {};
+              localStorage.clear();
+              Object.keys(items).forEach(k=>localStorage.setItem(k, items[k]));
+              safePost({type:'pilote-ls-dump', fid:FID, data: items});
+            }catch(e){}
+          });
+        })();
+      `);
+      fn();
+    }catch(e){
+      // ignore
+    }
+  }
+
+  function ensureAllBridges(){
+    FRAMES.forEach(injectBridgeIntoFrame);
+  }
+
+  // Listen mirror updates
+  window.addEventListener('message', function(e){
+    const d = e && e.data;
+    if (!d || !d.type || !d.fid) return;
+    if (FRAMES.indexOf(d.fid) === -1) return;
+
+    if (d.type === 'pilote-ls-set'){
+      try{ localStorage.setItem(mirrorKey(d.fid, d.key), String(d.value)); }catch(err){}
+      markDirty();
+      return;
+    }
+    if (d.type === 'pilote-ls-remove'){
+      try{ localStorage.removeItem(mirrorKey(d.fid, d.key)); }catch(err){}
+      markDirty();
+      return;
+    }
+    if (d.type === 'pilote-ls-clear'){
+      try{
+        const todel = [];
+        for (let i=0;i<localStorage.length;i++){
+          const k = localStorage.key(i);
+          if (k && k.startsWith(MIRROR_PREFIX + d.fid + '__')) todel.push(k);
+        }
+        todel.forEach(k=>localStorage.removeItem(k));
+      }catch(err){}
+      markDirty();
+      return;
+    }
+    if (d.type === 'pilote-ls-dump'){
+      try{
+        const data = d.data || {};
+        Object.keys(data).forEach(k=>localStorage.setItem(mirrorKey(d.fid, k), String(data[k])));
+      }catch(err){}
+      // dump doesn't necessarily mean change, don't mark dirty
+      return;
+    }
+  });
+
+  // Hook iframe loads
+  FRAMES.forEach(fid=>{
+    const fr = document.getElementById(fid);
+    if (!fr) return;
+    fr.addEventListener('load', ()=>{
+      setTimeout(()=>injectBridgeIntoFrame(fid), 150);
+      setTimeout(()=>injectBridgeIntoFrame(fid), 700);
+      setTimeout(()=>injectBridgeIntoFrame(fid), 1500);
+    });
+  });
+
+  // Also poll (blob iframe can be recreated)
+  setInterval(ensureAllBridges, 1100);
+  document.addEventListener('DOMContentLoaded', ()=>setTimeout(ensureAllBridges, 900));
+
+  // -------------------- Collect / restore ALL data --------------------
+  function collectAll(){
+    // Prefer existing function if present
+    let data = {};
+    try{
+      if (typeof window.collectAllModulesData === 'function'){
+        data = window.collectAllModulesData() || {};
+      }
+    }catch(e){ data = {}; }
+
+    // Always include mirror keys to guarantee module data
+    try{
+      for (let i=0;i<localStorage.length;i++){
+        const k = localStorage.key(i);
+        if (isMirrorKey(k)) data[k] = localStorage.getItem(k);
+      }
+    }catch(e){}
+
+    return {
+      schema: 'cadir-pilote-data-v1',
+      updatedAt: nowIso(),
+      data
+    };
+  }
+
+  function splitPerFrame(recordData){
+    const per = {};
+    FRAMES.forEach(fid=>per[fid] = {});
+    Object.keys(recordData||{}).forEach(k=>{
+      FRAMES.forEach(fid=>{
+        const p1 = '__' + fid + '__';
+        const p2 = MIRROR_PREFIX + fid + '__';
+        if (k.startsWith(p1)){
+          per[fid][k.slice(p1.length)] = recordData[k];
+        }else if (k.startsWith(p2)){
+          per[fid][k.slice(p2.length)] = recordData[k];
+        }
+      });
+    });
+    return per;
+  }
+
+  function restoreAll(payload){
+    if (!payload || !payload.data) return;
+    const record = payload.data;
+
+    // Restore parent localStorage non-mirror keys that belong to app (keep mirrors too)
+    try{
+      Object.keys(record).forEach(k=>{
+        // write everything back; it's safe (includes mirrors)
+        localStorage.setItem(k, record[k]);
+      });
+    }catch(e){}
+
+    // Restore modules via postMessage apply
+    const per = splitPerFrame(record);
+    FRAMES.forEach(fid=>{
+      const fr = document.getElementById(fid);
+      try{
+        fr && fr.contentWindow && fr.contentWindow.postMessage({type:'pilote-ls-apply', fid, items: per[fid]}, '*');
+      }catch(e){}
+    });
+
+    // If your app already has distributeToModules, call it too
+    try{ if (typeof window.distributeToModules === 'function') window.distributeToModules(record); }catch(e){}
+  }
+
+  // -------------------- Autosave (folder if enabled, else download) --------------------
+  let dirty = false;
+  let tmr = 0;
+
+  function markDirty(){
+    dirty = true;
+    if (tmr) clearTimeout(tmr);
+    tmr = setTimeout(()=>autoSave(), 900);
+  }
+
+  async function autoSave(){
+    if (!dirty) return;
+    dirty = false;
+
+    const payload = collectAll();
+
+    // If folder sync enabled and handle exists -> write file
+    const s = (function(){
+      try{ return (typeof getSettings==='function') ? (getSettings()||{}) : (JSON.parse(localStorage.getItem('PILOTE_SETTINGS')||'{}')||{}); }catch(e){ return {}; }
+    })();
+
+    const folderEnabled = !!(s.localFolderEnabled || s.folderSyncEnabled || s.syncFolderEnabled);
+    if (folderEnabled && 'showDirectoryPicker' in window){
+      const handle = await getSavedFolderHandle();
+      if (handle){
+        try{
+          await writeJsonToFolder(handle, payload);
+          // optional toast if your UI has it
+          try{ if (typeof toast === 'function') toast('Sauvegarde OK', 'pilote_data.json mis à jour'); }catch(e){}
+          return;
+        }catch(e){
+          // permission lost -> fall back
+        }
+      }
+    }
+
+    // fallback: store payload in localStorage (always) so you don't lose anything
+    try{ localStorage.setItem('__last_export__', JSON.stringify(payload)); }catch(e){}
+  }
+
+  // Public actions for UI buttons (can be wired later)
+  window.PILOTE_SYNC = {
+    chooseFolder: async function(){
+      if (!('showDirectoryPicker' in window)){
+        alert("Votre navigateur ne permet pas la sélection de dossier (File System Access API).\\nUtilisez Chrome/Edge.");
+        return;
+      }
+      const handle = await window.showDirectoryPicker();
+      await setSavedFolderHandle(handle);
+      await ensurePermission(handle);
+      alert("Dossier de synchronisation enregistré.\\nLe fichier pilote_data.json sera mis à jour automatiquement.");
+      // write immediately
+      await writeJsonToFolder(handle, collectAll());
+    },
+    exportNow: async function(){
+      const payload = collectAll();
+      const handle = await getSavedFolderHandle();
+      if (handle){
+        try{ await writeJsonToFolder(handle, payload); return; }catch(e){}
+      }
+      downloadJson(payload);
+    },
+    importFromFolder: async function(){
+      const handle = await getSavedFolderHandle();
+      if (!handle){
+        alert("Aucun dossier enregistré.\\nChoisissez d'abord un dossier de synchronisation.");
+        return;
+      }
+      const payload = await readJsonFromFolder(handle);
+      restoreAll(payload);
+      alert("Import terminé depuis pilote_data.json");
+    },
+    importFromFile: async function(file){
+      const txt = await file.text();
+      const payload = JSON.parse(txt);
+      restoreAll(payload);
+      alert("Import terminé depuis fichier");
+    }
+  };
+
+  // initial save after load (captures dumps)
+  setTimeout(()=>{ markDirty(); }, 1800);
+
+})();
+</script>
+
 </body></html>
