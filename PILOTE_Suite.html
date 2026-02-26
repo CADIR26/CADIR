@@ -6844,4 +6844,209 @@ function _v12RerenderSoon(){
 })();
 </script>
 
+
+<script>
+/* ===== V34 - Fix "OK en local mais pas en ligne" (GitHub Pages) =====
+   Cause probable: l'iframe PERDIR est recréée en blob / re-render => localStorage iframe non persistant + timing.
+   V34:
+   - Stocke le mapping Titre -> DateDébut dans le localStorage PARENT (persistant)
+   - Injecte dans l'iframe un "reporter" qui envoie (postMessage) {title, start} dès que le formulaire est visible
+   - Réapplique les dates en polling (robuste) + au message reçu
+   Format: dddd dd mmmm (fr-FR)
+*/
+(function(){
+  const MAP_KEY = 'cadir_ap_title_to_start_global_v1';
+
+  function normalize(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
+
+  function loadMap(){
+    try{ return JSON.parse(localStorage.getItem(MAP_KEY) || '{}') || {}; }catch(e){ return {}; }
+  }
+  function saveMap(m){
+    try{ localStorage.setItem(MAP_KEY, JSON.stringify(m||{})); }catch(e){}
+  }
+
+  const fmt = new Intl.DateTimeFormat('fr-FR', { weekday:'long', day:'2-digit', month:'long' });
+  function parseToDate(v){
+    if (!v) return null;
+    const s = String(v).trim();
+    let m = s.match(/^(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{4})$/);
+    if (m) return new Date(Number(m[3]), Number(m[2])-1, Number(m[1]));
+    m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
+    const t = Date.parse(s);
+    if (!Number.isNaN(t)) return new Date(t);
+    return null;
+  }
+  function niceDate(v){
+    const d = parseToDate(v);
+    if (!d) return null;
+    return fmt.format(d).replace(/\.$/, '');
+  }
+
+  function getPerdirDoc(){
+    const fr = document.getElementById('frame-perdir');
+    if (!fr) return null;
+    try{ return fr.contentDocument; }catch(e){ return null; }
+  }
+
+  function ensureIframeReporter(){
+    const fr = document.getElementById('frame-perdir');
+    if (!fr) return;
+    let doc, win;
+    try{ win = fr.contentWindow; doc = fr.contentDocument; }catch(e){ return; }
+    if (!doc || doc.__cadirReporterInjected) return;
+
+    // CSS for inline date in cards (inside iframe)
+    const st = doc.createElement('style');
+    st.textContent = `
+      .ap-inline-date{
+        color:#6b7280;
+        font-size:12px;
+        font-weight:800;
+        margin-left:8px;
+        white-space:nowrap;
+      }
+      .ap-inline-date::before{ content:"• "; font-weight:900; }
+    `;
+    doc.head.appendChild(st);
+
+    // Reporter script in iframe: detect form and post title/start to parent
+    const reporter = doc.createElement('script');
+    reporter.textContent = `
+      (function(){
+        function norm(s){ return String(s||'').trim().toLowerCase().replace(/\\s+/g,' '); }
+
+        function findFormFields(){
+          const labels = Array.from(document.querySelectorAll('label'));
+          const titleLb = labels.find(lb => norm(lb.textContent).includes('intitul'));
+          const dateLb  = labels.find(lb => norm(lb.textContent) === 'début' || norm(lb.textContent).includes('début'));
+
+          let titleInput=null, dateInput=null;
+          if (titleLb){
+            const fid = titleLb.getAttribute('for');
+            titleInput = fid ? document.querySelector('#'+CSS.escape(fid)) : (titleLb.parentElement && titleLb.parentElement.querySelector('input,textarea'));
+          }
+          if (!titleInput) titleInput = document.querySelector('input[name*="intitul" i], input[name*="title" i]');
+
+          if (dateLb){
+            const fid = dateLb.getAttribute('for');
+            dateInput = fid ? document.querySelector('#'+CSS.escape(fid)) : (dateLb.parentElement && dateLb.parentElement.querySelector('input'));
+          }
+          if (!dateInput) dateInput = document.querySelector('input[type="date"], input[name*="debut" i], input[name*="start" i]');
+
+          return {titleInput, dateInput};
+        }
+
+        function isEditScreen(){
+          const heads = Array.from(document.querySelectorAll('h1,h2,h3,h4'));
+          return heads.some(h => norm(h.textContent).includes("modifier l'événement") || norm(h.textContent).includes("modifier l'evenement"));
+        }
+
+        function snapshot(){
+          if (!isEditScreen()) return;
+          const {titleInput, dateInput} = findFormFields();
+          const title = titleInput ? norm(titleInput.value) : '';
+          const start = dateInput ? String(dateInput.value||dateInput.getAttribute('value')||'').trim() : '';
+          if (!title || !start) return;
+          try{ parent.postMessage({type:'cadir-ap-start', title, start}, '*'); }catch(e){}
+        }
+
+        const obs = new MutationObserver(()=>snapshot());
+        obs.observe(document.body, {childList:true, subtree:true});
+
+        document.addEventListener('input', snapshot, true);
+        document.addEventListener('change', snapshot, true);
+        setInterval(snapshot, 800);
+        setTimeout(snapshot, 500);
+      })();
+    `;
+    doc.body.appendChild(reporter);
+
+    doc.__cadirReporterInjected = true;
+  }
+
+  function findCards(doc){
+    const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
+    const cards = new Set();
+    pens.forEach(icon=>{
+      const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
+      if (!p) return;
+      const hasTrash = !!p.querySelector('.fa-trash,.fa-trash-alt') || !!p.querySelector('button[title*="sup" i],a[title*="sup" i]');
+      if (!hasTrash) return;
+      let card = p;
+      for(let j=0;j<4;j++){
+        if (!card.parentElement) break;
+        const cs = doc.defaultView.getComputedStyle(card);
+        if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
+        card = card.parentElement;
+      }
+      cards.add(card);
+    });
+    return Array.from(cards);
+  }
+
+  function getCardTitle(doc, card){
+    const el = card.querySelector('h3,h4,.title,.card-title,strong') || card;
+    return normalize(el.textContent || '');
+  }
+
+  function upsertDate(doc, card, dateStr){
+    const existing = card.querySelector('.ap-inline-date');
+    if (existing){ existing.textContent = dateStr; return; }
+    const span = doc.createElement('span');
+    span.className = 'ap-inline-date';
+    span.textContent = dateStr;
+
+    const parentsLine = Array.from(card.querySelectorAll('*')).find(n => normalize(n.textContent).includes('parents inform'));
+    if (parentsLine){ parentsLine.appendChild(span); return; }
+    const titleLine = card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
+    titleLine.appendChild(span);
+  }
+
+  function applyDatesToCards(){
+    const doc = getPerdirDoc();
+    if (!doc) return;
+    const map = loadMap();
+    const cards = findCards(doc);
+    cards.forEach(card=>{
+      const t = getCardTitle(doc, card);
+      if (!t) return;
+      const raw = map[t];
+      const dn = niceDate(raw);
+      if (dn) upsertDate(doc, card, dn);
+    });
+  }
+
+  // listen messages from iframe reporter
+  window.addEventListener('message', function(e){
+    if (!e || !e.data || e.data.type !== 'cadir-ap-start') return;
+    const title = normalize(e.data.title);
+    const start = String(e.data.start||'').trim();
+    const dn = niceDate(start);
+    if (!title || !dn) return;
+    const m = loadMap();
+    m[title] = start; // store raw, format at display time
+    saveMap(m);
+    applyDatesToCards();
+  });
+
+  // robust polling (handles blob recreation / timing online)
+  setInterval(()=>{
+    ensureIframeReporter();
+    applyDatesToCards();
+  }, 900);
+
+  document.getElementById('frame-perdir')?.addEventListener('load', function(){
+    setTimeout(ensureIframeReporter, 400);
+    setTimeout(applyDatesToCards, 800);
+  });
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(ensureIframeReporter, 900);
+    setTimeout(applyDatesToCards, 1200);
+  });
+})();
+</script>
+
 </body></html>
