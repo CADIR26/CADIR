@@ -6387,4 +6387,253 @@ function _v12RerenderSoon(){
 })();
 </script>
 
+
+<script>
+/* ===== V32 - Activités: afficher UNIQUEMENT la date de DÉBUT (robuste) + format "dddd dd mmmm" ===== */
+(function(){
+  function injectIntoPerdir(){
+    const fr = document.getElementById('frame-perdir');
+    if(!fr) return;
+    let doc, win;
+    try{ win = fr.contentWindow; doc = fr.contentDocument; }catch(e){ return; }
+    if(!doc || doc.__cadirV32Injected) return;
+
+    const st = doc.createElement('style');
+    st.textContent = `
+      .ap-inline-date{
+        color:#6b7280;
+        font-size:12px;
+        font-weight:800;
+        margin-left:8px;
+        white-space:nowrap;
+      }
+      .ap-inline-date::before{ content:"• "; font-weight:900; }
+    `;
+    doc.head.appendChild(st);
+
+    const fmt = new Intl.DateTimeFormat('fr-FR', { weekday:'long', day:'2-digit', month:'long' });
+
+    function parseToDate(v){
+      if (!v) return null;
+      const s = String(v).trim();
+      let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (m) return new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
+      m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      if (m) return new Date(Number(m[3]), Number(m[2])-1, Number(m[1]));
+      m = s.match(/^(\d{2})\/(\d{2})$/);
+      if (m){
+        const y = new Date().getFullYear();
+        return new Date(y, Number(m[2])-1, Number(m[1]));
+      }
+      const t = Date.parse(s);
+      if (!Number.isNaN(t)) return new Date(t);
+      return null;
+    }
+
+    function niceDate(v){
+      const d = parseToDate(v);
+      if (!d) return null;
+      return fmt.format(d).replace(/\.$/, '');
+    }
+
+    function normalize(s){
+      return String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
+    }
+
+    function pickTitle(o){
+      return (o && (o.title ?? o.titre ?? o.intitule ?? o['intitulé'] ?? o.name ?? o.libelle ?? o.label)) || null;
+    }
+
+    function isBadKey(k){
+      return /creation|created|createdat|update|updated|modified|timestamp|echeance|échéance|due|deadline|fin|end/i.test(k);
+    }
+    function scoreKey(k){
+      const kk = String(k||'');
+      let s = 0;
+      if (/^(start|debut|début|dateDebut|date_debut|startDate)$/i.test(kk)) s += 10;
+      if (/start|debut|début/i.test(kk)) s += 6;
+      if (/date/i.test(kk)) s += 2;
+      if (/echeance|échéance|due|deadline/i.test(kk)) s -= 8;
+      if (/creation|created|update|timestamp/i.test(kk)) s -= 10;
+      if (/fin|end/i.test(kk)) s -= 4;
+      return s;
+    }
+
+    function pickStartSmart(o){
+      if (!o || typeof o !== 'object') return null;
+
+      const priority = ['start','debut','début','dateDebut','date_début','date_debut','startDate'];
+      for (const k of priority){
+        if (o[k]){
+          if (niceDate(o[k])) return o[k];
+        }
+      }
+
+      let bestVal = null;
+      let bestScore = -1e9;
+      for (const k of Object.keys(o)){
+        if (isBadKey(k)) continue;
+        const v = o[k];
+        if (!niceDate(v)) continue;
+        const sc = scoreKey(k);
+        if (sc > bestScore){
+          bestScore = sc;
+          bestVal = v;
+        }
+      }
+
+      if (!bestVal){
+        for (const k of Object.keys(o)){
+          if (!/date/i.test(k) || isBadKey(k)) continue;
+          if (niceDate(o[k])) return o[k];
+        }
+      }
+      return bestVal;
+    }
+
+    function extractActivitiesFromValue(val){
+      if (!val) return null;
+      const t = String(val).trim();
+      if (!(t.startsWith('{') || t.startsWith('['))) return null;
+      let data;
+      try{ data = JSON.parse(t); }catch(e){ return null; }
+
+      function looks(a){ return a && typeof a === 'object' && pickTitle(a) && pickStartSmart(a); }
+
+      if (Array.isArray(data) && data.length && looks(data[0])) return data;
+
+      if (data && typeof data === 'object'){
+        const candidates = ['activites','activities','items','list','events','rows','data'];
+        for (const k of candidates){
+          const arr = data[k];
+          if (Array.isArray(arr) && arr.length && looks(arr[0])) return arr;
+        }
+        for (const k of Object.keys(data)){
+          const v = data[k];
+          if (Array.isArray(v) && v.length && looks(v[0])) return v;
+        }
+      }
+      return null;
+    }
+
+    function scanLocalStorageForActivities(){
+      const ls = win.localStorage;
+      let best = null, bestLen = 0;
+      try{
+        for (let i=0;i<ls.length;i++){
+          const k = ls.key(i);
+          const v = ls.getItem(k);
+          const arr = extractActivitiesFromValue(v);
+          if (arr && arr.length > bestLen){
+            best = arr; bestLen = arr.length;
+          }
+        }
+      }catch(e){}
+      return best || [];
+    }
+
+    function findCards(){
+      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
+      const cards = new Set();
+      pens.forEach(icon=>{
+        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
+        if (!p) return;
+        const hasTrash = !!p.querySelector('.fa-trash,.fa-trash-alt') || !!p.querySelector('button[title*="sup" i],a[title*="sup" i]');
+        if (!hasTrash) return;
+        let card = p;
+        for(let j=0;j<4;j++){
+          if (!card.parentElement) break;
+          const cs = doc.defaultView.getComputedStyle(card);
+          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
+          card = card.parentElement;
+        }
+        cards.add(card);
+      });
+      return Array.from(cards);
+    }
+
+    function getCardTitle(card){
+      const el = card.querySelector('h3,h4,.title,.card-title,strong') || card;
+      return normalize(el.textContent || '');
+    }
+
+    function upsertDate(card, dateStr){
+      if (!card || !dateStr) return;
+      const existing = card.querySelector('.ap-inline-date');
+      if (existing){ existing.textContent = dateStr; return; }
+      const span = doc.createElement('span');
+      span.className = 'ap-inline-date';
+      span.textContent = dateStr;
+
+      const parentsLine = Array.from(card.querySelectorAll('*')).find(n => normalize(n.textContent).includes('parents inform'));
+      if (parentsLine){ parentsLine.appendChild(span); return; }
+      const titleLine = card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
+      titleLine.appendChild(span);
+    }
+
+    let rafId = 0;
+    function scheduleApply(){
+      if (rafId) return;
+      rafId = requestAnimationFrame(()=>{ rafId = 0; applyDates(); });
+    }
+
+    function applyDates(){
+      const activities = scanLocalStorageForActivities();
+      if (!activities.length) return;
+
+      const idx = new Map();
+      activities.forEach(a=>{
+        const t = normalize(pickTitle(a));
+        const raw = pickStartSmart(a);
+        const dn = niceDate(raw);
+        if (t && dn) idx.set(t, dn);
+      });
+
+      const cards = findCards();
+      cards.forEach(card=>{
+        const t = getCardTitle(card);
+        if (!t) return;
+
+        let d = idx.get(t);
+        if (!d){
+          for (const [k,v] of idx.entries()){
+            if (k && (k.includes(t) || t.includes(k))){ d = v; break; }
+          }
+        }
+        if (d) upsertDate(card, d);
+      });
+    }
+
+    const obs = new MutationObserver(()=>scheduleApply());
+    obs.observe(doc.body, {childList:true, subtree:true});
+    scheduleApply();
+    setTimeout(scheduleApply, 350);
+    setTimeout(scheduleApply, 1200);
+
+    doc.__cadirV32Injected = true;
+  }
+
+  document.getElementById('frame-perdir')?.addEventListener('load', function(){
+    setTimeout(injectIntoPerdir, 600);
+    setTimeout(injectIntoPerdir, 1400);
+  });
+
+  const _loadModule = window.loadModule;
+  if (typeof _loadModule === 'function'){
+    window.loadModule = function(name){
+      const r = _loadModule.apply(this, arguments);
+      if (name === 'perdir'){
+        setTimeout(injectIntoPerdir, 700);
+        setTimeout(injectIntoPerdir, 1600);
+      }
+      return r;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(injectIntoPerdir, 1200);
+  });
+})();
+</script>
+
 </body></html>
