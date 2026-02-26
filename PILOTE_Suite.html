@@ -2130,11 +2130,78 @@ function saveSettings() {
     }
 
     // ═══ MODULE LOADING ═══
-    function b64toBlob(b64) {
+    function b64toBlob(b64, name) {
+        // Decode base64 -> HTML string
         const bin = atob(b64);
         const bytes = new Uint8Array(bin.length);
         for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-        return URL.createObjectURL(new Blob([bytes], { type: 'text/html; charset=utf-8' }));
+        let htmlStr = new TextDecoder('utf-8').decode(bytes);
+
+        // Inject a storage bridge INSIDE the iframe document so it works online even when parent can't access iframe DOM.
+        // This bridge mirrors localStorage mutations to the parent and supports restore via postMessage.
+        const frameId = (function(){
+            const map = { perdir:'frame-perdir', exam:'frame-exam', oral:'frame-oral', dhg:'frame-dhg', aed:'frame-aed', bibase:'frame-bibase', donnees:'frame-donnees', data:'frame-donnees' };
+            return map[name] || ('frame-' + String(name || '').toLowerCase());
+        })();
+
+        const bridge = `
+<script>
+(function(){
+  const FID = ${"__FID__"};
+  function safePost(msg){ try{ parent.postMessage(msg, '*'); }catch(e){} }
+
+  // dump at start
+  try{
+    const dump = {};
+    for (let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      dump[k] = localStorage.getItem(k);
+    }
+    safePost({type:'pilote-ls-dump', fid:FID, data: dump});
+  }catch(e){}
+
+  // wrap localStorage mutations
+  try{
+    const _set = localStorage.setItem.bind(localStorage);
+    const _rem = localStorage.removeItem.bind(localStorage);
+    const _clr = localStorage.clear.bind(localStorage);
+    localStorage.setItem = function(k,v){
+      _set(k,v);
+      safePost({type:'pilote-ls-set', fid:FID, key:String(k), value:String(v)});
+    };
+    localStorage.removeItem = function(k){
+      _rem(k);
+      safePost({type:'pilote-ls-remove', fid:FID, key:String(k)});
+    };
+    localStorage.clear = function(){
+      _clr();
+      safePost({type:'pilote-ls-clear', fid:FID});
+    };
+  }catch(e){}
+
+  // apply from parent (import)
+  window.addEventListener('message', function(ev){
+    const d = ev && ev.data;
+    if (!d || d.type !== 'pilote-ls-apply' || d.fid !== FID) return;
+    try{
+      const items = d.items || {};
+      localStorage.clear();
+      Object.keys(items).forEach(k=>localStorage.setItem(k, items[k]));
+      safePost({type:'pilote-ls-dump', fid:FID, data: items});
+    }catch(e){}
+  });
+})();
+<\/script>
+`.replace("__FID__", JSON.stringify(frameId));
+
+        // Inject before </body> if present, else append.
+        if (htmlStr.includes('</body>')) {
+            htmlStr = htmlStr.replace('</body>', bridge + '\n</body>');
+        } else {
+            htmlStr += '\n' + bridge;
+        }
+
+        return URL.createObjectURL(new Blob([htmlStr], { type: 'text/html; charset=utf-8' }));
     }
 
 
@@ -2179,7 +2246,7 @@ function saveSettings() {
         const frame = document.getElementById('frame-' + name);
         if (!loadedModules.has(name)) {
             document.getElementById('loader').classList.add('show');
-            if (!blobUrls[name]) blobUrls[name] = b64toBlob(MODULE_DATA[name]);
+            if (!blobUrls[name]) blobUrls[name] = b64toBlob(MODULE_DATA[name], name);
             frame.src = blobUrls[name];
             frame.onload = () => {
                 loadedModules.add(name);
