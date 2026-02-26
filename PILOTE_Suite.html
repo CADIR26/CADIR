@@ -2959,4 +2959,28 @@ document.title = 'PILOTE — ' + name.toUpperCase();
 })();
 </script>
 
+
+<script>
+/* ===== V8 - MASQUER EVENEMENTS <= 3 CARACTERES ===== */
+
+function hideShortEvents(){
+    const possibleEvents = document.querySelectorAll('[class*="event"], [class*="rdv"], [data-event]');
+    possibleEvents.forEach(el => {
+        const txt = (el.innerText || "").trim();
+        if(txt.length > 0 && txt.length <= 3){
+            el.style.display = "none";
+        }
+    });
+}
+
+// Exécution après chargement
+document.addEventListener("DOMContentLoaded", function(){
+    hideShortEvents();
+    
+    // Observer si agenda dynamique
+    const observer = new MutationObserver(() => hideShortEvents());
+    observer.observe(document.body, { childList: true, subtree: true });
+});
+</script>
+
 </body></html>
