@@ -2983,4 +2983,76 @@ document.addEventListener("DOMContentLoaded", function(){
 });
 </script>
 
+
+<script>
+/* ===== V9 - EVENEMENTS DU JOUR SUR ACCUEIL ===== */
+
+function handleHomeEvents(){
+
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth()+1).padStart(2,'0');
+    const dd = String(today.getDate()).padStart(2,'0');
+    const todayStr = yyyy + "-" + mm + "-" + dd;
+
+    // Cherche événements avec attribut data-date="YYYY-MM-DD"
+    const allEvents = document.querySelectorAll('[data-date]');
+    let todayEvents = [];
+
+    allEvents.forEach(ev => {
+        if(ev.getAttribute('data-date') === todayStr){
+            todayEvents.push(ev);
+        }
+    });
+
+    // Trie chronologique si data-time="HH:MM"
+    todayEvents.sort((a,b)=>{
+        const ta = a.getAttribute('data-time') || "23:59";
+        const tb = b.getAttribute('data-time') || "23:59";
+        return ta.localeCompare(tb);
+    });
+
+    const welcomeHeader = document.querySelector('.welcome-header');
+    if(!welcomeHeader) return;
+
+    // Supprimer ancien bloc si existant
+    const old = document.getElementById('home-today-events');
+    if(old) old.remove();
+
+    if(todayEvents.length > 0){
+
+        document.body.classList.remove('home-no-events');
+
+        const container = document.createElement('div');
+        container.id = "home-today-events";
+        container.style.marginTop = "18px";
+        container.style.fontSize = "0.9rem";
+        container.style.color = "#1f2937";
+        container.style.textAlign = "center";
+
+        const title = document.createElement('div');
+        title.innerHTML = "<strong>ÉVÉNEMENTS DU JOUR</strong>";
+        title.style.marginBottom = "8px";
+        container.appendChild(title);
+
+        todayEvents.forEach(ev=>{
+            const line = document.createElement('div');
+            const time = ev.getAttribute('data-time') || "";
+            const text = (ev.innerText || "").trim();
+            line.textContent = (time ? time + " — " : "") + text;
+            line.style.marginBottom = "4px";
+            container.appendChild(line);
+        });
+
+        welcomeHeader.appendChild(container);
+
+    } else {
+        // Aucun événement → centre verticalement le logo
+        document.body.classList.add('home-no-events');
+    }
+}
+
+document.addEventListener("DOMContentLoaded", handleHomeEvents);
+</script>
+
 </body></html>
