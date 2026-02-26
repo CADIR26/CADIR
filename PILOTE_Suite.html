@@ -3618,4 +3618,210 @@ function _v12RerenderSoon(){
 })();
 </script>
 
+
+<script>
+/* ===== V14 - GOOGLE AGENDA: ordre des agendas + synchro fiable (clé stockée + pagination) + plus d'alerte sur Accueil ===== */
+
+(function(){
+  const PRIORITY_CALS = [
+    "Enseignants STMG",
+    "Familles Secteur STMG",
+    "Familles - Secteur STMG"
+  ];
+
+  function prioIndex(name){
+    const n = String(name||"").trim().toLowerCase();
+    for (let i=0;i<PRIORITY_CALS.length;i++){
+      if (n === PRIORITY_CALS[i].toLowerCase()) return i;
+    }
+    return 999;
+  }
+
+  /* 1) Rendre la liste d'agendas (checkbox) avec les 2 agendas prioritaires en tête */
+  const _renderGcalList = window.renderGcalList;
+  if (typeof _renderGcalList === "function"){
+    window.renderGcalList = function(cals, sel){
+      try{
+        if (Array.isArray(cals)){
+          cals = cals.slice().sort((a,b)=>{
+            const ia = prioIndex(a && a.name), ib = prioIndex(b && b.name);
+            if (ia !== ib) return ia - ib;
+            return String((a&&a.name)||"").localeCompare(String((b&&b.name)||""), 'fr', {sensitivity:'base'});
+          });
+        }
+      }catch(e){}
+      return _renderGcalList.call(this, cals, sel);
+    };
+  }
+
+  /* 2) Sur le calendrier (cards), l'ordre dépend de s.gcalCals -> on trie et on persiste */
+  function sortAndPersistCals(){
+    try{
+      if (typeof getSettings !== "function" || typeof STORAGE_KEY === "undefined") return;
+      const s = getSettings() || {};
+      if (!Array.isArray(s.gcalCals)) return;
+      const sorted = s.gcalCals.slice().sort((a,b)=>{
+        const ia = prioIndex(a && a.name), ib = prioIndex(b && b.name);
+        if (ia !== ib) return ia - ib;
+        return String((a&&a.name)||"").localeCompare(String((b&&b.name)||""), 'fr', {sensitivity:'base'});
+      });
+      s.gcalCals = sorted;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+      // mettre aussi en mémoire
+      try{ window._gcalCalsData = sorted; }catch(e){}
+    }catch(e){}
+  }
+  document.addEventListener('DOMContentLoaded', sortAndPersistCals);
+
+  /* 3) Synchro Google: utiliser la clé stockée (s.gcalKey) + pagination (nextPageToken) */
+  const _origGcalFetchEvents = window.gcalFetchEvents;
+  if (typeof _origGcalFetchEvents === "function"){
+    window.gcalFetchEvents = async function(options){
+      // options: {silent:true} pour éviter les alert() automatiques
+      const silent = !!(options && options.silent);
+
+      const sel = (typeof getGcalSel === "function") ? getGcalSel() : [];
+      if (!sel.length){
+        if (!silent) alert('Sélectionnez au moins un agenda.');
+        return;
+      }
+
+      const useOAuth = !!window._gcalAccessToken;
+      // clé: input (si settings ouverts) OU settings sauvegardés
+      let apiKey = '';
+      try{
+        const el = document.getElementById('s-gcal-key');
+        if (el && el.value) apiKey = String(el.value||'').trim();
+      }catch(e){}
+      if (!apiKey){
+        try{
+          if (typeof getSettings === "function"){
+            const s = getSettings() || {};
+            apiKey = String(s.gcalKey || '').trim();
+          }
+        }catch(e){}
+      }
+
+      if (!useOAuth && !apiKey){
+        // surtout pas d'alerte sur Accueil
+        if (!silent) alert('Connectez-vous via OAuth2 ou saisissez une clé API.');
+        return;
+      }
+
+      const statusEl = document.getElementById('gcal-events-status');
+      if (statusEl) statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Récupération...';
+
+      const now = new Date();
+      const start = new Date(now.getFullYear(), now.getMonth() - 2, 1).toISOString();
+      const end   = new Date(now.getFullYear(), now.getMonth() + 4, 0).toISOString();
+
+      // map calendriers
+      const calMap = {};
+      try{
+        const s = (typeof getSettings==="function") ? (getSettings()||{}) : {};
+        const src = (window._gcalCalsData && window._gcalCalsData.length) ? window._gcalCalsData : (s.gcalCals || []);
+        (src||[]).forEach(c=>{ if(c && c.id) calMap[c.id]=c; });
+      }catch(e){}
+
+      async function fetchAllPages(calId){
+        const all = [];
+        let pageToken = '';
+        for (let guard=0; guard<30; guard++){
+          let url = 'https://www.googleapis.com/calendar/v3/calendars/' + encodeURIComponent(calId) +
+            '/events?timeMin=' + encodeURIComponent(start) +
+            '&timeMax=' + encodeURIComponent(end) +
+            '&singleEvents=true&orderBy=startTime&maxResults=2500' +
+            '&showDeleted=false' +
+            '&showHiddenInvitations=true';
+          if (pageToken) url += '&pageToken=' + encodeURIComponent(pageToken);
+
+          const opts = {};
+          if (useOAuth) opts.headers = { 'Authorization': 'Bearer ' + window._gcalAccessToken };
+          else url += '&key=' + encodeURIComponent(apiKey);
+
+          let data = {items:[]};
+          try{
+            const r = await fetch(url, opts);
+            data = r.ok ? await r.json() : {items:[]};
+          }catch(e){ data = {items:[]}; }
+
+          (data.items||[]).forEach(it=>all.push(it));
+          pageToken = data.nextPageToken || '';
+          if (!pageToken) break;
+        }
+        return all;
+      }
+
+      const results = await Promise.all(sel.map(async calId => ({calId, items: await fetchAllPages(calId)})));
+
+      const events = [];
+      results.forEach(res=>{
+        const calId = res.calId;
+        const calInfo = calMap[calId] || {name: calId, bg:'#4285f4'};
+        (res.items||[]).forEach(ev=>{
+          if (!ev.start) return;
+          const startDate = ev.start.date || (ev.start.dateTime ? ev.start.dateTime.split('T')[0] : null);
+          if (!startDate) return;
+          const startTime = ev.start.dateTime ? ev.start.dateTime.split('T')[1].substring(0,5) : '';
+          const endTime = (ev.end && ev.end.dateTime) ? ev.end.dateTime.split('T')[1].substring(0,5) : '';
+          events.push({
+            id: ev.id,
+            title: ev.summary || '(sans titre)',
+            date: startDate,
+            time: startTime,
+            endTime: endTime,
+            calName: calInfo.name,
+            color: calInfo.bg,
+            calId: calId
+          });
+        });
+      });
+
+      events.sort((a,b)=> (a.date + ' ' + (a.time||'00:00')).localeCompare(b.date + ' ' + (b.time||'00:00')));
+
+      try{
+        if (typeof getSettings === "function" && typeof STORAGE_KEY !== "undefined"){
+          const s = getSettings() || {};
+          s.gcalEvents = events;
+          s.gcalSel = sel;
+          // persister la clé si elle a été saisie dans l'UI (évite "vide" si settings pas ouverts)
+          if (apiKey && !s.gcalKey) s.gcalKey = apiKey;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+        }
+      }catch(e){}
+
+      // pousser aux modules (et donc au calendrier)
+      try{ if (typeof pushGcalToModules === "function") pushGcalToModules(); }catch(e){}
+
+      if (statusEl){
+        statusEl.innerHTML = '<span style="color:#34a853;"><i class="fas fa-check"></i> ' + events.length + ' événement(s) synchronisé(s)</span>';
+      }
+
+      // après synchro, on relance l'affichage Accueil si v12/v11 est présent
+      try{
+        if (typeof _v12RerenderSoon === "function") _v12RerenderSoon();
+        if (typeof renderHomeTodayEvents === "function") renderHomeTodayEvents();
+      }catch(e){}
+    };
+  }
+
+  /* 4) Stopper l'alerte quand on clique "Accueil" : l'auto-sync passe en mode silent */
+  // On surcharge goHome si présent
+  const _goHome = window.goHome;
+  if (typeof _goHome === "function"){
+    window.goHome = function(){
+      const r = _goHome.apply(this, arguments);
+      // synchro silencieuse (pas d'alert)
+      try{
+        const s = (typeof getSettings==="function") ? (getSettings()||{}) : {};
+        if (s.gcalEnabled && typeof window.gcalFetchEvents === "function"){
+          window.gcalFetchEvents({silent:true});
+        }
+      }catch(e){}
+      return r;
+    };
+  }
+})();
+</script>
+
 </body></html>
