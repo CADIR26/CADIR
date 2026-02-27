@@ -1367,6 +1367,7 @@ function saveSettings() {
                     return;
                 }
                 _gcalAccessToken = resp.access_token;
+                window._gcalAccessToken = resp.access_token;
                 if (resp.expires_in) window._gcalTokenExpiresAt = Date.now() + (resp.expires_in * 1000);
                 document.getElementById('gcal-auth-status').innerHTML = '<span style="color:#34a853;"><i class="fas fa-check"></i> Connect\u00e9</span>';
                 document.getElementById('btn-gcal-auth').innerHTML = '<i class="fas fa-check-circle"></i> Connect\u00e9';
@@ -1721,17 +1722,28 @@ function saveSettings() {
 
     function pushGcalToModules() {
         var s = getSettings();
-        var frame = document.getElementById('frame-perdir');
-        if (frame && frame.contentWindow) {
-            frame.contentWindow.postMessage({ type: 'pilote-settings', data: {
-                school: s.school || '', name: s.name || '', role: s.role || '', city: s.city || '',
-                zone: s.zone || 'B', logoSrc: s.logoSrc || '', signSrc: s.signSrc || '',
-                teachers: s.teachers || [], students: s.students || [],
-                gcalEnabled: s.gcalEnabled || false,
-                gcalEvents: s.gcalEvents || [],
-                gcalCalendars: s.gcalCals || [],
-                gcalSel: s.gcalSel || []
-            }}, '*');
+        var payload = { type: 'pilote-settings', data: {
+            school: s.school || '', name: s.name || '', role: s.role || '', city: s.city || '',
+            zone: s.zone || 'B', logoSrc: s.logoSrc || '', signSrc: s.signSrc || '',
+            teachers: s.teachers || [], students: s.students || [],
+            gcalEnabled: s.gcalEnabled || false,
+            gcalEvents: s.gcalEvents || [],
+            gcalCalendars: s.gcalCals || [],
+            gcalSel: s.gcalSel || []
+        }};
+        /* Envoyer à toutes les iframes de modules (pas seulement perdir) */
+        var frames = document.querySelectorAll('.module-frame');
+        frames.forEach(function(frame){
+            try{
+                if (frame.contentWindow) frame.contentWindow.postMessage(payload, '*');
+            }catch(e){}
+        });
+        /* Retry 1s après si l'iframe principale est encore en chargement */
+        var fp = document.getElementById('frame-perdir');
+        if (fp && !fp.contentDocument){
+            setTimeout(function(){
+                try{ if (fp.contentWindow) fp.contentWindow.postMessage(payload, '*'); }catch(e){}
+            }, 1000);
         }
     }
 
@@ -3685,7 +3697,7 @@ function _v12RerenderSoon(){
     if (_autoSyncRunning) return;
     _autoSyncRunning = true;
     try{
-      window.gcalFetchEvents();
+      window.gcalFetchEvents({silent:true});
     }catch(e){
       // noop
     }finally{
@@ -3947,6 +3959,11 @@ function _v12RerenderSoon(){
         if (s.gcalEnabled && typeof window.gcalFetchEvents === "function"){
           window.gcalFetchEvents({silent:true});
         }
+      }catch(e){}
+      // Toujours re-rendre l'accueil
+      try{
+        if (typeof _v12RerenderSoon === "function") _v12RerenderSoon();
+        if (typeof renderHomeTodayEvents === "function") renderHomeTodayEvents();
       }catch(e){}
       return r;
     };
@@ -6336,27 +6353,48 @@ Principe:
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════════════════
-   GOOGLE CALENDAR — Auto-sync transparent
+   GOOGLE CALENDAR — Contrôleur de sync unifié v2.0
    ═══════════════════════════════════════════════════════════════════════════════
-   ① Au chargement: si gcal activé + clientId → auth silencieuse → fetch auto
-   ② Refresh périodique toutes les 5 min
-   ③ Gestion expiration token (re-auth silencieuse avant expiry)
-   ④ Indicateur visuel de statut dans la barre
+   Remplace et unifie tous les mécanismes de sync précédents (V13, V15, ancien
+   auto-sync) en un seul point de contrôle. Objectifs :
+   ① Auth silencieuse au chargement → fetch auto transparent
+   ② Timer unique (5 min) — pas de doublons
+   ③ Refresh token AVANT expiration (marge de 5 min)
+   ④ Indicateur visuel cliquable dans la nav-bar
+   ⑤ Re-push vers iframes à chaque sync + quand elles chargent
+   ⑥ Rendu accueil garanti après chaque sync réussie
+   ⑦ Neutralise les timers concurrents de V13
    ═══════════════════════════════════════════════════════════════════════════════ */
 (function(){
   'use strict';
 
   var SYNC_INTERVAL = 5 * 60 * 1000;   // 5 minutes
-  var TOKEN_MARGIN  = 5 * 60 * 1000;    // refresh 5 min avant expiry
+  var TOKEN_MARGIN  = 5 * 60 * 1000;   // refresh 5 min avant expiry
   var _tokenExpiresAt = 0;
   var _syncTimer = null;
   var _gsiLoaded = false;
   var _silentAuthFailed = false;
   var _tokenClient = null;
+  var _syncInProgress = false;
+  var _lastSyncTime = 0;
+  var MIN_SYNC_GAP = 8000; /* anti-flood : 8s min entre deux syncs */
+
+  /* ── 0) Neutraliser le timer concurrent de V13 ── */
+  try{
+    if (typeof _autoSyncTimer !== 'undefined' && _autoSyncTimer){
+      clearInterval(_autoSyncTimer); _autoSyncTimer = null;
+    }
+  }catch(e){}
+  /* Empêcher V13 de relancer son timer */
+  try{ window._v13StartAutoSync = function(){}; }catch(e){}
+  try{ window._v13StopAutoSync = function(){}; }catch(e){}
 
   /* ─── Helpers ─── */
   function getS(){
     try{ return JSON.parse(localStorage.getItem(typeof STORAGE_KEY!=='undefined'?STORAGE_KEY:'pilote_settings')||'{}'); }catch(e){ return {}; }
+  }
+  function saveS(s){
+    try{ localStorage.setItem(typeof STORAGE_KEY!=='undefined'?STORAGE_KEY:'pilote_settings', JSON.stringify(s)); }catch(e){}
   }
 
   function isGcalConfigured(){
@@ -6365,37 +6403,42 @@ Principe:
   }
 
   function getClientId(){
-    var s = getS();
-    return (s.gcalClientId || '').trim();
-  }
-
-  function hasToken(){
-    return typeof _gcalAccessToken !== 'undefined' && !!_gcalAccessToken;
+    return (getS().gcalClientId || '').trim();
   }
 
   function tokenAlive(){
-    if (!hasToken()) return false;
-    if (_tokenExpiresAt && Date.now() > _tokenExpiresAt - TOKEN_MARGIN) return false;
-    return true;
+    return !!window._gcalAccessToken && _tokenExpiresAt > (Date.now() + TOKEN_MARGIN);
   }
 
-  /* ─── Charger la bibliothèque GIS ─── */
+  function tokenValid(){
+    /* Token existe et non expiré (sans marge — pour fetch immédiat) */
+    return !!window._gcalAccessToken && _tokenExpiresAt > Date.now();
+  }
+
+  /* ─── Charger GSI (Google Sign-In library) ─── */
   function loadGSI(cb){
-    if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2){
-      _gsiLoaded = true;
-      cb();
+    if (_gsiLoaded && typeof google !== 'undefined' && google.accounts && google.accounts.oauth2){
+      cb(); return;
+    }
+    /* Script déjà injecté par un autre module ? */
+    if (document.querySelector('script[src*="accounts.google.com/gsi/client"]')){
+      var check = setInterval(function(){
+        if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2){
+          clearInterval(check); _gsiLoaded = true; cb();
+        }
+      }, 150);
+      setTimeout(function(){ clearInterval(check); }, 10000);
       return;
     }
-    if (_gsiLoaded) { cb(); return; }
     var s = document.createElement('script');
     s.src = 'https://accounts.google.com/gsi/client';
     s.async = true;
     s.onload = function(){ _gsiLoaded = true; cb(); };
-    s.onerror = function(){ console.warn('[PILOTE] Impossible de charger GIS'); };
+    s.onerror = function(){ updateSyncStatus('error'); };
     document.head.appendChild(s);
   }
 
-  /* ─── Créer le tokenClient (une seule fois) ─── */
+  /* ─── Token client (singleton) ─── */
   function ensureTokenClient(){
     if (_tokenClient) return _tokenClient;
     var clientId = getClientId();
@@ -6410,27 +6453,52 @@ Principe:
             updateSyncStatus('disconnected');
             return;
           }
-          _gcalAccessToken = resp.access_token;
+          /* ── Token reçu ── */
+          window._gcalAccessToken = resp.access_token;
+          try{ _gcalAccessToken = resp.access_token; }catch(e){}  /* var globale du script principal */
           _tokenExpiresAt = Date.now() + ((resp.expires_in || 3600) * 1000);
+          window._gcalTokenExpiresAt = _tokenExpiresAt;  /* compat scripts existants */
           _silentAuthFailed = false;
           updateSyncStatus('connected');
-          /* UI settings panel — update if visible */
+
+          /* MAJ UI settings si panneau ouvert */
           var statusEl = document.getElementById('gcal-auth-status');
-          if (statusEl) statusEl.innerHTML = '<span style="color:#34a853;"><i class="fas fa-check"></i> Connecté</span>';
+          if (statusEl) statusEl.innerHTML = '<span style="color:#34a853;"><i class="fas fa-check"></i> Connecté (auto)</span>';
           var btnEl = document.getElementById('btn-gcal-auth');
           if (btnEl){ btnEl.innerHTML = '<i class="fas fa-check-circle"></i> Connecté'; btnEl.style.background = '#34a853'; }
-          /* Auto-fetch: get calendar list then events */
+
+          /* Lancer fetch événements */
           autoFetchAfterAuth();
+
+          /* Programmer le refresh AVANT expiration */
+          scheduleTokenRefresh(resp.expires_in || 3600);
         }
       });
     }catch(e){ _tokenClient = null; }
     return _tokenClient;
   }
 
-  /* ─── Auth silencieuse (pas de popup si consentement déjà donné) ─── */
+  /* ─── Programmation du refresh token ─── */
+  var _refreshTimer = null;
+  function scheduleTokenRefresh(expiresInSec){
+    if (_refreshTimer) clearTimeout(_refreshTimer);
+    /* Refresh 5 min avant expiration, minimum 30s */
+    var delay = Math.max((expiresInSec - 300) * 1000, 30000);
+    _refreshTimer = setTimeout(function(){
+      if (!isGcalConfigured()) return;
+      _silentAuthFailed = false; /* reset pour re-tenter */
+      silentAuth(function(ok){
+        if (!ok){
+          updateSyncStatus('expired');
+        }
+      });
+    }, delay);
+  }
+
+  /* ─── Auth silencieuse ─── */
   function silentAuth(cb){
     var tc = ensureTokenClient();
-    if (!tc) return;
+    if (!tc){ if (cb) cb(false); return; }
     try{
       tc.requestAccessToken({ prompt: '' });
     }catch(e){
@@ -6439,7 +6507,7 @@ Principe:
     }
   }
 
-  /* ─── Auth interactive (fallback si silent échoue) ─── */
+  /* ─── Auth interactive (popup consent) ─── */
   function interactiveAuth(){
     var tc = ensureTokenClient();
     if (!tc) return;
@@ -6448,43 +6516,71 @@ Principe:
 
   /* ─── Auto-fetch après auth réussie ─── */
   function autoFetchAfterAuth(){
-    /* S'assurer qu'il y a des agendas sélectionnés */
     var s = getS();
     if (s.gcalCals && s.gcalCals.length && s.gcalSel && s.gcalSel.length){
-      /* Agendas déjà connus → fetch events directement */
-      if (typeof _gcalCalsData !== 'undefined') _gcalCalsData = s.gcalCals;
-      if (typeof renderGcalList === 'function') try{ renderGcalList(s.gcalCals, s.gcalSel); }catch(e){}
-      setTimeout(function(){ doSyncEvents(); }, 200);
+      try{ if (typeof _gcalCalsData !== 'undefined') _gcalCalsData = s.gcalCals; }catch(e){}
+      try{ if (typeof renderGcalList === 'function') renderGcalList(s.gcalCals, s.gcalSel); }catch(e){}
+      setTimeout(function(){ doSyncEvents(); }, 150);
     } else {
-      /* Pas d'agendas connus → fetch list d'abord (qui déclenche fetch events via fix 2) */
-      if (typeof fetchGcalList === 'function') try{ fetchGcalList(); }catch(e){}
+      try{ if (typeof fetchGcalList === 'function') fetchGcalList(); }catch(e){}
     }
     startPeriodicSync();
   }
 
-  /* ─── Sync events (wrapper robuste) ─── */
+  /* ─── Sync events (wrapper anti-flood) ─── */
   function doSyncEvents(){
-    if (!tokenAlive()){
-      /* Token expiré → re-auth silencieuse */
-      if (!_silentAuthFailed){
-        silentAuth();
-      }
+    if (_syncInProgress) return;
+    if (Date.now() - _lastSyncTime < MIN_SYNC_GAP) return;
+
+    if (!tokenValid()){
+      if (!_silentAuthFailed) silentAuth();
       return;
     }
-    if (typeof gcalFetchEvents === 'function'){
-      try{ gcalFetchEvents(); }catch(e){}
+
+    _syncInProgress = true;
+    _lastSyncTime = Date.now();
+    updateSyncStatus('syncing');
+
+    try{
+      if (typeof gcalFetchEvents === 'function'){
+        var result = gcalFetchEvents({silent:true});
+        if (result && typeof result.then === 'function'){
+          result.then(function(){ onSyncComplete(true); })
+                .catch(function(){ onSyncComplete(false); });
+        } else {
+          setTimeout(function(){ onSyncComplete(true); }, 3000);
+        }
+      } else {
+        _syncInProgress = false;
+      }
+    }catch(e){
+      onSyncComplete(false);
     }
   }
 
-  /* ─── Refresh périodique ─── */
+  function onSyncComplete(success){
+    _syncInProgress = false;
+    if (success && tokenValid()) updateSyncStatus('connected');
+    else updateSyncStatus('disconnected');
+    renderHomeEventsNow();
+    try{ if (typeof pushGcalToModules === 'function') pushGcalToModules(); }catch(e){}
+  }
+
+  /* ─── Rendu accueil (appelle les renderers existants) ─── */
+  function renderHomeEventsNow(){
+    try{ if (typeof _v12RerenderSoon === 'function') _v12RerenderSoon(); }catch(e){}
+    try{ if (typeof renderHomeTodayEvents === 'function') renderHomeTodayEvents(); }catch(e){}
+    setTimeout(function(){
+      try{ if (typeof _v12RenderHomeToday === 'function') _v12RenderHomeToday(); }catch(e){}
+      try{ if (typeof renderHomeTodayEvents === 'function') renderHomeTodayEvents(); }catch(e){}
+    }, 300);
+  }
+
+  /* ─── Timer unique ─── */
   function startPeriodicSync(){
     if (_syncTimer) return;
     _syncTimer = setInterval(function(){
       if (!isGcalConfigured()) return;
-      if (!tokenAlive()){
-        if (!_silentAuthFailed) silentAuth();
-        return;
-      }
       doSyncEvents();
     }, SYNC_INTERVAL);
   }
@@ -6493,95 +6589,144 @@ Principe:
     if (_syncTimer){ clearInterval(_syncTimer); _syncTimer = null; }
   }
 
-  /* ─── Indicateur visuel de sync ─── */
+  /* ─── Indicateur visuel ─── */
   function updateSyncStatus(state){
     var el = document.getElementById('gcal-sync-indicator');
     if (!el){
-      /* Créer l'indicateur dans la barre de titre si possible */
-      var titleBar = document.querySelector('.title-bar-right, .nav-right, .top-bar-actions');
+      var titleBar = document.querySelector('.nav-right');
+      if (!titleBar) titleBar = document.querySelector('.title-bar-right, .top-bar-actions');
       if (!titleBar) return;
       el = document.createElement('span');
       el.id = 'gcal-sync-indicator';
-      el.style.cssText = 'font-size:.68rem;cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;margin-left:8px;transition:opacity .3s;';
+      el.style.cssText = 'font-size:.68rem;cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;margin-left:8px;transition:all .3s;';
       el.title = 'Google Agenda — cliquer pour resynchroniser';
       el.onclick = function(){
-        if (tokenAlive()) doSyncEvents();
+        if (tokenValid()) doSyncEvents();
         else if (!_silentAuthFailed) silentAuth();
         else interactiveAuth();
       };
-      titleBar.appendChild(el);
+      titleBar.insertBefore(el, titleBar.firstChild);
     }
+    var icons = {
+      connected:    '<i class="fab fa-google" style="color:#34a853;font-size:.7rem;"></i><span style="color:#34a853;">Sync OK</span>',
+      syncing:      '<i class="fas fa-sync fa-spin" style="color:#4285f4;font-size:.65rem;"></i><span style="color:#4285f4;">Sync...</span>',
+      disconnected: '<i class="fab fa-google" style="color:#ccc;font-size:.7rem;"></i><span style="color:#999;">Déconnecté</span>',
+      expired:      '<i class="fab fa-google" style="color:#f39c12;font-size:.7rem;"></i><span style="color:#f39c12;">Reconnecter</span>',
+      error:        '<i class="fas fa-exclamation-triangle" style="color:#e74c3c;font-size:.65rem;"></i><span style="color:#e74c3c;">Erreur GSI</span>'
+    };
+    el.innerHTML = icons[state] || icons.disconnected;
+    el.style.opacity = '1';
     if (state === 'connected'){
-      el.innerHTML = '<i class="fab fa-google" style="color:#34a853;font-size:.7rem;"></i><span style="color:#34a853;">Sync</span>';
-      el.style.opacity = '1';
-      setTimeout(function(){ el.style.opacity = '.5'; }, 3000);
-    } else if (state === 'syncing'){
-      el.innerHTML = '<i class="fas fa-sync fa-spin" style="color:#4285f4;font-size:.65rem;"></i><span style="color:#4285f4;">Sync...</span>';
-      el.style.opacity = '1';
-    } else if (state === 'disconnected'){
-      el.innerHTML = '<i class="fab fa-google" style="color:#ccc;font-size:.7rem;"></i><span style="color:#999;">Déconnecté</span>';
-      el.style.opacity = '1';
+      setTimeout(function(){ if (el) el.style.opacity = '.5'; }, 4000);
     }
   }
 
-  /* ─── Hook gcalAuth() existant pour capter le token ─── */
+  /* ─── Hook gcalAuth() ─── */
   var _origGcalAuth = window.gcalAuth;
   if (typeof _origGcalAuth === 'function'){
     window.gcalAuth = function(){
-      /* Si on a notre tokenClient avec le scope élargi, l'utiliser */
       if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2){
         var tc = ensureTokenClient();
         if (tc){ tc.requestAccessToken({ prompt: 'consent' }); return; }
       }
-      /* Sinon fallback vers l'original */
       return _origGcalAuth.apply(this, arguments);
     };
   }
 
-  /* ─── Hook gcalFetchEvents pour ajouter indicateur ─── */
+  /* ─── Hook gcalFetchEvents pour indicateur ─── */
   var _origFetch = window.gcalFetchEvents;
   if (typeof _origFetch === 'function'){
-    window.gcalFetchEvents = function(){
+    window.gcalFetchEvents = function(opts){
       updateSyncStatus('syncing');
-      var r = _origFetch.apply(this, arguments);
-      /* La fetch est async (Promise.all), on re-check après un délai */
-      setTimeout(function(){
-        if (tokenAlive()) updateSyncStatus('connected');
-        else updateSyncStatus('disconnected');
-      }, 4000);
+      var r;
+      try{ r = _origFetch.apply(this, arguments); }catch(e){ updateSyncStatus('disconnected'); throw e; }
+      if (r && typeof r.then === 'function'){
+        r.then(function(){
+          if (tokenValid()) updateSyncStatus('connected');
+          else updateSyncStatus('disconnected');
+          renderHomeEventsNow();
+          try{ if (typeof pushGcalToModules === 'function') pushGcalToModules(); }catch(e){}
+        }).catch(function(){ updateSyncStatus('disconnected'); });
+      } else {
+        setTimeout(function(){
+          if (tokenValid()) updateSyncStatus('connected');
+          else updateSyncStatus('disconnected');
+          renderHomeEventsNow();
+        }, 3500);
+      }
       return r;
     };
   }
 
-  /* ─── Point d'entrée : au chargement de la page ─── */
-  function initAutoSync(){
-    if (window.location.protocol === 'file:') return;  /* OAuth ne marche pas en file:// */
-    if (!isGcalConfigured()) return;
+  /* ─── Hook loadModule : re-push events quand on charge un module ─── */
+  var _origLoadModule = window.loadModule;
+  if (typeof _origLoadModule === 'function' && !_origLoadModule.__syncHooked){
+    window.loadModule = function(name){
+      var r = _origLoadModule.apply(this, arguments);
+      setTimeout(function(){ try{ if (typeof pushGcalToModules === 'function') pushGcalToModules(); }catch(e){} }, 500);
+      setTimeout(function(){ try{ if (typeof pushGcalToModules === 'function') pushGcalToModules(); }catch(e){} }, 1500);
+      return r;
+    };
+    window.loadModule.__syncHooked = true;
+  }
 
+  /* ─── Hook goHome : sync + rendu accueil ─── */
+  var _origGoHome = window.goHome;
+  if (typeof _origGoHome === 'function' && !_origGoHome.__syncHooked){
+    window.goHome = function(){
+      var r = _origGoHome.apply(this, arguments);
+      renderHomeEventsNow();
+      setTimeout(function(){
+        if (isGcalConfigured() && tokenValid()) doSyncEvents();
+      }, 400);
+      return r;
+    };
+    window.goHome.__syncHooked = true;
+  }
+
+  /* ─── Point d'entrée ─── */
+  function initAutoSync(){
+    if (window.location.protocol === 'file:') return;
+    if (!isGcalConfigured()){
+      renderHomeEventsNow();
+      return;
+    }
+    updateSyncStatus('syncing');
     loadGSI(function(){
-      /* Tenter l'auth silencieuse */
-      silentAuth();
+      silentAuth(function(ok){
+        if (!ok){
+          updateSyncStatus('expired');
+          renderHomeEventsNow();
+        }
+      });
     });
   }
 
-  /* Attendre que le DOM et les settings soient chargés */
   if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', function(){ setTimeout(initAutoSync, 800); });
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(initAutoSync, 600); });
   } else {
-    setTimeout(initAutoSync, 800);
+    setTimeout(initAutoSync, 600);
   }
 
-  /* Aussi re-tenter quand on revient sur l'onglet (le token a pu expirer) */
   document.addEventListener('visibilitychange', function(){
     if (document.visibilityState === 'visible' && isGcalConfigured()){
       if (!tokenAlive() && !_silentAuthFailed){
         loadGSI(function(){ silentAuth(); });
-      } else if (tokenAlive()){
+      } else if (tokenValid()){
         doSyncEvents();
       }
+      renderHomeEventsNow();
     }
   });
 
+  window.addEventListener('storage', function(){ renderHomeEventsNow(); });
+
+  /* Exposer pour debug */
+  window._piloteSyncController = {
+    sync: doSyncEvents,
+    auth: interactiveAuth,
+    status: function(){ return { token: tokenValid(), expires: new Date(_tokenExpiresAt), lastSync: new Date(_lastSyncTime) }; }
+  };
+
 })();
 </script>
-
