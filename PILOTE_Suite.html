@@ -474,44 +474,6 @@ body.home-no-events .welcome{
 }
 
 
-
-
-/* ===== V25 - Date inline Activités pédagogiques ===== */
-.ap-inline-date{
-  color:#6b7280;
-  font-size:12px;
-  font-weight:700;
-  margin-left:8px;
-  white-space:nowrap;
-}
-
-
-/* ===== V26 - Ajustement champs dates Activités pédagogiques ===== */
-
-/* Réduire largeur des champs date début / fin */
-input[type="date"].date-start,
-input[type="date"].date-end,
-.ap-date-start,
-.ap-date-end {
-  width: 160px !important;
-  max-width: 160px !important;
-}
-
-/* Si pas de classes spécifiques, cibler par conteneur */
-.activites-container input[type="date"],
-#frame-perdir input[type="date"] {
-  width: 160px !important;
-  max-width: 160px !important;
-}
-
-/* Supprimer champ date d'échéance */
-input[name="dueDate"],
-input[name="dateEcheance"],
-.ap-date-due,
-.date-due {
-  display: none !important;
-}
-
 </style>
     <script src="CADIR_fichiers/client" async="" defer="defer"></script>
 <style id="googleidentityservice_button_styles">.qJTHM{-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;color:#202124;direction:ltr;-webkit-touch-callout:none;font-family:"Roboto-Regular",arial,sans-serif;-webkit-font-smoothing:antialiased;font-weight:400;margin:0;overflow:hidden;-webkit-text-size-adjust:100%}.ynRLnc{left:-9999px;position:absolute;top:-9999px}.L6cTce{display:none}.bltWBb{overflow-wrap:break-word;word-break:break-word}.hSRGPd{color:#1a73e8;cursor:pointer;font-weight:500;text-decoration:none}.Bz112c-W3lGp{height:16px;width:16px}.Bz112c-E3DyYd{height:20px;width:20px}.Bz112c-r9oPif{height:24px;width:24px}.Bz112c-u2z5K{height:36px;width:36px}.Bz112c-uaxL4e{border-radius:10px}.LgbsSe-Bz112c{display:block}.S9gUrf-YoZ4jf{border:none;margin:0;padding:0}.S9gUrf-YoZ4jf *{border:none;margin:0;padding:0}.fFW7wc-ibnC6b>.aZ2wEe>div{border-color:#4285f4}.P1ekSe-ZMv3u{transition:height linear .2s}.P1ekSe-ZMv3u>div:nth-child(1){background-color:#1a73e8!important;transition:width linear .3s}.P1ekSe-ZMv3u>div:nth-child(2){background-image:linear-gradient(to right,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(to right,#1a73e8,#1a73e8)!important}.P1ekSe-ZMv3u>div:nth-child(3){background-image:linear-gradient(to right,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(to right,#1a73e8,#1a73e8)!important}.haAclf{display:inline-block}.nsm7Bb-HzV7m-LgbsSe{border-radius:4px;-moz-box-sizing:border-box;box-sizing:border-box;transition:background-color .218s,border-color .218s;-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;-webkit-appearance:none;background-color:#fff;background-image:none;border:1px solid #dadce0;color:#3c4043;cursor:pointer;font-family:"Google Sans",arial,sans-serif;font-size:14px;height:40px;letter-spacing:.25px;outline:none;overflow:hidden;padding:0 12px;position:relative;text-align:center;vertical-align:middle;white-space:nowrap;width:auto}@media screen and (-ms-high-contrast:active){.nsm7Bb-HzV7m-LgbsSe{border:2px solid windowText;color:windowText}}@media screen and (preferes-contrast:more){.nsm7Bb-HzV7m-LgbsSe{color:#000}}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe{font-size:14px;height:32px;letter-spacing:.25px;padding:0 10px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe{font-size:11px;height:20px;letter-spacing:.3px;padding:0 8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe{padding:0;width:40px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe{width:32px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe{width:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK{border-radius:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.pSzOP-SxQuSe{border-radius:16px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.purZT-SxQuSe{border-radius:10px}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc{border:none;color:#fff}.nsm7Bb-HzV7m-LgbsSe.MFS4be-v3pZbf-Ia7Qfc{background-color:#1a73e8}.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{background-color:#202124;color:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{color:#fff}}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:18px;margin-right:8px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:14px;min-width:14px;width:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:10px;min-width:10px;width:10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin-left:8px;margin-right:-4px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:10px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:4px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:3px;border-bottom-left-radius:3px;display:-moz-box;display:flex;-moz-box-pack:center;justify-content:center;-moz-box-align:center;align-items:center;background-color:#fff;height:36px;margin-left:-10px;margin-right:12px;min-width:36px;width:36px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c,.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:28px;margin-left:-8px;margin-right:10px;min-width:28px;width:28px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:16px;margin-left:-6px;margin-right:8px;min-width:16px;width:16px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:3px;margin-left:2px;margin-right:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:8px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-bN97Pc-sM5MNb{display:-moz-box;display:flex;-moz-box-align:center;align-items:center;-moz-box-orient:horizontal;-moz-box-direction:normal;flex-direction:row;-moz-box-pack:justify;justify-content:space-between;flex-wrap:nowrap;height:100%;position:relative;width:100%}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX{-moz-box-pack:center;justify-content:center}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{-moz-box-flex:1;flex-grow:1;font-family:"Google Sans",arial,sans-serif;font-weight:500;overflow:hidden;text-overflow:ellipsis;vertical-align:top}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-weight:300}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX .nsm7Bb-HzV7m-LgbsSe-BPrWId{-moz-box-flex:0;flex-grow:0}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-MJoBVe{transition:background-color .218s;bottom:0;left:0;position:absolute;right:0;top:0}.nsm7Bb-HzV7m-LgbsSe:hover,.nsm7Bb-HzV7m-LgbsSe:focus{box-shadow:none;border-color:rgb(210,227,252);outline:none}.nsm7Bb-HzV7m-LgbsSe:focus-within{outline:2px solid #00639b;border-color:transparent}.nsm7Bb-HzV7m-LgbsSe:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.08)}.nsm7Bb-HzV7m-LgbsSe:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.1)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.24)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.32)}.nsm7Bb-HzV7m-LgbsSe .n1UuX-DkfjY{border-radius:50%;display:-moz-box;display:flex;height:20px;margin-left:-4px;margin-right:8px;min-width:20px;width:20px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-family:"Roboto";font-size:12px;text-align:left}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .ssJRIf,.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .fmcmS{overflow:hidden;text-overflow:ellipsis}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{display:-moz-box;display:flex;-moz-box-align:center;align-items:center;color:#5f6368;fill:#5f6368;font-size:11px;font-weight:400}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#e8eaed;fill:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff,.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#000;fill:#000}}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .Bz112c{height:18px;margin:-3px -3px -3px 2px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:0;border-bottom-left-radius:0;border-top-right-radius:3px;border-bottom-right-radius:3px;margin-left:12px;margin-right:-10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.L5Fo6c-sM5MNb{border:0;display:block;left:0;position:relative;top:0}.L5Fo6c-bF1uUb{border-radius:4px;bottom:0;cursor:pointer;left:0;position:absolute;right:0;top:0}.L5Fo6c-bF1uUb:focus{border:none;outline:none}sentinel{}
@@ -1398,13 +1360,14 @@ function saveSettings() {
             document.getElementById('gcal-auth-status').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
         var tokenClient = google.accounts.oauth2.initTokenClient({
             client_id: clientId,
-            scope: 'https://www.googleapis.com/auth/calendar.events',
+            scope: 'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.readonly',
             callback: function(resp) {
                 if (resp.error) {
                     document.getElementById('gcal-auth-status').innerHTML = '<span style="color:#e74c3c;"><i class="fas fa-times"></i> ' + (resp.error_description || resp.error) + '</span>';
                     return;
                 }
                 _gcalAccessToken = resp.access_token;
+                if (resp.expires_in) window._gcalTokenExpiresAt = Date.now() + (resp.expires_in * 1000);
                 document.getElementById('gcal-auth-status').innerHTML = '<span style="color:#34a853;"><i class="fas fa-check"></i> Connect\u00e9</span>';
                 document.getElementById('btn-gcal-auth').innerHTML = '<i class="fas fa-check-circle"></i> Connect\u00e9';
                 document.getElementById('btn-gcal-auth').style.background = '#34a853';
@@ -1443,6 +1406,8 @@ function saveSettings() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
             renderGcalList(_gcalCalsData, s.gcalSel || []);
             document.getElementById('gcal-list-wrap').style.display = 'block';
+            /* Auto-sync events after calendar list loaded */
+            setTimeout(function(){ try{ gcalFetchEvents(); }catch(e){} }, 300);
         })
         .catch(function(err) {
             div.innerHTML = '<span style="color:#e74c3c;font-size:.78rem;"><i class="fas fa-exclamation-triangle"></i> ' + err.message + '</span>';
@@ -1515,9 +1480,10 @@ function saveSettings() {
 
             statusEl.innerHTML = '<span style="color:#34a853;"><i class="fas fa-check"></i> ' + events.length + ' \u00e9v\u00e9nement(s) synchronis\u00e9(s)</span>';
             pushGcalToModules();
+            /* Refresh home page events immediately */
+            if (typeof renderHomeTodayEvents === 'function') try{ renderHomeTodayEvents(); }catch(e){}
         });
     }
-
 
 
     // ═══ OUTLOOK / OFFICE 365 CALENDAR ═══
@@ -2104,7 +2070,7 @@ function saveSettings() {
         const s = getSettings();
         frame.contentWindow.postMessage({
             type: 'pilote-settings',
-            data: { school: s.school||'', name: s.name||'', role: s.role||'', city: s.city||'', zone: s.zone||'B', logoSrc: s.logoSrc||'', signSrc: s.signSrc||'', teachers: s.teachers||[], students: s.students||[], gcalEnabled: s.gcalEnabled||false, gcalEvents: s.gcalEvents||[], pdfHeaderLayout: s.pdfHeaderLayout||'classique', pdfHeaderColor: s.pdfHeaderColor||'#1b2433', pdfHeaderSubtitle: s.pdfHeaderSubtitle||'' }
+            data: { school: s.school||'', name: s.name||'', role: s.role||'', city: s.city||'', zone: s.zone||'B', logoSrc: s.logoSrc||'', signSrc: s.signSrc||'', teachers: s.teachers||[], students: s.students||[], gcalEnabled: s.gcalEnabled||false, gcalEvents: s.gcalEvents||[], gcalCalendars: s.gcalCals||[], gcalSel: s.gcalSel||[], pdfHeaderLayout: s.pdfHeaderLayout||'classique', pdfHeaderColor: s.pdfHeaderColor||'#1b2433', pdfHeaderSubtitle: s.pdfHeaderSubtitle||'' }
         }, '*');
     }
 
@@ -3050,9 +3016,6 @@ document.title = 'PILOTE — ' + name.toUpperCase();
     }
 
 
-
-
-
     function loadBibSettings() {
         var s = JSON.parse(localStorage.getItem('bibase_establishment') || '{}');
         var el;
@@ -3102,7 +3065,6 @@ document.title = 'PILOTE — ' + name.toUpperCase();
     });
 
     </script>
-
 
 
 <script>
@@ -5066,1999 +5028,6 @@ function _v12RerenderSoon(){
 
 
 <script>
-/* ===== V24 - Injection date dans chaque vignette "Activités pédagogiques" ===== */
-(function(){
-
-  function extractDateFromText(txt){
-    if (!txt) return null;
-    // formats supportés: 12/03/2026 ou 12/03
-    const m = txt.match(/\b(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)\b/);
-    return m ? m[1] : null;
-  }
-
-  function applyDates(){
-    const container = document.querySelector('#frame-activites, .activites-container, .activities-container');
-    let root = container;
-
-    // si module dans iframe
-    const fr = document.getElementById('frame-activites');
-    if (fr && fr.contentDocument){
-      root = fr.contentDocument;
-    }
-
-    if (!root) return;
-
-    const cards = root.querySelectorAll('.ap-card, .activity-card, .card');
-    cards.forEach(card=>{
-
-      if (card.classList.contains('ap-card-has-date')) return;
-
-      let date = null;
-
-      // priorité 1 : data-date
-      if (card.dataset && card.dataset.date){
-        date = card.dataset.date;
-      }
-
-      // priorité 2 : élément interne avec classe date
-      if (!date){
-        const dEl = card.querySelector('.date, .ap-date');
-        if (dEl) date = dEl.textContent.trim();
-      }
-
-      // priorité 3 : chercher dans le texte
-      if (!date){
-        date = extractDateFromText(card.textContent);
-      }
-
-      if (!date) return;
-
-      const badge = document.createElement('div');
-      badge.className = 'ap-date-badge';
-      badge.textContent = date;
-
-      card.classList.add('ap-card-has-date');
-      card.appendChild(badge);
-    });
-  }
-
-  function hookModule(){
-    applyDates();
-    const obs = new MutationObserver(()=>applyDates());
-    obs.observe(document.body, {childList:true, subtree:true});
-  }
-
-  document.addEventListener('DOMContentLoaded', hookModule);
-
-  const _loadModule = window.loadModule;
-  if (typeof _loadModule === 'function'){
-    window.loadModule = function(name){
-      const r = _loadModule.apply(this, arguments);
-      if (name === 'activites'){
-        setTimeout(hookModule, 400);
-        setTimeout(hookModule, 1200);
-      }
-      return r;
-    };
-  }
-
-})();
-</script>
-
-
-<script>
-/* ===== V25 - Afficher la date à la suite de la description (Activités pédagogiques) ===== */
-(function(){
-
-  function extractDate(txt){
-    if (!txt) return null;
-    const m = txt.match(/\b(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)\b/);
-    return m ? m[1] : null;
-  }
-
-  function ensureInlineDate(root){
-    if (!root) return;
-
-    // cartes: on garde large pour matcher vos vignettes
-    const cards = root.querySelectorAll('.ap-card, .activity-card, .card, .note-card, .item-card');
-    cards.forEach(card => {
-      // supprimer l'ancien badge V24 si présent
-      const oldBadge = card.querySelector('.ap-date-badge');
-      if (oldBadge) oldBadge.remove();
-
-      // déjà injecté ?
-      if (card.querySelector('.ap-inline-date')) return;
-
-      // chercher une date: dataset/date element/text
-      let date = null;
-      if (card.dataset && card.dataset.date) date = String(card.dataset.date).trim();
-      if (!date){
-        const dEl = card.querySelector('.date, .ap-date, .meta-date');
-        if (dEl) date = dEl.textContent.trim();
-      }
-      if (!date){
-        date = extractDate(card.textContent || '');
-      }
-      if (!date) return;
-
-      // trouver la "description" : plusieurs possibilités selon votre module
-      const desc =
-        card.querySelector('.desc, .description, .content, .card-content, .note-body, .body, .text, .ap-desc') ||
-        card.querySelector('p') ||
-        card.querySelector('.tagline, small');
-
-      // si aucune description, on la met après le titre
-      const title =
-        card.querySelector('.title, .card-title, h3, h4, strong') ||
-        card.firstElementChild;
-
-      const target = desc || title;
-      if (!target) return;
-
-      // Injecter à la suite du texte (dans le même bloc)
-      const span = root.createElement ? root.createElement('span') : document.createElement('span');
-      span.className = 'ap-inline-date';
-      span.textContent = date;
-
-      // Si la description est vide (souvent), on la met après la ligne "Parents informés" si présente
-      const parentsLine = card.querySelector('.parents, .parents-line, .status, .badge, .tag, .pill, .meta');
-      if (parentsLine && parentsLine.textContent.toLowerCase().includes('parents')){
-        parentsLine.appendChild(span);
-      } else {
-        target.appendChild(span);
-      }
-    });
-  }
-
-  function apply(){
-    // module dans iframe PERDIR
-    const fr = document.getElementById('frame-perdir');
-    if (fr && fr.contentDocument){
-      ensureInlineDate(fr.contentDocument);
-    }
-    ensureInlineDate(document);
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    apply();
-    const obs = new MutationObserver(apply);
-    obs.observe(document.body, {childList:true, subtree:true});
-  });
-
-  const _loadModule = window.loadModule;
-  if (typeof _loadModule === 'function'){
-    window.loadModule = function(name){
-      const r = _loadModule.apply(this, arguments);
-      if (name === 'perdir'){
-        setTimeout(apply, 600);
-        setTimeout(apply, 1400);
-      }
-      return r;
-    };
-  }
-})();
-</script>
-
-
-<script>
-/* ===== V27 - Activités pédagogiques: afficher DATE DE DÉBUT + supprimer DATE D'ÉCHÉANCE =====
-   Note: le module vit dans l'iframe PERDIR (frame-perdir) -> injection CSS/JS dans l'iframe.
-*/
-(function(){
-  function isoToFr(s){
-    // yyyy-mm-dd -> dd/mm/yyyy
-    const m = String(s||'').trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if (!m) return String(s||'').trim();
-    return `${m[3]}/${m[2]}/${m[1]}`;
-  }
-
-  function injectIntoPerdir(){
-    const fr = document.getElementById('frame-perdir');
-    if (!fr) return;
-    let doc;
-    try{ doc = fr.contentDocument; }catch(e){ return; }
-    if (!doc || doc.__cadirV27Injected) return;
-
-    // 1) CSS dans l'iframe: réduire largeur des dates + masquer champ échéance par défaut
-    const st = doc.createElement('style');
-    st.textContent = `
-      /* CADIR V27 - dates compactes */
-      input[type="date"]{ width:140px !important; max-width:140px !important; }
-      .date-field input[type="date"]{ width:140px !important; max-width:140px !important; }
-
-      /* Masquer tout champ/ligne/label contenant "échéance" */
-      .cadir-hide-due{ display:none !important; }
-
-      /* Date début inline sur la vignette */
-      .ap-inline-date{
-        color:#6b7280;
-        font-size:12px;
-        font-weight:700;
-        margin-left:8px;
-        white-space:nowrap;
-      }
-    `;
-    doc.head.appendChild(st);
-
-    function hideDueDate(){
-      // cacher label + champ qui contiennent "échéance"
-      const labels = Array.from(doc.querySelectorAll('label, .field-label, .form-label, .lbl'));
-      labels.forEach(lb=>{
-        const t = (lb.textContent||'').toLowerCase();
-        if (t.includes("échéance") || t.includes("echeance") || t.includes("due")){
-          const row = lb.closest('.field, .form-group, .row, .grid, .input-group') || lb.parentElement;
-          if (row) row.classList.add('cadir-hide-due');
-          else lb.classList.add('cadir-hide-due');
-
-          // cacher l'input le plus proche
-          const input = (row||lb).querySelector?.('input, select, textarea');
-          if (input){
-            const wrap = input.closest('.field, .form-group, .row, .grid, .input-group') || input.parentElement;
-            if (wrap) wrap.classList.add('cadir-hide-due');
-            else input.classList.add('cadir-hide-due');
-          }
-        }
-      });
-
-      // cacher aussi par attributs (si connus)
-      doc.querySelectorAll('input[name*="echeance" i], input[id*="echeance" i], input[name*="due" i], input[id*="due" i]').forEach(inp=>{
-        const row = inp.closest('.field, .form-group, .row, .grid, .input-group') || inp.parentElement;
-        if (row) row.classList.add('cadir-hide-due');
-        inp.classList.add('cadir-hide-due');
-      });
-    }
-
-    function getStartDateFromDataset(card){
-      if (!card || !card.dataset) return null;
-      const keys = Object.keys(card.dataset);
-      // privilégier start/debut
-      const startKey = keys.find(k => /start|debut|begin/i.test(k) && !/due|echeance/i.test(k));
-      if (startKey) return card.dataset[startKey];
-      // sinon une clé date (mais pas due)
-      const dateKey = keys.find(k => /date/i.test(k) && !/due|echeance/i.test(k));
-      if (dateKey) return card.dataset[dateKey];
-      return null;
-    }
-
-    function appendStartDateToCards(){
-      const cards = doc.querySelectorAll('.ap-card, .activity-card, .card, .item-card, .note-card');
-      cards.forEach(card=>{
-        if (card.querySelector('.ap-inline-date')) return;
-
-        // trouver date de début
-        let date = getStartDateFromDataset(card);
-        if (date) date = isoToFr(date);
-
-        // fallback: chercher dans un input hidden
-        if (!date){
-          const hidden = card.querySelector('input[type="hidden"][name*="date" i], input[type="hidden"][name*="start" i]');
-          if (hidden && hidden.value) date = isoToFr(hidden.value);
-        }
-
-        if (!date) return;
-
-        // cible: la description si existe, sinon la 2e ligne (souvent un statut)
-        const target =
-          card.querySelector('.description, .desc, .content, .card-content, .body, .text') ||
-          card.querySelector('.meta, .status, .tags, small') ||
-          card.querySelector('p') ||
-          card;
-
-        const span = doc.createElement('span');
-        span.className = 'ap-inline-date';
-        span.textContent = date;
-
-        // Si target est le card lui-même, on l'ajoute sous le titre: on cherche une ligne existante
-        if (target === card){
-          const line = card.querySelector('.meta, .status, small, p') || card;
-          line.appendChild(span);
-        }else{
-          target.appendChild(span);
-        }
-      });
-    }
-
-    function applyAll(){
-      hideDueDate();
-      appendStartDateToCards();
-    }
-
-    applyAll();
-    const obs = new MutationObserver(()=>applyAll());
-    obs.observe(doc.body, {childList:true, subtree:true});
-
-    doc.__cadirV27Injected = true;
-  }
-
-  // inject on load + when entering PERDIR
-  document.getElementById('frame-perdir')?.addEventListener('load', function(){
-    setTimeout(injectIntoPerdir, 500);
-    setTimeout(injectIntoPerdir, 1400);
-  });
-
-  const _loadModule = window.loadModule;
-  if (typeof _loadModule === 'function'){
-    window.loadModule = function(name){
-      const r = _loadModule.apply(this, arguments);
-      if (name === 'perdir') {
-        setTimeout(injectIntoPerdir, 700);
-        setTimeout(injectIntoPerdir, 1700);
-      }
-      return r;
-    };
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(injectIntoPerdir, 1200);
-  });
-})();
-</script>
-
-
-<script>
-/* ===== V28 - Activités pédagogiques: date début affichée + titre/date obligatoires =====
-   - Les vignettes ne contiennent pas la date dans le texte => on la récupère depuis les boutons edit (dataset)
-     ou depuis le formulaire "Modifier l'événement" (input date), puis on la mappe à la carte active.
-   - Rend obligatoire le champ Titre (intitulé) et Début (date) au moment de l'enregistrement.
-*/
-(function(){
-  function injectIntoPerdir(){
-    const fr = document.getElementById('frame-perdir');
-    if(!fr) return;
-    let doc;
-    try{ doc = fr.contentDocument; }catch(e){ return; }
-    if(!doc || doc.__cadirV28Injected) return;
-
-    const st = doc.createElement('style');
-    st.textContent = `
-      .ap-inline-date{
-        color:#6b7280;
-        font-size:12px;
-        font-weight:800;
-        margin-left:8px;
-        white-space:nowrap;
-      }
-      .ap-date-inline-wrap{ display:inline-flex; align-items:center; gap:6px; }
-      .ap-required-hint{ color:#b91c1c; font-size:12px; font-weight:800; margin-left:8px; }
-      .ap-invalid{ outline:2px solid #ef4444 !important; border-color:#ef4444 !important; }
-    `;
-    doc.head.appendChild(st);
-
-    function isoToFr(iso){
-      const m = String(iso||'').trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
-      if (!m) return String(iso||'').trim();
-      return `${m[3]}/${m[2]}/${m[1]}`;
-    }
-    function frToIso(fr){
-      const m = String(fr||'').trim().match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-      if (!m) return null;
-      return `${m[3]}-${m[2]}-${m[1]}`;
-    }
-
-    // Try to read date from edit button dataset (best effort)
-    function getDateFromEditBtn(card){
-      const btn = card.querySelector('button, a');
-      const edit = card.querySelector('button[title*="modifier" i], a[title*="modifier" i], .btn-edit, .edit, .fa-pen')?.closest('button, a') || btn;
-      if (!edit) return null;
-      const ds = edit.dataset || {};
-      // common keys: date, start, debut
-      const keys = Object.keys(ds);
-      const k = keys.find(x => /date|start|debut/i.test(x) && !/due|echeance/i.test(x));
-      if (k && ds[k]) return ds[k];
-      // aria-label may include date
-      const al = (edit.getAttribute('aria-label')||'') + ' ' + (edit.getAttribute('title')||'');
-      const m = al.match(/\b(\d{1,2}\/\d{1,2}\/\d{4})\b/);
-      if (m) return frToIso(m[1]);
-      return null;
-    }
-
-    function appendStartDate(card, iso){
-      if (!card || !iso) return;
-      if (card.querySelector('.ap-inline-date')) return;
-
-      const dateFr = isoToFr(iso);
-      const target = card.querySelector('.status, .meta, .tags, small') || card.querySelector('.description, .desc, .content, p') || card;
-      const span = doc.createElement('span');
-      span.className = 'ap-inline-date';
-      span.textContent = dateFr;
-
-      // Try to append after "Parents informés" line if present
-      const parentsLine = Array.from(card.querySelectorAll('*')).find(n => (n.textContent||'').toLowerCase().includes('parents informés'));
-      if (parentsLine){
-        parentsLine.appendChild(span);
-      }else{
-        target.appendChild(span);
-      }
-    }
-
-    // Map cards by title text (fallback) to apply date when form opens
-    function getCardTitle(card){
-      const t = card.querySelector('h3, h4, .title, .card-title, strong') || card;
-      return (t.textContent||'').trim();
-    }
-
-    function applyDatesOnCards(){
-      const cards = doc.querySelectorAll('.ap-card, .activity-card, .card, .item-card, .note-card');
-      cards.forEach(card=>{
-        if (card.querySelector('.ap-inline-date')) return;
-        const iso = getDateFromEditBtn(card);
-        if (iso) appendStartDate(card, iso);
-      });
-    }
-
-    // When edit form is shown, force required and also update card date
-    function enforceRequiredInEditForm(){
-      // find edit form container (heuristic by heading text)
-      const h = Array.from(doc.querySelectorAll('h1,h2,h3,h4')).find(x => (x.textContent||'').toLowerCase().includes("modifier l'événement") || (x.textContent||'').toLowerCase().includes("modifier l'evenement"));
-      const formRoot = h ? (h.closest('section, .card, .container, body') || doc.body) : doc.body;
-
-      // Title input: by label "Intitulé"
-      let titleInput = null;
-      const titleLabel = Array.from(formRoot.querySelectorAll('label')).find(lb => (lb.textContent||'').toLowerCase().includes('intitul'));
-      if (titleLabel){
-        const forId = titleLabel.getAttribute('for');
-        titleInput = forId ? formRoot.querySelector('#'+CSS.escape(forId)) : titleLabel.parentElement.querySelector('input,textarea');
-      } else {
-        titleInput = formRoot.querySelector('input[name*="title" i], input[name*="intitul" i]');
-      }
-
-      // Date start input: look for label "Début" then input date/text
-      let dateInput = null;
-      const dateLabel = Array.from(formRoot.querySelectorAll('label')).find(lb => (lb.textContent||'').trim().toLowerCase() === 'début' || (lb.textContent||'').toLowerCase().includes('début'));
-      if (dateLabel){
-        const forId = dateLabel.getAttribute('for');
-        dateInput = forId ? formRoot.querySelector('#'+CSS.escape(forId)) : dateLabel.parentElement.querySelector('input');
-      } else {
-        dateInput = formRoot.querySelector('input[type="date"], input[name*="start" i], input[name*="debut" i]');
-      }
-
-      if (titleInput) titleInput.required = true;
-      if (dateInput) dateInput.required = true;
-
-      // Add tiny required hint near labels
-      function markLabel(lb){
-        if (!lb || lb.querySelector('.ap-required-hint')) return;
-        const s = doc.createElement('span');
-        s.className = 'ap-required-hint';
-        s.textContent = '*';
-        lb.appendChild(s);
-      }
-      if (titleLabel) markLabel(titleLabel);
-      if (dateLabel) markLabel(dateLabel);
-
-      // Intercept save button click to validate
-      const saveBtn = Array.from(formRoot.querySelectorAll('button, input[type="submit"]')).find(b => (b.textContent||'').toLowerCase().includes('enregistrer') || (b.value||'').toLowerCase().includes('enregistrer'));
-      if (saveBtn && !saveBtn.__cadirV28Hooked){
-        saveBtn.__cadirV28Hooked = true;
-        saveBtn.addEventListener('click', function(ev){
-          let ok = true;
-          if (titleInput){
-            titleInput.classList.remove('ap-invalid');
-            if (!String(titleInput.value||'').trim()){ ok = false; titleInput.classList.add('ap-invalid'); }
-          }
-          if (dateInput){
-            dateInput.classList.remove('ap-invalid');
-            if (!String(dateInput.value||'').trim()){ ok = false; dateInput.classList.add('ap-invalid'); }
-          }
-          if (!ok){
-            ev.preventDefault();
-            ev.stopPropagation();
-            alert("Veuillez renseigner le titre et la date de début.");
-            return;
-          }
-        }, true);
-      }
-
-      // When form is open, reflect date on corresponding card by title match (best effort)
-      try{
-        const curTitle = titleInput ? String(titleInput.value||'').trim() : '';
-        const curDate = dateInput ? String(dateInput.value||'').trim() : '';
-        if (curTitle && curDate){
-          const cards = doc.querySelectorAll('.ap-card, .activity-card, .card, .item-card, .note-card');
-          cards.forEach(card=>{
-            if (card.querySelector('.ap-inline-date')) return;
-            if (getCardTitle(card).includes(curTitle)){
-              appendStartDate(card, curDate);
-            }
-          });
-        }
-      }catch(e){}
-    }
-
-    function applyAll(){
-      applyDatesOnCards();
-      enforceRequiredInEditForm();
-    }
-
-    applyAll();
-    const obs = new MutationObserver(()=>applyAll());
-    obs.observe(doc.body, {childList:true, subtree:true});
-
-    doc.__cadirV28Injected = true;
-  }
-
-  document.getElementById('frame-perdir')?.addEventListener('load', function(){
-    setTimeout(injectIntoPerdir, 600);
-    setTimeout(injectIntoPerdir, 1400);
-  });
-
-  const _loadModule = window.loadModule;
-  if (typeof _loadModule === 'function'){
-    window.loadModule = function(name){
-      const r = _loadModule.apply(this, arguments);
-      if (name === 'perdir'){
-        setTimeout(injectIntoPerdir, 700);
-        setTimeout(injectIntoPerdir, 1700);
-      }
-      return r;
-    };
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(injectIntoPerdir, 1200);
-  });
-})();
-</script>
-
-
-<script>
-/* ===== V29 - Date début sur vignettes (robuste) + obligatoire titre/date =====
-   Stratégie:
-   1) Détecter les "vignettes" par la présence des boutons crayon + corbeille.
-   2) Chercher une date de début dans:
-      - dataset de la carte ou des boutons
-      - attributs (onclick/aria/title) contenant une date
-      - inputs hidden
-      - HTML texte (yyyy-mm-dd ou dd/mm/yyyy)
-   3) Si introuvable: au clic sur le crayon, mémoriser la carte -> quand le formulaire "Modifier l'événement"
-      apparaît, lire la date Début et l'injecter sur la carte (sans matching par titre).
-*/
-(function(){
-  function injectIntoPerdir(){
-    const fr = document.getElementById('frame-perdir');
-    if(!fr) return;
-    let doc;
-    try{ doc = fr.contentDocument; }catch(e){ return; }
-    if(!doc || doc.__cadirV29Injected) return;
-
-    const st = doc.createElement('style');
-    st.textContent = `
-      .ap-inline-date{
-        color:#6b7280;
-        font-size:12px;
-        font-weight:800;
-        margin-left:8px;
-        white-space:nowrap;
-      }
-      .ap-invalid{ outline:2px solid #ef4444 !important; border-color:#ef4444 !important; }
-      .ap-required-hint{ color:#b91c1c; font-size:12px; font-weight:900; margin-left:6px; }
-    `;
-    doc.head.appendChild(st);
-
-    function isoToFr(iso){
-      const m = String(iso||'').trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
-      if (!m) return String(iso||'').trim();
-      return `${m[3]}/${m[2]}/${m[1]}`;
-    }
-    function anyDateFromString(s){
-      s = String(s||'');
-      let m = s.match(/\b(\d{4})-(\d{2})-(\d{2})\b/);
-      if (m) return `${m[1]}-${m[2]}-${m[3]}`;
-      m = s.match(/\b(\d{2})\/(\d{2})\/(\d{4})\b/);
-      if (m) return `${m[3]}-${m[2]}-${m[1]}`;
-      m = s.match(/\b(\d{2})\/(\d{2})\b/);
-      if (m){
-        const y = new Date().getFullYear();
-        return `${y}-${m[2]}-${m[1]}`;
-      }
-      return null;
-    }
-
-    function findCardElements(){
-      // carte = conteneur qui contient crayon + poubelle
-      const pens = Array.from(doc.querySelectorAll('.fa-pen, .fa-pencil, .fa-edit'));
-      const cards = new Set();
-      pens.forEach(icon=>{
-        const btn = icon.closest('button,a');
-        if(!btn) return;
-        // vérifier présence corbeille dans le même bloc
-        const parent = btn.closest('div, li, article, section');
-        if(!parent) return;
-        const hasTrash = !!parent.querySelector('.fa-trash, .fa-trash-alt, .fa-delete-left') ||
-                         !!parent.querySelector('button[title*="sup" i], a[title*="sup" i]');
-        if(!hasTrash) return;
-        // remonter à une carte "vraie" (avec border / shadow)
-        let card = parent;
-        for(let i=0;i<4;i++){
-          if(!card.parentElement) break;
-          const cs = doc.defaultView.getComputedStyle(card);
-          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none'){
-            break;
-          }
-          card = card.parentElement;
-        }
-        cards.add(card);
-      });
-      return Array.from(cards);
-    }
-      }
-      // we'll do in JS below (no python)
-    }
-
-    function pickIsoFromDatasets(el){
-      if (!el || !el.dataset) return null;
-      const keys = Object.keys(el.dataset);
-      const key = keys.find(k => /start|debut|date/i.test(k) && !/due|echeance/i.test(k));
-      if (key && el.dataset[key]){
-        const iso = anyDateFromString(el.dataset[key]);
-        if (iso) return iso;
-      }
-      return null;
-    }
-
-    function extractStartIso(card){
-      // 1) dataset card
-      let iso = pickIsoFromDatasets(card);
-      if (iso) return iso;
-
-      // 2) dataset buttons within (edit button)
-      const editBtn = card.querySelector('.fa-pen, .fa-pencil, .fa-edit')?.closest('button,a');
-      iso = pickIsoFromDatasets(editBtn);
-      if (iso) return iso;
-
-      // 3) hidden inputs with date-like values
-      const hidden = Array.from(card.querySelectorAll('input[type="hidden"]'))
-        .map(i => anyDateFromString(i.value))
-        .find(Boolean);
-      if (hidden) return hidden;
-
-      // 4) scan attributes for date
-      const scanEls = [card, ...(editBtn ? [editBtn] : []), ...Array.from(card.querySelectorAll('button,a,div,span'))].slice(0, 80);
-      for (const el of scanEls){
-        if (!el || !el.getAttribute) continue;
-        const attrs = ['onclick','data-date','data-start','title','aria-label'];
-        for (const a of attrs){
-          const v = el.getAttribute(a);
-          const d = anyDateFromString(v);
-          if (d) return d;
-        }
-      }
-
-      // 5) scan innerHTML text (last resort)
-      iso = anyDateFromString(card.innerHTML);
-      if (iso) return iso;
-      iso = anyDateFromString(card.textContent);
-      if (iso) return iso;
-
-      return null;
-    }
-
-    function appendDate(card, iso){
-      if (!card || !iso) return;
-      if (card.querySelector('.ap-inline-date')) return;
-      const dateFr = isoToFr(iso);
-      const span = doc.createElement('span');
-      span.className = 'ap-inline-date';
-      span.textContent = dateFr;
-
-      // append after "Parents informés" line if exists
-      const line = Array.from(card.querySelectorAll('*')).find(n => (n.textContent||'').toLowerCase().includes('parents inform'));
-      if (line){
-        line.appendChild(span);
-        return;
-      }
-      // otherwise after title line
-      const titleLine = card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
-      titleLine.appendChild(span);
-    }
-
-    // --- Live binding: when user clicks edit, remember card and inject date from form
-    let lastCard = null;
-
-    function hookEditClicks(card){
-      const editBtn = card.querySelector('.fa-pen, .fa-pencil, .fa-edit')?.closest('button,a');
-      if (!editBtn || editBtn.__cadirV29Hooked) return;
-      editBtn.__cadirV29Hooked = true;
-      editBtn.addEventListener('click', function(){
-        lastCard = card;
-        // after UI opens, read date "Début"
-        setTimeout(()=>{
-          const labels = Array.from(doc.querySelectorAll('label'));
-          const lb = labels.find(x => (x.textContent||'').trim().toLowerCase() === 'début' || (x.textContent||'').toLowerCase().includes('début'));
-          let dateInput = null;
-          if (lb){
-            const fid = lb.getAttribute('for');
-            dateInput = fid ? doc.querySelector('#'+CSS.escape(fid)) : (lb.parentElement && lb.parentElement.querySelector('input'));
-          }
-          if (!dateInput){
-            dateInput = doc.querySelector('input[type="date"], input[name*="debut" i], input[name*="start" i]');
-          }
-          if (dateInput && dateInput.value){
-            appendDate(lastCard, dateInput.value);
-          }
-        }, 450);
-      }, true);
-    }
-
-    function renderDates(){
-      const cards = findCardElements();
-      cards.forEach(card=>{
-        // try extract immediately
-        const iso = extractStartIso(card);
-        if (iso) appendDate(card, iso);
-        hookEditClicks(card);
-      });
-    }
-
-    // --- Required title/date in edit form
-    function enforceRequired(){
-      const labels = Array.from(doc.querySelectorAll('label'));
-      const titleLb = labels.find(x => (x.textContent||'').toLowerCase().includes('intitul'));
-      const dateLb = labels.find(x => (x.textContent||'').trim().toLowerCase() === 'début' || (x.textContent||'').toLowerCase().includes('début'));
-
-      let titleInput = null, dateInput = null;
-      if (titleLb){
-        const fid = titleLb.getAttribute('for');
-        titleInput = fid ? doc.querySelector('#'+CSS.escape(fid)) : (titleLb.parentElement && titleLb.parentElement.querySelector('input,textarea'));
-      }
-      if (!titleInput) titleInput = doc.querySelector('input[name*="intitul" i], input[name*="title" i]');
-
-      if (dateLb){
-        const fid = dateLb.getAttribute('for');
-        dateInput = fid ? doc.querySelector('#'+CSS.escape(fid)) : (dateLb.parentElement && dateLb.parentElement.querySelector('input'));
-      }
-      if (!dateInput) dateInput = doc.querySelector('input[type="date"], input[name*="debut" i], input[name*="start" i]');
-
-      if (titleInput){
-        titleInput.required = true;
-        if (titleLb && !titleLb.querySelector('.ap-required-hint')){
-          const s = doc.createElement('span'); s.className='ap-required-hint'; s.textContent='*'; titleLb.appendChild(s);
-        }
-      }
-      if (dateInput){
-        dateInput.required = true;
-        if (dateLb && !dateLb.querySelector('.ap-required-hint')){
-          const s = doc.createElement('span'); s.className='ap-required-hint'; s.textContent='*'; dateLb.appendChild(s);
-        }
-      }
-
-      const saveBtn = Array.from(doc.querySelectorAll('button, input[type="submit"]'))
-        .find(b => (b.textContent||b.value||'').toLowerCase().includes('enregistrer'));
-      if (saveBtn && !saveBtn.__cadirV29SaveHooked){
-        saveBtn.__cadirV29SaveHooked = true;
-        saveBtn.addEventListener('click', function(ev){
-          let ok = true;
-          if (titleInput){
-            titleInput.classList.remove('ap-invalid');
-            if (!String(titleInput.value||'').trim()){ ok=false; titleInput.classList.add('ap-invalid'); }
-          }
-          if (dateInput){
-            dateInput.classList.remove('ap-invalid');
-            if (!String(dateInput.value||'').trim()){ ok=false; dateInput.classList.add('ap-invalid'); }
-          }
-          if (!ok){
-            ev.preventDefault(); ev.stopPropagation();
-            alert('Veuillez renseigner le titre et la date de début.');
-          }
-        }, true);
-      }
-    }
-
-    function applyAll(){
-      renderDates();
-      enforceRequired();
-    }
-
-    applyAll();
-    const obs = new MutationObserver(()=>applyAll());
-    obs.observe(doc.body, {childList:true, subtree:true});
-
-    doc.__cadirV29Injected = true;
-  }
-
-  document.getElementById('frame-perdir')?.addEventListener('load', function(){
-    setTimeout(injectIntoPerdir, 500);
-    setTimeout(injectIntoPerdir, 1300);
-  });
-
-  const _loadModule = window.loadModule;
-  if (typeof _loadModule === 'function'){
-    window.loadModule = function(name){
-      const r = _loadModule.apply(this, arguments);
-      if (name === 'perdir'){
-        setTimeout(injectIntoPerdir, 700);
-        setTimeout(injectIntoPerdir, 1600);
-      }
-      return r;
-    };
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(injectIntoPerdir, 1200);
-  });
-})();
-</script>
-
-
-<script>
-/* ===== V30 - Activités pédagogiques depuis pilote_data.json (via localStorage synchronisé) =====
-   L'activité est stockée dans le JSON de synchronisation (pilote_data.json) qui restaure le localStorage de l'iframe PERDIR.
-   -> On scanne le localStorage de l'iframe pour retrouver la liste des activités + leur date de début,
-      puis on injecte la date sur les vignettes (sans ouvrir l'édition).
-   + Rend obligatoire Intitulé + Début
-   + Supprime/masque le champ Date d'échéance.
-*/
-(function(){
-  function injectIntoPerdir(){
-    const fr = document.getElementById('frame-perdir');
-    if(!fr) return;
-    let doc, win;
-    try{ win = fr.contentWindow; doc = fr.contentDocument; }catch(e){ return; }
-    if(!doc || doc.__cadirV30Injected) return;
-
-    const st = doc.createElement('style');
-    st.textContent = `
-      .ap-inline-date{
-        color:#6b7280;
-        font-size:12px;
-        font-weight:800;
-        margin-left:8px;
-        white-space:nowrap;
-      }
-      .ap-invalid{ outline:2px solid #ef4444 !important; border-color:#ef4444 !important; }
-      .ap-required-hint{ color:#b91c1c; font-size:12px; font-weight:900; margin-left:6px; }
-      .cadir-hide-due{ display:none !important; }
-      /* dates compactes */
-      input[type="date"]{ width:140px !important; max-width:140px !important; }
-    `;
-    doc.head.appendChild(st);
-
-    const pad2 = (n)=>String(n).padStart(2,'0');
-    function isoToFr(iso){
-      const m = String(iso||'').trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
-      if (!m) return String(iso||'').trim();
-      return `${m[3]}/${m[2]}/${m[1]}`;
-    }
-    function normalize(s){
-      return String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
-    }
-
-    function pickTitle(o){
-      return o?.title ?? o?.titre ?? o?.intitule ?? o?.intitulé ?? o?.name ?? o?.libelle ?? o?.label ?? null;
-    }
-    function pickStart(o){
-      return o?.start ?? o?.debut ?? o?.dateDebut ?? o?.date_début ?? o?.date_debut ?? o?.startDate ?? o?.date ?? null;
-    }
-
-    function extractActivitiesFromValue(val){
-      if (!val) return null;
-      const t = String(val).trim();
-      if (!(t.startsWith('{') || t.startsWith('['))) return null;
-      let data;
-      try{ data = JSON.parse(t); }catch(e){ return null; }
-
-      // Direct array
-      if (Array.isArray(data) && data.length){
-        const o = data[0];
-        if (pickTitle(o) && pickStart(o)) return data;
-      }
-
-      // Object containing list
-      if (data && typeof data === 'object'){
-        const candidates = ['activites','activities','items','list','events','rows','data'];
-        for (const k of candidates){
-          const arr = data[k];
-          if (Array.isArray(arr) && arr.length && pickTitle(arr[0]) && pickStart(arr[0])) return arr;
-        }
-        // deep: search one level
-        for (const k of Object.keys(data)){
-          const v = data[k];
-          if (Array.isArray(v) && v.length && pickTitle(v[0]) && pickStart(v[0])) return v;
-        }
-      }
-      return null;
-    }
-
-    function scanLocalStorageForActivities(){
-      const ls = win.localStorage;
-      let best = null;
-      let bestLen = 0;
-      try{
-        for (let i=0;i<ls.length;i++){
-          const k = ls.key(i);
-          const v = ls.getItem(k);
-          const arr = extractActivitiesFromValue(v);
-          if (arr && arr.length > bestLen){
-            best = arr;
-            bestLen = arr.length;
-          }
-        }
-      }catch(e){}
-      return best || [];
-    }
-
-    function getCardTitle(card){
-      const el = card.querySelector('h3,h4,.title,.card-title,strong') || card;
-      return normalize(el.textContent || '');
-    }
-
-    function findCards(){
-      // Vignettes visibles dans la liste des activités (heuristique)
-      // On cible les cartes qui ont crayon + poubelle (comme vos captures)
-      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
-      const cards = new Set();
-      pens.forEach(icon=>{
-        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
-        if (!p) return;
-        const hasTrash = !!p.querySelector('.fa-trash,.fa-trash-alt') || !!p.querySelector('button[title*="sup" i],a[title*="sup" i]');
-        if (!hasTrash) return;
-        let card = p;
-        for(let j=0;j<4;j++){
-          if (!card.parentElement) break;
-          const cs = doc.defaultView.getComputedStyle(card);
-          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
-          card = card.parentElement;
-        }
-        cards.add(card);
-      });
-      return Array.from(cards);
-    }
-
-    function appendDateToCard(card, iso){
-      if (!card || !iso) return;
-      if (card.querySelector('.ap-inline-date')) return;
-      const span = doc.createElement('span');
-      span.className = 'ap-inline-date';
-      span.textContent = isoToFr(iso);
-
-      const parentsLine = Array.from(card.querySelectorAll('*')).find(n => normalize(n.textContent).includes('parents inform'));
-      if (parentsLine){
-        parentsLine.appendChild(span);
-        return;
-      }
-      const titleLine = card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
-      titleLine.appendChild(span);
-    }
-
-    function injectDates(){
-      const activities = scanLocalStorageForActivities();
-      if (!activities.length) return;
-
-      // index by title
-      const idx = new Map();
-      activities.forEach(a=>{
-        const t = normalize(pickTitle(a));
-        const d = pickStart(a);
-        if (t && d && !idx.has(t)) idx.set(t, d);
-      });
-
-      const cards = findCards();
-      cards.forEach(card=>{
-        const t = getCardTitle(card);
-        if (!t) return;
-        let d = idx.get(t);
-        // fallback: includes match
-        if (!d){
-          for (const [k,v] of idx.entries()){
-            if (k && (k.includes(t) || t.includes(k))){ d = v; break; }
-          }
-        }
-        if (d) appendDateToCard(card, d);
-      });
-    }
-
-    function hideDueDate(){
-      const labels = Array.from(doc.querySelectorAll('label,.field-label,.form-label'));
-      labels.forEach(lb=>{
-        const t = normalize(lb.textContent);
-        if (t.includes('échéance') || t.includes('echeance') || t.includes('due')){
-          const row = lb.closest('.field,.form-group,.row,.grid,.input-group') || lb.parentElement;
-          if (row) row.classList.add('cadir-hide-due');
-          lb.classList.add('cadir-hide-due');
-          const inp = (row||lb).querySelector?.('input,select,textarea');
-          if (inp){
-            const wrap = inp.closest('.field,.form-group,.row,.grid,.input-group') || inp.parentElement;
-            if (wrap) wrap.classList.add('cadir-hide-due');
-            inp.classList.add('cadir-hide-due');
-          }
-        }
-      });
-      doc.querySelectorAll('input[name*="echeance" i],input[id*="echeance" i],input[name*="due" i],input[id*="due" i]').forEach(inp=>{
-        inp.classList.add('cadir-hide-due');
-        const wrap = inp.closest('.field,.form-group,.row,.grid,.input-group') || inp.parentElement;
-        if (wrap) wrap.classList.add('cadir-hide-due');
-      });
-    }
-
-    function enforceRequired(){
-      const labels = Array.from(doc.querySelectorAll('label'));
-      const titleLb = labels.find(x => normalize(x.textContent).includes('intitul'));
-      const dateLb  = labels.find(x => normalize(x.textContent) === 'début' || normalize(x.textContent).includes('début'));
-
-      let titleInput = null, dateInput = null;
-      if (titleLb){
-        const fid = titleLb.getAttribute('for');
-        titleInput = fid ? doc.querySelector('#'+CSS.escape(fid)) : titleLb.parentElement?.querySelector('input,textarea');
-      }
-      if (!titleInput) titleInput = doc.querySelector('input[name*="intitul" i], input[name*="title" i]');
-
-      if (dateLb){
-        const fid = dateLb.getAttribute('for');
-        dateInput = fid ? doc.querySelector('#'+CSS.escape(fid)) : dateLb.parentElement?.querySelector('input');
-      }
-      if (!dateInput) dateInput = doc.querySelector('input[type="date"], input[name*="debut" i], input[name*="start" i]');
-
-      if (titleInput){
-        titleInput.required = true;
-        if (titleLb && !titleLb.querySelector('.ap-required-hint')){
-          const s = doc.createElement('span'); s.className='ap-required-hint'; s.textContent='*'; titleLb.appendChild(s);
-        }
-      }
-      if (dateInput){
-        dateInput.required = true;
-        if (dateLb && !dateLb.querySelector('.ap-required-hint')){
-          const s = doc.createElement('span'); s.className='ap-required-hint'; s.textContent='*'; dateLb.appendChild(s);
-        }
-      }
-
-      const saveBtn = Array.from(doc.querySelectorAll('button, input[type="submit"]'))
-        .find(b => normalize(b.textContent||b.value).includes('enregistrer'));
-      if (saveBtn && !saveBtn.__cadirV30SaveHooked){
-        saveBtn.__cadirV30SaveHooked = true;
-        saveBtn.addEventListener('click', function(ev){
-          let ok = true;
-          if (titleInput){
-            titleInput.classList.remove('ap-invalid');
-            if (!String(titleInput.value||'').trim()){ ok=false; titleInput.classList.add('ap-invalid'); }
-          }
-          if (dateInput){
-            dateInput.classList.remove('ap-invalid');
-            if (!String(dateInput.value||'').trim()){ ok=false; dateInput.classList.add('ap-invalid'); }
-          }
-          if (!ok){
-            ev.preventDefault(); ev.stopPropagation();
-            alert('Veuillez renseigner le titre et la date de début.');
-          }
-        }, true);
-      }
-    }
-
-    function applyAll(){
-      injectDates();
-      hideDueDate();
-      enforceRequired();
-    }
-
-    applyAll();
-    const obs = new MutationObserver(()=>applyAll());
-    obs.observe(doc.body, {childList:true, subtree:true});
-
-    doc.__cadirV30Injected = true;
-  }
-
-  document.getElementById('frame-perdir')?.addEventListener('load', function(){
-    setTimeout(injectIntoPerdir, 600);
-    setTimeout(injectIntoPerdir, 1400);
-  });
-
-  const _loadModule = window.loadModule;
-  if (typeof _loadModule === 'function'){
-    window.loadModule = function(name){
-      const r = _loadModule.apply(this, arguments);
-      if (name === 'perdir'){
-        setTimeout(injectIntoPerdir, 700);
-        setTimeout(injectIntoPerdir, 1600);
-      }
-      return r;
-    };
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(injectIntoPerdir, 1200);
-  });
-})();
-</script>
-
-
-<script>
-/* ===== V31 - Dates stables + format "dddd dd mmmm" (Activités pédagogiques) =====
-   - Stabilise l'affichage (réinjection throttlée) pour éviter l'effet "apparaît/disparaît"
-   - Formate les dates en FR : "jeudi 26 février" (weekday long + day 2-digit + month long)
-*/
-(function(){
-  function injectIntoPerdir(){
-    const fr = document.getElementById('frame-perdir');
-    if(!fr) return;
-    let doc, win;
-    try{ win = fr.contentWindow; doc = fr.contentDocument; }catch(e){ return; }
-    if(!doc || doc.__cadirV31Injected) return;
-
-    const st = doc.createElement('style');
-    st.textContent = `
-      .ap-inline-date{
-        color:#6b7280;
-        font-size:12px;
-        font-weight:800;
-        margin-left:8px;
-        white-space:nowrap;
-      }
-      .ap-inline-date::before{ content:"• "; font-weight:900; }
-    `;
-    doc.head.appendChild(st);
-
-    const fmt = new Intl.DateTimeFormat('fr-FR', { weekday:'long', day:'2-digit', month:'long' });
-
-    function parseToDate(v){
-      if (!v) return null;
-      const s = String(v).trim();
-      // ISO yyyy-mm-dd
-      let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-      if (m) return new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
-      // dd/mm/yyyy
-      m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-      if (m) return new Date(Number(m[3]), Number(m[2])-1, Number(m[1]));
-      // dd/mm (assume current year)
-      m = s.match(/^(\d{2})\/(\d{2})$/);
-      if (m){
-        const y = new Date().getFullYear();
-        return new Date(y, Number(m[2])-1, Number(m[1]));
-      }
-      // fallback Date.parse
-      const t = Date.parse(s);
-      if (!Number.isNaN(t)) return new Date(t);
-      return null;
-    }
-
-    function niceDate(v){
-      const d = parseToDate(v);
-      if (!d) return null;
-      // Lowercase weekday already in fr; ensure no trailing dot
-      return fmt.format(d).replace(/\.$/, '');
-    }
-
-    function normalize(s){
-      return String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
-    }
-    function pickTitle(o){
-      return o?.title ?? o?.titre ?? o?.intitule ?? o?.intitulé ?? o?.name ?? o?.libelle ?? o?.label ?? null;
-    }
-    function pickStart(o){
-      return o?.start ?? o?.debut ?? o?.dateDebut ?? o?.date_début ?? o?.date_debut ?? o?.startDate ?? o?.date ?? null;
-    }
-
-    function extractActivitiesFromValue(val){
-      if (!val) return null;
-      const t = String(val).trim();
-      if (!(t.startsWith('{') || t.startsWith('['))) return null;
-      let data;
-      try{ data = JSON.parse(t); }catch(e){ return null; }
-
-      if (Array.isArray(data) && data.length){
-        const o = data[0];
-        if (pickTitle(o) && pickStart(o)) return data;
-      }
-      if (data && typeof data === 'object'){
-        const candidates = ['activites','activities','items','list','events','rows','data'];
-        for (const k of candidates){
-          const arr = data[k];
-          if (Array.isArray(arr) && arr.length && pickTitle(arr[0]) && pickStart(arr[0])) return arr;
-        }
-        for (const k of Object.keys(data)){
-          const v = data[k];
-          if (Array.isArray(v) && v.length && pickTitle(v[0]) && pickStart(v[0])) return v;
-        }
-      }
-      return null;
-    }
-
-    function scanLocalStorageForActivities(){
-      const ls = win.localStorage;
-      let best = null;
-      let bestLen = 0;
-      try{
-        for (let i=0;i<ls.length;i++){
-          const k = ls.key(i);
-          const v = ls.getItem(k);
-          const arr = extractActivitiesFromValue(v);
-          if (arr && arr.length > bestLen){
-            best = arr;
-            bestLen = arr.length;
-          }
-        }
-      }catch(e){}
-      return best || [];
-    }
-
-    function findCards(){
-      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
-      const cards = new Set();
-      pens.forEach(icon=>{
-        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
-        if (!p) return;
-        const hasTrash = !!p.querySelector('.fa-trash,.fa-trash-alt') || !!p.querySelector('button[title*="sup" i],a[title*="sup" i]');
-        if (!hasTrash) return;
-        let card = p;
-        for(let j=0;j<4;j++){
-          if (!card.parentElement) break;
-          const cs = doc.defaultView.getComputedStyle(card);
-          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
-          card = card.parentElement;
-        }
-        cards.add(card);
-      });
-      return Array.from(cards);
-    }
-
-    function getCardTitle(card){
-      const el = card.querySelector('h3,h4,.title,.card-title,strong') || card;
-      return normalize(el.textContent || '');
-    }
-
-    function upsertDate(card, dateStr){
-      if (!card || !dateStr) return;
-
-      // stocker pour stabilité
-      card.setAttribute('data-cadir-start', dateStr);
-
-      // supprimer un ancien span si le card a été re-render et dupliqué
-      const existing = card.querySelector('.ap-inline-date');
-      if (existing){
-        existing.textContent = dateStr;
-        return;
-      }
-
-      const span = doc.createElement('span');
-      span.className = 'ap-inline-date';
-      span.textContent = dateStr;
-
-      const parentsLine = Array.from(card.querySelectorAll('*')).find(n => normalize(n.textContent).includes('parents inform'));
-      if (parentsLine){
-        parentsLine.appendChild(span);
-        return;
-      }
-      const titleLine = card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
-      titleLine.appendChild(span);
-    }
-
-    // throttling to avoid flicker
-    let rafId = 0;
-    function scheduleApply(){
-      if (rafId) return;
-      rafId = requestAnimationFrame(()=>{
-        rafId = 0;
-        applyDates();
-      });
-    }
-
-    function applyDates(){
-      const activities = scanLocalStorageForActivities();
-      if (!activities.length) return;
-
-      const idx = new Map();
-      activities.forEach(a=>{
-        const t = normalize(pickTitle(a));
-        const dRaw = pickStart(a);
-        const dNice = niceDate(dRaw);
-        if (t && dNice && !idx.has(t)) idx.set(t, dNice);
-      });
-
-      const cards = findCards();
-      cards.forEach(card=>{
-        // If the card got rerendered, but still has stored date, restore it
-        const stored = card.getAttribute('data-cadir-start');
-        if (stored) upsertDate(card, stored);
-
-        const t = getCardTitle(card);
-        if (!t) return;
-        let d = idx.get(t);
-        if (!d){
-          for (const [k,v] of idx.entries()){
-            if (k && (k.includes(t) || t.includes(k))){ d = v; break; }
-          }
-        }
-        if (d) upsertDate(card, d);
-      });
-    }
-
-    // observe for rerenders and re-apply smoothly
-    const obs = new MutationObserver(()=>scheduleApply());
-    obs.observe(doc.body, {childList:true, subtree:true});
-
-    // initial apply (and a couple retries for async)
-    scheduleApply();
-    setTimeout(scheduleApply, 350);
-    setTimeout(scheduleApply, 1200);
-
-    doc.__cadirV31Injected = true;
-  }
-
-  document.getElementById('frame-perdir')?.addEventListener('load', function(){
-    setTimeout(injectIntoPerdir, 600);
-    setTimeout(injectIntoPerdir, 1400);
-  });
-
-  const _loadModule = window.loadModule;
-  if (typeof _loadModule === 'function'){
-    window.loadModule = function(name){
-      const r = _loadModule.apply(this, arguments);
-      if (name === 'perdir'){
-        setTimeout(injectIntoPerdir, 700);
-        setTimeout(injectIntoPerdir, 1600);
-      }
-      return r;
-    };
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(injectIntoPerdir, 1200);
-  });
-})();
-</script>
-
-
-<script>
-/* ===== V32 - Activités: afficher UNIQUEMENT la date de DÉBUT (robuste) + format "dddd dd mmmm" ===== */
-(function(){
-  function injectIntoPerdir(){
-    const fr = document.getElementById('frame-perdir');
-    if(!fr) return;
-    let doc, win;
-    try{ win = fr.contentWindow; doc = fr.contentDocument; }catch(e){ return; }
-    if(!doc || doc.__cadirV32Injected) return;
-
-    const st = doc.createElement('style');
-    st.textContent = `
-      .ap-inline-date{
-        color:#6b7280;
-        font-size:12px;
-        font-weight:800;
-        margin-left:8px;
-        white-space:nowrap;
-      }
-      .ap-inline-date::before{ content:"• "; font-weight:900; }
-    `;
-    doc.head.appendChild(st);
-
-    const fmt = new Intl.DateTimeFormat('fr-FR', { weekday:'long', day:'2-digit', month:'long' });
-
-    function parseToDate(v){
-      if (!v) return null;
-      const s = String(v).trim();
-      let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-      if (m) return new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
-      m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-      if (m) return new Date(Number(m[3]), Number(m[2])-1, Number(m[1]));
-      m = s.match(/^(\d{2})\/(\d{2})$/);
-      if (m){
-        const y = new Date().getFullYear();
-        return new Date(y, Number(m[2])-1, Number(m[1]));
-      }
-      const t = Date.parse(s);
-      if (!Number.isNaN(t)) return new Date(t);
-      return null;
-    }
-
-    function niceDate(v){
-      const d = parseToDate(v);
-      if (!d) return null;
-      return fmt.format(d).replace(/\.$/, '');
-    }
-
-    function normalize(s){
-      return String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
-    }
-
-    function pickTitle(o){
-      return (o && (o.title ?? o.titre ?? o.intitule ?? o['intitulé'] ?? o.name ?? o.libelle ?? o.label)) || null;
-    }
-
-    function isBadKey(k){
-      return /creation|created|createdat|update|updated|modified|timestamp|echeance|échéance|due|deadline|fin|end/i.test(k);
-    }
-    function scoreKey(k){
-      const kk = String(k||'');
-      let s = 0;
-      if (/^(start|debut|début|dateDebut|date_debut|startDate)$/i.test(kk)) s += 10;
-      if (/start|debut|début/i.test(kk)) s += 6;
-      if (/date/i.test(kk)) s += 2;
-      if (/echeance|échéance|due|deadline/i.test(kk)) s -= 8;
-      if (/creation|created|update|timestamp/i.test(kk)) s -= 10;
-      if (/fin|end/i.test(kk)) s -= 4;
-      return s;
-    }
-
-    function pickStartSmart(o){
-      if (!o || typeof o !== 'object') return null;
-
-      const priority = ['start','debut','début','dateDebut','date_début','date_debut','startDate'];
-      for (const k of priority){
-        if (o[k]){
-          if (niceDate(o[k])) return o[k];
-        }
-      }
-
-      let bestVal = null;
-      let bestScore = -1e9;
-      for (const k of Object.keys(o)){
-        if (isBadKey(k)) continue;
-        const v = o[k];
-        if (!niceDate(v)) continue;
-        const sc = scoreKey(k);
-        if (sc > bestScore){
-          bestScore = sc;
-          bestVal = v;
-        }
-      }
-
-      if (!bestVal){
-        for (const k of Object.keys(o)){
-          if (!/date/i.test(k) || isBadKey(k)) continue;
-          if (niceDate(o[k])) return o[k];
-        }
-      }
-      return bestVal;
-    }
-
-    function extractActivitiesFromValue(val){
-      if (!val) return null;
-      const t = String(val).trim();
-      if (!(t.startsWith('{') || t.startsWith('['))) return null;
-      let data;
-      try{ data = JSON.parse(t); }catch(e){ return null; }
-
-      function looks(a){ return a && typeof a === 'object' && pickTitle(a) && pickStartSmart(a); }
-
-      if (Array.isArray(data) && data.length && looks(data[0])) return data;
-
-      if (data && typeof data === 'object'){
-        const candidates = ['activites','activities','items','list','events','rows','data'];
-        for (const k of candidates){
-          const arr = data[k];
-          if (Array.isArray(arr) && arr.length && looks(arr[0])) return arr;
-        }
-        for (const k of Object.keys(data)){
-          const v = data[k];
-          if (Array.isArray(v) && v.length && looks(v[0])) return v;
-        }
-      }
-      return null;
-    }
-
-    function scanLocalStorageForActivities(){
-      const ls = win.localStorage;
-      let best = null, bestLen = 0;
-      try{
-        for (let i=0;i<ls.length;i++){
-          const k = ls.key(i);
-          const v = ls.getItem(k);
-          const arr = extractActivitiesFromValue(v);
-          if (arr && arr.length > bestLen){
-            best = arr; bestLen = arr.length;
-          }
-        }
-      }catch(e){}
-      return best || [];
-    }
-
-    function findCards(){
-      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
-      const cards = new Set();
-      pens.forEach(icon=>{
-        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
-        if (!p) return;
-        const hasTrash = !!p.querySelector('.fa-trash,.fa-trash-alt') || !!p.querySelector('button[title*="sup" i],a[title*="sup" i]');
-        if (!hasTrash) return;
-        let card = p;
-        for(let j=0;j<4;j++){
-          if (!card.parentElement) break;
-          const cs = doc.defaultView.getComputedStyle(card);
-          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
-          card = card.parentElement;
-        }
-        cards.add(card);
-      });
-      return Array.from(cards);
-    }
-
-    function getCardTitle(card){
-      const el = card.querySelector('h3,h4,.title,.card-title,strong') || card;
-      return normalize(el.textContent || '');
-    }
-
-    function upsertDate(card, dateStr){
-      if (!card || !dateStr) return;
-      const existing = card.querySelector('.ap-inline-date');
-      if (existing){ existing.textContent = dateStr; return; }
-      const span = doc.createElement('span');
-      span.className = 'ap-inline-date';
-      span.textContent = dateStr;
-
-      const parentsLine = Array.from(card.querySelectorAll('*')).find(n => normalize(n.textContent).includes('parents inform'));
-      if (parentsLine){ parentsLine.appendChild(span); return; }
-      const titleLine = card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
-      titleLine.appendChild(span);
-    }
-
-    let rafId = 0;
-    function scheduleApply(){
-      if (rafId) return;
-      rafId = requestAnimationFrame(()=>{ rafId = 0; applyDates(); });
-    }
-
-    function applyDates(){
-      const activities = scanLocalStorageForActivities();
-      if (!activities.length) return;
-
-      const idx = new Map();
-      activities.forEach(a=>{
-        const t = normalize(pickTitle(a));
-        const raw = pickStartSmart(a);
-        const dn = niceDate(raw);
-        if (t && dn) idx.set(t, dn);
-      });
-
-      const cards = findCards();
-      cards.forEach(card=>{
-        const t = getCardTitle(card);
-        if (!t) return;
-
-        let d = idx.get(t);
-        if (!d){
-          for (const [k,v] of idx.entries()){
-            if (k && (k.includes(t) || t.includes(k))){ d = v; break; }
-          }
-        }
-        if (d) upsertDate(card, d);
-      });
-    }
-
-    const obs = new MutationObserver(()=>scheduleApply());
-    obs.observe(doc.body, {childList:true, subtree:true});
-    scheduleApply();
-    setTimeout(scheduleApply, 350);
-    setTimeout(scheduleApply, 1200);
-
-    doc.__cadirV32Injected = true;
-  }
-
-  document.getElementById('frame-perdir')?.addEventListener('load', function(){
-    setTimeout(injectIntoPerdir, 600);
-    setTimeout(injectIntoPerdir, 1400);
-  });
-
-  const _loadModule = window.loadModule;
-  if (typeof _loadModule === 'function'){
-    window.loadModule = function(name){
-      const r = _loadModule.apply(this, arguments);
-      if (name === 'perdir'){
-        setTimeout(injectIntoPerdir, 700);
-        setTimeout(injectIntoPerdir, 1600);
-      }
-      return r;
-    };
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(injectIntoPerdir, 1200);
-  });
-})();
-</script>
-
-
-<script>
-/* ===== V33 - Activités: afficher EXACTEMENT la date du champ "Début" (formulaire) =====
-   Votre formulaire affiche la bonne date (Début), mais le JSON contient d'autres dates -> confusion.
-   V33:
-   - Quand le formulaire "Modifier l'événement" est visible, on lit:
-       * Intitulé (valeur du champ)
-       * Début (valeur du champ)
-     puis on enregistre un mapping {titre -> dateDébut} dans localStorage de l'iframe.
-   - Les vignettes affichent en priorité ce mapping (donc la date est identique au champ Début).
-   - Format: "dddd dd mmmm" (ex: mardi 17 février).
-*/
-(function(){
-  function injectIntoPerdir(){
-    const fr = document.getElementById('frame-perdir');
-    if(!fr) return;
-    let doc, win;
-    try{ win = fr.contentWindow; doc = fr.contentDocument; }catch(e){ return; }
-    if(!doc || doc.__cadirV33Injected) return;
-
-    const st = doc.createElement('style');
-    st.textContent = `
-      .ap-inline-date{
-        color:#6b7280;
-        font-size:12px;
-        font-weight:800;
-        margin-left:8px;
-        white-space:nowrap;
-      }
-      .ap-inline-date::before{ content:"• "; font-weight:900; }
-    `;
-    doc.head.appendChild(st);
-
-    const fmt = new Intl.DateTimeFormat('fr-FR', { weekday:'long', day:'2-digit', month:'long' });
-
-    function parseToDate(v){
-      if (!v) return null;
-      const s = String(v).trim();
-      // dd / mm / yyyy (avec espaces)
-      let m = s.match(/^(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{4})$/);
-      if (m) return new Date(Number(m[3]), Number(m[2])-1, Number(m[1]));
-      // ISO yyyy-mm-dd
-      m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-      if (m) return new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
-      // dd/mm (assume year)
-      m = s.match(/^(\d{1,2})\/(\d{1,2})$/);
-      if (m){
-        const y = new Date().getFullYear();
-        return new Date(y, Number(m[2])-1, Number(m[1]));
-      }
-      const t = Date.parse(s);
-      if (!Number.isNaN(t)) return new Date(t);
-      return null;
-    }
-    function niceDate(v){
-      const d = parseToDate(v);
-      if (!d) return null;
-      return fmt.format(d).replace(/\.$/, '');
-    }
-    function normalize(s){
-      return String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
-    }
-
-    // Persistent map stored in iframe localStorage
-    const MAP_KEY = 'cadir_ap_title_to_start';
-    function loadMap(){
-      try{ return JSON.parse(win.localStorage.getItem(MAP_KEY) || '{}') || {}; }catch(e){ return {}; }
-    }
-    function saveMap(m){
-      try{ win.localStorage.setItem(MAP_KEY, JSON.stringify(m || {})); }catch(e){}
-    }
-
-    function findCards(){
-      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
-      const cards = new Set();
-      pens.forEach(icon=>{
-        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
-        if (!p) return;
-        const hasTrash = !!p.querySelector('.fa-trash,.fa-trash-alt') || !!p.querySelector('button[title*="sup" i],a[title*="sup" i]');
-        if (!hasTrash) return;
-        let card = p;
-        for(let j=0;j<4;j++){
-          if (!card.parentElement) break;
-          const cs = doc.defaultView.getComputedStyle(card);
-          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
-          card = card.parentElement;
-        }
-        cards.add(card);
-      });
-      return Array.from(cards);
-    }
-
-    function getCardTitle(card){
-      const el = card.querySelector('h3,h4,.title,.card-title,strong') || card;
-      return normalize(el.textContent || '');
-    }
-
-    function upsertDate(card, dateStr){
-      if (!card || !dateStr) return;
-      const existing = card.querySelector('.ap-inline-date');
-      if (existing){ existing.textContent = dateStr; return; }
-      const span = doc.createElement('span');
-      span.className = 'ap-inline-date';
-      span.textContent = dateStr;
-
-      const parentsLine = Array.from(card.querySelectorAll('*')).find(n => normalize(n.textContent).includes('parents inform'));
-      if (parentsLine){ parentsLine.appendChild(span); return; }
-      const titleLine = card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
-      titleLine.appendChild(span);
-    }
-
-    function applyFromMap(){
-      const m = loadMap();
-      const cards = findCards();
-      cards.forEach(card=>{
-        const t = getCardTitle(card);
-        if (!t) return;
-        const d = m[t];
-        if (d) upsertDate(card, d);
-      });
-    }
-
-    // Read the edit form fields and update map
-    function readEditFormAndUpdateMap(){
-      // detect heading
-      const h = Array.from(doc.querySelectorAll('h1,h2,h3,h4')).find(x => normalize(x.textContent).includes("modifier l'événement") || normalize(x.textContent).includes("modifier l'evenement"));
-      if (!h) return;
-
-      const scope = h.closest('section, .container, .card, body') || doc.body;
-
-      // title input by label "Intitulé"
-      let titleInput = null;
-      const titleLb = Array.from(scope.querySelectorAll('label')).find(lb => normalize(lb.textContent).includes('intitul'));
-      if (titleLb){
-        const fid = titleLb.getAttribute('for');
-        titleInput = fid ? scope.querySelector('#'+CSS.escape(fid)) : titleLb.parentElement?.querySelector('input,textarea');
-      }
-      if (!titleInput) titleInput = scope.querySelector('input[name*="intitul" i], input[name*="title" i]');
-
-      // start date input by label "Début"
-      let dateInput = null;
-      const dateLb = Array.from(scope.querySelectorAll('label')).find(lb => normalize(lb.textContent) === 'début' || normalize(lb.textContent).includes('début'));
-      if (dateLb){
-        const fid = dateLb.getAttribute('for');
-        dateInput = fid ? scope.querySelector('#'+CSS.escape(fid)) : dateLb.parentElement?.querySelector('input');
-      }
-      if (!dateInput){
-        // many UIs use text input for date (dd/mm/yyyy)
-        dateInput = scope.querySelector('input[type="date"], input[name*="debut" i], input[name*="start" i], input[placeholder*="jj" i]');
-      }
-
-      const title = titleInput ? normalize(titleInput.value) : '';
-      const rawDate = dateInput ? String(dateInput.value || dateInput.getAttribute('value') || '').trim() : '';
-      const dNice = niceDate(rawDate);
-
-      if (!title || !dNice) return;
-
-      const m = loadMap();
-      m[title] = dNice;
-      saveMap(m);
-      applyFromMap();
-    }
-
-    // Hook: whenever DOM changes, if form is present, sync map
-    let raf = 0;
-    function schedule(){
-      if (raf) return;
-      raf = requestAnimationFrame(()=>{
-        raf = 0;
-        applyFromMap();
-        readEditFormAndUpdateMap();
-      });
-    }
-
-    const obs = new MutationObserver(()=>schedule());
-    obs.observe(doc.body, {childList:true, subtree:true});
-
-    // initial
-    schedule();
-    setTimeout(schedule, 400);
-    setTimeout(schedule, 1400);
-
-    doc.__cadirV33Injected = true;
-  }
-
-  document.getElementById('frame-perdir')?.addEventListener('load', function(){
-    setTimeout(injectIntoPerdir, 600);
-    setTimeout(injectIntoPerdir, 1400);
-  });
-
-  const _loadModule = window.loadModule;
-  if (typeof _loadModule === 'function'){
-    window.loadModule = function(name){
-      const r = _loadModule.apply(this, arguments);
-      if (name === 'perdir'){
-        setTimeout(injectIntoPerdir, 700);
-        setTimeout(injectIntoPerdir, 1600);
-      }
-      return r;
-    };
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(injectIntoPerdir, 1200);
-  });
-})();
-</script>
-
-
-<script>
-/* ===== V34 - Fix "OK en local mais pas en ligne" (GitHub Pages) =====
-   Cause probable: l'iframe PERDIR est recréée en blob / re-render => localStorage iframe non persistant + timing.
-   V34:
-   - Stocke le mapping Titre -> DateDébut dans le localStorage PARENT (persistant)
-   - Injecte dans l'iframe un "reporter" qui envoie (postMessage) {title, start} dès que le formulaire est visible
-   - Réapplique les dates en polling (robuste) + au message reçu
-   Format: dddd dd mmmm (fr-FR)
-*/
-(function(){
-  const MAP_KEY = 'cadir_ap_title_to_start_global_v1';
-
-  function normalize(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
-
-  function loadMap(){
-    try{ return JSON.parse(localStorage.getItem(MAP_KEY) || '{}') || {}; }catch(e){ return {}; }
-  }
-  function saveMap(m){
-    try{ localStorage.setItem(MAP_KEY, JSON.stringify(m||{})); }catch(e){}
-  }
-
-  const fmt = new Intl.DateTimeFormat('fr-FR', { weekday:'long', day:'2-digit', month:'long' });
-  function parseToDate(v){
-    if (!v) return null;
-    const s = String(v).trim();
-    let m = s.match(/^(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{4})$/);
-    if (m) return new Date(Number(m[3]), Number(m[2])-1, Number(m[1]));
-    m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if (m) return new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
-    const t = Date.parse(s);
-    if (!Number.isNaN(t)) return new Date(t);
-    return null;
-  }
-  function niceDate(v){
-    const d = parseToDate(v);
-    if (!d) return null;
-    return fmt.format(d).replace(/\.$/, '');
-  }
-
-  function getPerdirDoc(){
-    const fr = document.getElementById('frame-perdir');
-    if (!fr) return null;
-    try{ return fr.contentDocument; }catch(e){ return null; }
-  }
-
-  function ensureIframeReporter(){
-    const fr = document.getElementById('frame-perdir');
-    if (!fr) return;
-    let doc, win;
-    try{ win = fr.contentWindow; doc = fr.contentDocument; }catch(e){ return; }
-    if (!doc || doc.__cadirReporterInjected) return;
-
-    // CSS for inline date in cards (inside iframe)
-    const st = doc.createElement('style');
-    st.textContent = `
-      .ap-inline-date{
-        color:#6b7280;
-        font-size:12px;
-        font-weight:800;
-        margin-left:8px;
-        white-space:nowrap;
-      }
-      .ap-inline-date::before{ content:"• "; font-weight:900; }
-    `;
-    doc.head.appendChild(st);
-
-    // Reporter script in iframe: detect form and post title/start to parent
-    const reporter = doc.createElement('script');
-    reporter.textContent = `
-      (function(){
-        function norm(s){ return String(s||'').trim().toLowerCase().replace(/\\s+/g,' '); }
-
-        function findFormFields(){
-          const labels = Array.from(document.querySelectorAll('label'));
-          const titleLb = labels.find(lb => norm(lb.textContent).includes('intitul'));
-          const dateLb  = labels.find(lb => norm(lb.textContent) === 'début' || norm(lb.textContent).includes('début'));
-
-          let titleInput=null, dateInput=null;
-          if (titleLb){
-            const fid = titleLb.getAttribute('for');
-            titleInput = fid ? document.querySelector('#'+CSS.escape(fid)) : (titleLb.parentElement && titleLb.parentElement.querySelector('input,textarea'));
-          }
-          if (!titleInput) titleInput = document.querySelector('input[name*="intitul" i], input[name*="title" i]');
-
-          if (dateLb){
-            const fid = dateLb.getAttribute('for');
-            dateInput = fid ? document.querySelector('#'+CSS.escape(fid)) : (dateLb.parentElement && dateLb.parentElement.querySelector('input'));
-          }
-          if (!dateInput) dateInput = document.querySelector('input[type="date"], input[name*="debut" i], input[name*="start" i]');
-
-          return {titleInput, dateInput};
-        }
-
-        function isEditScreen(){
-          const heads = Array.from(document.querySelectorAll('h1,h2,h3,h4'));
-          return heads.some(h => norm(h.textContent).includes("modifier l'événement") || norm(h.textContent).includes("modifier l'evenement"));
-        }
-
-        function snapshot(){
-          if (!isEditScreen()) return;
-          const {titleInput, dateInput} = findFormFields();
-          const title = titleInput ? norm(titleInput.value) : '';
-          const start = dateInput ? String(dateInput.value||dateInput.getAttribute('value')||'').trim() : '';
-          if (!title || !start) return;
-          try{ parent.postMessage({type:'cadir-ap-start', title, start}, '*'); }catch(e){}
-        }
-
-        const obs = new MutationObserver(()=>snapshot());
-        obs.observe(document.body, {childList:true, subtree:true});
-
-        document.addEventListener('input', snapshot, true);
-        document.addEventListener('change', snapshot, true);
-        setInterval(snapshot, 800);
-        setTimeout(snapshot, 500);
-      })();
-    `;
-    doc.body.appendChild(reporter);
-
-    doc.__cadirReporterInjected = true;
-  }
-
-  function findCards(doc){
-    const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
-    const cards = new Set();
-    pens.forEach(icon=>{
-      const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
-      if (!p) return;
-      const hasTrash = !!p.querySelector('.fa-trash,.fa-trash-alt') || !!p.querySelector('button[title*="sup" i],a[title*="sup" i]');
-      if (!hasTrash) return;
-      let card = p;
-      for(let j=0;j<4;j++){
-        if (!card.parentElement) break;
-        const cs = doc.defaultView.getComputedStyle(card);
-        if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
-        card = card.parentElement;
-      }
-      cards.add(card);
-    });
-    return Array.from(cards);
-  }
-
-  function getCardTitle(doc, card){
-    const el = card.querySelector('h3,h4,.title,.card-title,strong') || card;
-    return normalize(el.textContent || '');
-  }
-
-  function upsertDate(doc, card, dateStr){
-    const existing = card.querySelector('.ap-inline-date');
-    if (existing){ existing.textContent = dateStr; return; }
-    const span = doc.createElement('span');
-    span.className = 'ap-inline-date';
-    span.textContent = dateStr;
-
-    const parentsLine = Array.from(card.querySelectorAll('*')).find(n => normalize(n.textContent).includes('parents inform'));
-    if (parentsLine){ parentsLine.appendChild(span); return; }
-    const titleLine = card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
-    titleLine.appendChild(span);
-  }
-
-  function applyDatesToCards(){
-    const doc = getPerdirDoc();
-    if (!doc) return;
-    const map = loadMap();
-    const cards = findCards(doc);
-    cards.forEach(card=>{
-      const t = getCardTitle(doc, card);
-      if (!t) return;
-      const raw = map[t];
-      const dn = niceDate(raw);
-      if (dn) upsertDate(doc, card, dn);
-    });
-  }
-
-  // listen messages from iframe reporter
-  window.addEventListener('message', function(e){
-    if (!e || !e.data || e.data.type !== 'cadir-ap-start') return;
-    const title = normalize(e.data.title);
-    const start = String(e.data.start||'').trim();
-    const dn = niceDate(start);
-    if (!title || !dn) return;
-    const m = loadMap();
-    m[title] = start; // store raw, format at display time
-    saveMap(m);
-    applyDatesToCards();
-  });
-
-  // robust polling (handles blob recreation / timing online)
-  setInterval(()=>{
-    ensureIframeReporter();
-    applyDatesToCards();
-  }, 900);
-
-  document.getElementById('frame-perdir')?.addEventListener('load', function(){
-    setTimeout(ensureIframeReporter, 400);
-    setTimeout(applyDatesToCards, 800);
-  });
-
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(ensureIframeReporter, 900);
-    setTimeout(applyDatesToCards, 1200);
-  });
-})();
-</script>
-
-
-<script>
 /* ===== V35 - Synchro totale vers pilote_data.json (miroir localStorage des iframes) =====
 Objectif: TOUTES les données saisies (dans les modules/iframes) doivent finir dans pilote_data.json.
 Problème en ligne: parfois l'accès direct à frame.contentWindow.localStorage est instable (blob/sandbox/timing).
@@ -7657,866 +5626,531 @@ Principe:
 </script>
 
 
-<script>
-/* ===== V43 - Activités pédagogiques: tri du plus récent au plus ancien =====
-   - Trie les vignettes selon la date de début affichée (celle à côté de l'intitulé)
-   - Fonctionne même si le module rerender (MutationObserver + debounce)
-*/
-(function(){
-  function injectSortIntoPerdir(){
-    const fr = document.getElementById('frame-perdir');
-    if(!fr) return;
-    let doc;
-    try{ doc = fr.contentDocument; }catch(e){ return; }
-    if(!doc || doc.__cadirV43SortInjected) return;
-
-    function parseDateFromCard(card){
-      // Prefer our injected date span
-      const s = card.querySelector('.ap-inline-date')?.textContent?.trim() || '';
-      // expected: "• 19/02/2026" OR "mardi 19 février" depending earlier versions,
-      // but V42 shows dd/mm/yyyy; handle both.
-      let m = s.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
-      if (m){
-        const d = new Date(Number(m[3]), Number(m[2])-1, Number(m[1]));
-        return d.getTime();
-      }
-      // fallback: try ISO in attributes/text
-      const t = (card.textContent || '') + ' ' + (card.innerHTML || '');
-      m = t.match(/\b(\d{4})-(\d{2})-(\d{2})\b/);
-      if (m){
-        const d = new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
-        return d.getTime();
-      }
-      // fallback: try french long date (very permissive) using Date.parse
-      const ts = Date.parse(s);
-      if (!Number.isNaN(ts)) return ts;
-      return -Infinity;
-    }
-
-    function findCardsAndContainer(){
-      // Cards heuristic: those that have pen+trash buttons (like earlier)
-      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
-      const cards = new Set();
-      let commonParent = null;
-
-      pens.forEach(icon=>{
-        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
-        if (!p) return;
-        const hasTrash = !!p.querySelector('.fa-trash,.fa-trash-alt') || !!p.querySelector('button[title*="sup" i],a[title*="sup" i]');
-        if (!hasTrash) return;
-
-        let card = p;
-        for(let j=0;j<4;j++){
-          if (!card.parentElement) break;
-          const cs = doc.defaultView.getComputedStyle(card);
-          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
-          card = card.parentElement;
-        }
-        cards.add(card);
-
-        // guess container: nearest parent that contains multiple cards
-        const parent = card.parentElement;
-        if (parent){
-          if (!commonParent) commonParent = parent;
-          else if (commonParent !== parent){
-            // if different parents, keep a higher ancestor if possible
-            const a = commonParent.closest('div,section,main,body') || commonParent;
-            const b = parent.closest('div,section,main,body') || parent;
-            // choose the one that contains the other
-            if (a.contains(b)) commonParent = a;
-            else if (b.contains(a)) commonParent = b;
-          }
-        }
-      });
-
-      const cardsArr = Array.from(cards);
-      if (!cardsArr.length) return {container:null, cards:[]};
-
-      // If commonParent doesn't directly contain all cards, climb up until it does
-      let container = commonParent || cardsArr[0].parentElement;
-      for (let i=0;i<6 && container && cardsArr.some(c=>c.parentElement !== container); i++){
-        container = container.parentElement;
-      }
-      // final fallback: direct parent of first card
-      if (!container) container = cardsArr[0].parentElement;
-
-      return {container, cards: cardsArr};
-    }
-
-    let raf = 0;
-    function sortNow(){
-      raf = 0;
-      const {container, cards} = findCardsAndContainer();
-      if (!container || cards.length < 2) return;
-
-      // Ensure we only sort siblings in the same container
-      const siblings = cards.filter(c => c.parentElement === container);
-      if (siblings.length < 2) return;
-
-      const sorted = [...siblings].sort((a,b)=>parseDateFromCard(b)-parseDateFromCard(a));
-      // Re-append in order (stable for DOM)
-      sorted.forEach(el=>container.appendChild(el));
-    }
-
-    function scheduleSort(){
-      if (raf) return;
-      raf = requestAnimationFrame(sortNow);
-    }
-
-    // Observe rerenders
-    const obs = new MutationObserver(()=>scheduleSort());
-    obs.observe(doc.body, {childList:true, subtree:true});
-
-    // initial + retries
-    scheduleSort();
-    setTimeout(scheduleSort, 350);
-    setTimeout(scheduleSort, 1200);
-
-    doc.__cadirV43SortInjected = true;
-  }
-
-  document.getElementById('frame-perdir')?.addEventListener('load', function(){
-    setTimeout(injectSortIntoPerdir, 500);
-    setTimeout(injectSortIntoPerdir, 1200);
-  });
-
-  const _loadModule = window.loadModule;
-  if (typeof _loadModule === 'function'){
-    window.loadModule = function(name){
-      const r = _loadModule.apply(this, arguments);
-      if (name === 'perdir'){
-        setTimeout(injectSortIntoPerdir, 700);
-        setTimeout(injectSortIntoPerdir, 1600);
-      }
-      return r;
-    };
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(injectSortIntoPerdir, 1200);
-  });
-})();
-</script>
-
 
 <script>
-/* V44 - Ne pas afficher le contenu "Message à adresser aux parents" dans les vignettes */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ACTIVITÉS PÉDAGOGIQUES — Module unifié
+   ═══════════════════════════════════════════════════════════════════════════════
+   Remplace V24→V34 et V43→V50.
+   
+   Fonctionnalités :
+   ① Dates : détection depuis le formulaire (reporter iframe → parent via postMessage),
+     fallback par scan du localStorage iframe, stockage persistant côté parent.
+   ② Layout vignettes : Intitulé + Date + badge PARENTS INFORMÉS + bouton Modifier.
+     Masque description, message parents, bouton supprimer.
+   ③ Tri : du plus récent au plus ancien.
+   ④ Formulaire : titre + date de début obligatoires, champ échéance masqué.
+   ═══════════════════════════════════════════════════════════════════════════════ */
 (function(){
-  function injectHideMessage(){
-    const fr = document.getElementById('frame-perdir');
-    if(!fr) return;
-    let doc;
-    try{ doc = fr.contentDocument; }catch(e){ return; }
-    if(!doc || doc.__cadirHideMsg) return;
+  'use strict';
 
-    const style = doc.createElement('style');
-    style.textContent = `
-      /* Cache les paragraphes longs dans les vignettes (message parents) */
-      div, article, section {
-      }
-      .card p,
-      .card .message,
-      .card .content,
-      div[class*="card"] p {
-        display: none !important;
-      }
-    `;
-    doc.head.appendChild(style);
+  /* ─────────── Constantes ─────────── */
+  var MAP_KEY = 'cadir_ap_title_to_start_v2';
+  var FRAME_ID = 'frame-perdir';
 
-    doc.__cadirHideMsg = true;
+  /* ─────────── Helpers ─────────── */
+  function normalize(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
+  function pad2(n){ return String(n).padStart(2,'0'); }
+
+  var dateFmt = new Intl.DateTimeFormat('fr-FR', { weekday:'long', day:'2-digit', month:'long' });
+  function parseToDate(v){
+    if (!v) return null;
+    var s = String(v).trim();
+    var m = s.match(/^(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{4})$/);
+    if (m) return new Date(Number(m[3]), Number(m[2])-1, Number(m[1]));
+    m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
+    var t = Date.parse(s);
+    if (!Number.isNaN(t)) return new Date(t);
+    return null;
+  }
+  function niceDate(v){
+    var d = parseToDate(v);
+    if (!d || isNaN(d.getTime())) return null;
+    return dateFmt.format(d).replace(/\.$/,'');
+  }
+  function isoToFr(iso){
+    var m = String(iso||'').trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return String(iso||'').trim();
+    return m[3]+'/'+m[2]+'/'+m[1];
   }
 
-  document.getElementById('frame-perdir')?.addEventListener('load', function(){
-    setTimeout(injectHideMessage, 600);
-  });
-
-  const _loadModule = window.loadModule;
-  if (typeof _loadModule === 'function'){
-    window.loadModule = function(name){
-      const r = _loadModule.apply(this, arguments);
-      if (name === 'perdir'){
-        setTimeout(injectHideMessage, 800);
-      }
-      return r;
-    };
+  /* ─────────── Mapping titre→date (localStorage parent) ─────────── */
+  function loadMap(){
+    try{ return JSON.parse(localStorage.getItem(MAP_KEY)||'{}') || {}; }catch(e){ return {}; }
+  }
+  function saveMap(m){
+    try{ localStorage.setItem(MAP_KEY, JSON.stringify(m||{})); }catch(e){}
   }
 
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(injectHideMessage, 1200);
-  });
-})();
-</script>
-
-
-<script>
-/* ===== V45 - Vignettes Activités pédagogiques =====
-   - Réduit la hauteur (compact)
-   - Aligne parfaitement Titre + Date (sur une ligne)
-   - Ajoute un badge "PARENTS INFORMÉS" si l'option est cochée / détectée
-   - Continue de cacher le contenu du message parents dans les vignettes
-*/
-(function(){
-  function injectActivitiesCardUI(){
-    const fr = document.getElementById('frame-perdir');
-    if(!fr) return;
-    let doc;
-    try{ doc = fr.contentDocument; }catch(e){ return; }
-    if(!doc || doc.__cadirV45Cards) return;
-
-    const style = doc.createElement('style');
-    style.textContent = `
-      /* Cible vignettes: conteneurs avec boutons crayon + corbeille */
-      .cadir-ap-card{
-        padding: 10px 14px !important;
-        min-height: unset !important;
-      }
-
-      .cadir-ap-head{
-        display:flex !important;
-        align-items:center !important;
-        gap:8px !important;
-        flex-wrap:wrap !important;
-      }
-
-      .cadir-ap-title{
-        font-weight:800 !important;
-        display:flex !important;
-        align-items:baseline !important;
-        gap:8px !important;
-        margin:0 !important;
-        line-height:1.1 !important;
-      }
-
-      .cadir-ap-date{
-        color:#6b7280 !important;
-        font-size:12px !important;
-        font-weight:800 !important;
-        white-space:nowrap !important;
-      }
-
-      .cadir-ap-badge{
-        background: rgba(16,185,129,.12) !important;
-        color: #059669 !important;
-        border: 1px solid rgba(16,185,129,.25) !important;
-        font-weight:900 !important;
-        font-size:11px !important;
-        padding: 3px 8px !important;
-        border-radius: 999px !important;
-        white-space:nowrap !important;
-      }
-
-      /* cacher le message parents (contenu long) dans les vignettes */
-      .cadir-ap-card p,
-      .cadir-ap-card .message,
-      .cadir-ap-card .content,
-      .cadir-ap-card .ql-editor,
-      .cadir-ap-card textarea{
-        display:none !important;
-      }
-
-      /* réduire espaces internes */
-      .cadir-ap-card *{
-        margin-bottom: 0 !important;
-      }
-    `;
-    doc.head.appendChild(style);
-
-    function normalize(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
-
-    function findCards(){
-      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
-      const cards = new Set();
-      pens.forEach(icon=>{
-        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
-        if (!p) return;
-        const hasTrash = !!p.querySelector('.fa-trash,.fa-trash-alt') || !!p.querySelector('button[title*="sup" i],a[title*="sup" i]');
-        if (!hasTrash) return;
-
-        let card = p;
-        for(let j=0;j<4;j++){
-          if (!card.parentElement) break;
-          const cs = doc.defaultView.getComputedStyle(card);
-          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
-          card = card.parentElement;
-        }
-        cards.add(card);
-      });
-      return Array.from(cards);
-    }
-
-    function detectParentsInformed(card){
-      // best effort: if the card has an icon/check or the text already contains "Parents inform"
-      const txt = normalize(card.textContent);
-      if (txt.includes('parents inform')) return true;
-      // some UIs show a check icon near it
-      if (card.querySelector('.fa-check, .fa-check-circle, .bi-check, .lucide-check')) return true;
-      return false;
-    }
-
-    function getTitleNode(card){
-      return card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
-    }
-
-    function ensureHeaderLayout(card){
-      card.classList.add('cadir-ap-card');
-
-      // locate title element
-      const titleNode = getTitleNode(card);
-      if (!titleNode) return;
-
-      // date span (already injected by earlier versions): .ap-inline-date or text near title
-      let dateSpan = card.querySelector('.ap-inline-date');
-      if (dateSpan){
-        // convert to our class + strip bullet
-        dateSpan.classList.add('cadir-ap-date');
-        dateSpan.textContent = dateSpan.textContent.replace(/^•\s*/,'').trim();
-      }
-
-      // Wrap title + date into a single line container
-      // Avoid duplicating wrapper
-      if (!titleNode.closest('.cadir-ap-head')){
-        const head = doc.createElement('div');
-        head.className = 'cadir-ap-head';
-
-        const titleWrap = doc.createElement('div');
-        titleWrap.className = 'cadir-ap-title';
-
-        // move titleNode into titleWrap
-        titleNode.parentElement.insertBefore(head, titleNode);
-        head.appendChild(titleWrap);
-        titleWrap.appendChild(titleNode);
-
-        // move dateSpan next to title
-        if (dateSpan){
-          titleWrap.appendChild(dateSpan);
-        }
-
-        // badge if parents informed
-        if (detectParentsInformed(card)){
-          const badge = doc.createElement('span');
-          badge.className = 'cadir-ap-badge';
-          badge.textContent = 'PARENTS INFORMÉS';
-          head.appendChild(badge);
-        }
-      } else {
-        // already wrapped: ensure badge exists
-        const head = titleNode.closest('.cadir-ap-head');
-        if (head && !head.querySelector('.cadir-ap-badge') && detectParentsInformed(card)){
-          const badge = doc.createElement('span');
-          badge.className = 'cadir-ap-badge';
-          badge.textContent = 'PARENTS INFORMÉS';
-          head.appendChild(badge);
-        }
-      }
-    }
-
-    let raf=0;
-    function apply(){
-      raf=0;
-      const cards = findCards();
-      cards.forEach(ensureHeaderLayout);
-    }
-    function schedule(){
-      if (raf) return;
-      raf = requestAnimationFrame(apply);
-    }
-
-    const obs = new MutationObserver(()=>schedule());
-    obs.observe(doc.body, {childList:true, subtree:true});
-    schedule();
-    setTimeout(schedule, 350);
-    setTimeout(schedule, 1200);
-
-    doc.__cadirV45Cards = true;
+  /* ─────────── Accès iframe ─────────── */
+  function getFrame(){
+    return document.getElementById(FRAME_ID);
+  }
+  function getIframeDocWin(){
+    var fr = getFrame();
+    if (!fr) return null;
+    try{ return { doc: fr.contentDocument, win: fr.contentWindow }; }catch(e){ return null; }
   }
 
-  document.getElementById('frame-perdir')?.addEventListener('load', function(){
-    setTimeout(injectActivitiesCardUI, 600);
-    setTimeout(injectActivitiesCardUI, 1400);
-  });
+  /* ═══════════════════════════════════════
+     ① REPORTER IFRAME (détection formulaire)
+     ═══════════════════════════════════════ */
+  function ensureIframeReporter(){
+    var ifw = getIframeDocWin();
+    if (!ifw || !ifw.doc || ifw.doc.__cadirAPReporter) return;
+    var doc = ifw.doc;
 
-  const _loadModule = window.loadModule;
-  if (typeof _loadModule === 'function'){
-    window.loadModule = function(name){
-      const r = _loadModule.apply(this, arguments);
-      if (name === 'perdir'){
-        setTimeout(injectActivitiesCardUI, 800);
-        setTimeout(injectActivitiesCardUI, 1600);
-      }
-      return r;
-    };
+    var reporter = doc.createElement('script');
+    reporter.textContent = [
+      '(function(){',
+      '  function norm(s){ return String(s||"").trim().toLowerCase().replace(/\\s+/g," "); }',
+      '  function findFormFields(){',
+      '    var labels = Array.from(document.querySelectorAll("label"));',
+      '    var titleLb = labels.find(function(lb){ return norm(lb.textContent).indexOf("intitul")>=0; });',
+      '    var dateLb  = labels.find(function(lb){ var t=norm(lb.textContent); return t==="début" || t.indexOf("début")>=0; });',
+      '    var titleInput=null, dateInput=null;',
+      '    if(titleLb){ var fid=titleLb.getAttribute("for"); titleInput=fid?document.querySelector("#"+CSS.escape(fid)):titleLb.parentElement&&titleLb.parentElement.querySelector("input,textarea"); }',
+      '    if(!titleInput) titleInput=document.querySelector("input[name*=intitul i],input[name*=title i]");',
+      '    if(dateLb){ var fid2=dateLb.getAttribute("for"); dateInput=fid2?document.querySelector("#"+CSS.escape(fid2)):dateLb.parentElement&&dateLb.parentElement.querySelector("input"); }',
+      '    if(!dateInput) dateInput=document.querySelector("input[type=date],input[name*=debut i],input[name*=start i]");',
+      '    return {titleInput:titleInput, dateInput:dateInput};',
+      '  }',
+      '  function snapshot(){',
+      '    var f=findFormFields(); if(!f.titleInput||!f.dateInput) return;',
+      '    var title=norm(f.titleInput.value), start=String(f.dateInput.value||f.dateInput.getAttribute("value")||"").trim();',
+      '    if(!title||!start) return;',
+      '    try{ parent.postMessage({type:"cadir-ap-start",title:title,start:start},"*"); }catch(e){}',
+      '  }',
+      '  var obs=new MutationObserver(function(){snapshot();});',
+      '  obs.observe(document.body,{childList:true,subtree:true});',
+      '  document.addEventListener("input",snapshot,true);',
+      '  document.addEventListener("change",snapshot,true);',
+      '  setInterval(snapshot,800); setTimeout(snapshot,500);',
+      '})();'
+    ].join('\n');
+    doc.body.appendChild(reporter);
+    doc.__cadirAPReporter = true;
   }
 
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(injectActivitiesCardUI, 1200);
+  /* Écoute les messages du reporter */
+  window.addEventListener('message', function(e){
+    if (!e||!e.data||e.data.type!=='cadir-ap-start') return;
+    var title = normalize(e.data.title);
+    var start = String(e.data.start||'').trim();
+    if (!title||!start) return;
+    var m = loadMap();
+    m[title] = start;
+    saveMap(m);
+    applyToCards();
   });
-})();
-</script>
 
+  /* ═══════════════════════════════════════
+     ② SCAN LOCALSTORAGE IFRAME (fallback)
+     ═══════════════════════════════════════ */
+  function pickTitle(o){ return o&&(o.title||o.titre||o.intitule||o['intitulé']||o.name||o.libelle||o.label)||null; }
+  function pickStart(o){ return o&&(o.start||o.debut||o.dateDebut||o['date_début']||o.date_debut||o.startDate||o.date)||null; }
 
-<script>
-/* ===== V46 - Ajustements demandés =====
-1) Activités pédagogiques (PERDIR)
-   - Garder uniquement l'icône MODIFIER dans la vignette (à droite)
-   - Masquer toute icône SUPPRIMER dans la vignette (suppression uniquement dans "Modifier")
-   - Continuer à masquer le texte "Message à adresser aux parents" dans les vignettes
-   - Tri inverse chronologique (plus récent -> plus ancien) conservé/renforcé
-2) Accueil
-   - Mettre les événements du jour dans une VIGNETTE (card) sous le logo (si présents)
-*/
-(function(){
-  /* ---------- ACCUEIL: vignette événements du jour ---------- */
-  function wrapHomeTodayEvents(){
-    // Heuristiques: on cherche une liste/containeur déjà généré pour "aujourd'hui"
-    const candidates = [
-      document.getElementById('todayEvents'),
-      document.querySelector('#homeTodayEvents'),
-      document.querySelector('.today-events'),
-      document.querySelector('.home-today-events'),
-      document.querySelector('[data-role="today-events"]')
-    ].filter(Boolean);
-
-    let box = candidates[0];
-    if (!box){
-      // fallback: chercher un bloc contenant "AUJOURD" + items
-      const all = Array.from(document.querySelectorAll('div,section,article,ul'));
-      box = all.find(el => /aujourd/i.test(el.textContent || '') && (el.querySelector('li') || (el.children && el.children.length>=2)));
+  function extractActivitiesFromValue(val){
+    if (!val) return null;
+    var t = String(val).trim();
+    if (!(t.charAt(0)==='{' || t.charAt(0)==='[')) return null;
+    var data;
+    try{ data = JSON.parse(t); }catch(e){ return null; }
+    if (Array.isArray(data) && data.length && pickTitle(data[0]) && pickStart(data[0])) return data;
+    if (data && typeof data==='object'){
+      var keys = Object.keys(data);
+      for (var i=0;i<keys.length;i++){
+        var arr = data[keys[i]];
+        if (Array.isArray(arr)&&arr.length&&pickTitle(arr[0])&&pickStart(arr[0])) return arr;
+      }
     }
-    if (!box) return;
+    return null;
+  }
 
-    // déjà wrap ?
-    if (box.closest('.cadir-home-card')) return;
+  function scanLocalStorageForDates(){
+    var ifw = getIframeDocWin();
+    if (!ifw||!ifw.win) return {};
+    var ls = ifw.win.localStorage;
+    var result = {};
+    try{
+      for (var i=0;i<ls.length;i++){
+        var k = ls.key(i);
+        var arr = extractActivitiesFromValue(ls.getItem(k));
+        if (arr){
+          arr.forEach(function(a){
+            var tit = normalize(pickTitle(a));
+            var st = pickStart(a);
+            if (tit && st && !result[tit]) result[tit] = st;
+          });
+        }
+      }
+    }catch(e){}
+    return result;
+  }
 
-    const card = document.createElement('div');
-    card.className = 'cadir-home-card';
-    const title = document.createElement('div');
-    title.className = 'cadir-home-card-title';
-    title.textContent = "ÉVÉNEMENTS DU JOUR";
-    const body = document.createElement('div');
-    body.className = 'cadir-home-card-body';
+  /* ═══════════════════════════════════════
+     ③ DÉTECTION DES CARTES
+     ═══════════════════════════════════════ */
+  function findCards(doc){
+    var pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
+    var cards = new Set();
+    pens.forEach(function(icon){
+      var p = (icon.closest('button,a')||icon).closest('div,li,article,section');
+      if (!p) return;
+      var card = p;
+      for(var j=0;j<4;j++){
+        if (!card.parentElement) break;
+        var cs = doc.defaultView.getComputedStyle(card);
+        if ((cs.borderRadius && cs.borderRadius!=='0px') || cs.boxShadow!=='none') break;
+        card = card.parentElement;
+      }
+      cards.add(card);
+    });
+    return Array.from(cards);
+  }
 
-    // déplacer box dans body
-    const parent = box.parentElement;
+  function getCardTitle(card){
+    var el = card.querySelector('h3,h4,.title,.card-title,strong') || card;
+    return normalize(el.textContent || '');
+  }
+
+  /* ═══════════════════════════════════════
+     ④ INJECTION CSS IFRAME
+     ═══════════════════════════════════════ */
+  function injectCSS(doc){
+    if (doc.__cadirAPCss) return;
+    var st = doc.createElement('style');
+    st.textContent = [
+      /* Date inline */
+      '.ap-inline-date{ color:#6b7280; font-size:12px; font-weight:800; margin-left:8px; white-space:nowrap; }',
+
+      /* Card compact */
+      '.cadir-ap-card{ padding:10px 14px !important; }',
+
+      /* Header flex: left + right */
+      '.cadir-ap-head{ display:flex !important; align-items:flex-start !important; justify-content:space-between !important; gap:12px !important; }',
+      '.cadir-ap-left{ flex:1 1 auto !important; min-width:0 !important; display:flex !important; flex-direction:column !important; gap:6px !important; }',
+      '.cadir-ap-titleline{ display:flex !important; align-items:baseline !important; gap:8px !important; flex-wrap:wrap !important; }',
+      '.cadir-ap-date{ color:#6b7280 !important; font-size:12px !important; font-weight:800 !important; white-space:nowrap !important; }',
+      '.cadir-ap-meta{ display:flex !important; align-items:center !important; gap:8px !important; flex-wrap:wrap !important; }',
+
+      /* Badge parents */
+      '.cadir-ap-badge{ background:rgba(16,185,129,.12) !important; color:#059669 !important;',
+      '  border:1px solid rgba(16,185,129,.25) !important; font-weight:900 !important;',
+      '  font-size:11px !important; padding:3px 8px !important; border-radius:999px !important;',
+      '  text-transform:uppercase !important; white-space:nowrap !important; }',
+
+      /* Actions (bouton modifier) */
+      '.cadir-ap-actions{ flex:0 0 auto !important; margin-left:auto !important; display:flex !important; align-items:center !important; justify-content:flex-end !important; }',
+
+      /* Bouton modifier stylisé */
+      '.cadir-ap-edit-btn{ width:34px !important; height:34px !important; border-radius:10px !important;',
+      '  border:1px solid rgba(15,23,42,.10) !important; background:#f8fafc !important;',
+      '  box-shadow:0 6px 16px rgba(0,0,0,.06) !important;',
+      '  display:inline-flex !important; align-items:center !important; justify-content:center !important;',
+      '  cursor:pointer !important; transition:transform .08s ease,background .15s ease; }',
+      '.cadir-ap-edit-btn:hover{ transform:translateY(-1px); background:#fff !important; }',
+      '.cadir-ap-edit-btn:active{ transform:translateY(0); }',
+      '.cadir-ap-edit-btn .fa-pen,.cadir-ap-edit-btn .fa-pencil,.cadir-ap-edit-btn .fa-edit{ font-size:14px !important; opacity:.9 !important; }',
+
+      /* Masquer supprimer */
+      '.cadir-ap-card .fa-trash,.cadir-ap-card .fa-trash-alt,.cadir-ap-card .bi-trash,',
+      '.cadir-ap-card button[title*="sup" i],.cadir-ap-card a[title*="sup" i]{ display:none !important; visibility:hidden !important; pointer-events:none !important; }',
+
+      /* Masquer description / message / contenu long */
+      '.cadir-ap-card .ql-editor,.cadir-ap-card [contenteditable="true"],',
+      '.cadir-ap-card textarea,.cadir-ap-card .richtext,.cadir-ap-card .wysiwyg,',
+      '.cadir-ap-card .description,.cadir-ap-card [class*="desc" i],',
+      '.cadir-ap-card [data-field*="message" i]{ display:none !important; }',
+
+      /* Doublons texte parents */
+      '.cadir-ap-old-parents{ display:none !important; }',
+
+      /* Champ échéance masqué */
+      '.cadir-hide-due{ display:none !important; }',
+
+      /* Champs date compacts */
+      'input[type="date"]{ width:140px !important; max-width:140px !important; }',
+
+      /* Requis */
+      '.ap-invalid{ outline:2px solid #ef4444 !important; border-color:#ef4444 !important; }',
+      '.ap-required-hint{ color:#b91c1c; font-size:12px; font-weight:900; margin-left:6px; }'
+    ].join('\n');
+    doc.head.appendChild(st);
+    doc.__cadirAPCss = true;
+  }
+
+  /* ═══════════════════════════════════════
+     ⑤ LAYOUT D'UNE CARTE
+     ═══════════════════════════════════════ */
+  function detectParentsInformed(card){
+    var t = normalize(card.textContent || '');
+    if (t.indexOf('parents inform')>=0) return true;
+    if (t.indexOf('message envoyé aux parents')>=0 || t.indexOf('message envoye aux parents')>=0) return true;
+    if (card.querySelector('.fa-check,.fa-check-circle,.bi-check,.lucide-check')) return true;
+    return false;
+  }
+
+  function removeDuplicateParentsText(card){
+    Array.from(card.querySelectorAll('*')).forEach(function(n){
+      if (n.classList && (n.classList.contains('cadir-ap-badge') || n.classList.contains('cadir-ap-date'))) return;
+      var txt = normalize(n.textContent || '');
+      if ((txt==='parents informés'||txt==='parents informes'||txt.indexOf('parents inform')===0)
+          && (n.textContent||'').trim().length<=40){
+        n.classList.add('cadir-ap-old-parents');
+      }
+    });
+  }
+
+  function hideNonHeaderContent(card, head){
+    Array.from(card.children).forEach(function(ch){
+      if (ch===head) return;
+      if (ch.querySelector && ch.querySelector('.fa-pen,.fa-pencil,.fa-edit')) return;
+      ch.style.display = 'none';
+    });
+  }
+
+  function ensureLayout(doc, card, dateMap, lsFallback){
+    if (card.__cadirAPDone) return;
+    card.classList.add('cadir-ap-card');
+
+    var parentsSent = detectParentsInformed(card);
+    var editIcon = card.querySelector('.fa-pen,.fa-pencil,.fa-edit');
+    var editBtn = editIcon ? editIcon.closest('button,a') : null;
+    var titleNode = card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
+    var existingDateNode = card.querySelector('.ap-inline-date');
+
+    /* Résoudre la date */
+    var cardTitle = normalize(titleNode ? titleNode.textContent : '');
+    var rawDate = dateMap[cardTitle];
+    if (!rawDate){
+      /* Fallback: chercher par inclusion */
+      var keys = Object.keys(dateMap);
+      for (var i=0;i<keys.length;i++){
+        if (keys[i] && (keys[i].indexOf(cardTitle)>=0 || cardTitle.indexOf(keys[i])>=0)){ rawDate=dateMap[keys[i]]; break; }
+      }
+    }
+    if (!rawDate && lsFallback){
+      rawDate = lsFallback[cardTitle];
+      if (!rawDate){
+        var lsKeys = Object.keys(lsFallback);
+        for (var j=0;j<lsKeys.length;j++){
+          if (lsKeys[j] && (lsKeys[j].indexOf(cardTitle)>=0 || cardTitle.indexOf(lsKeys[j])>=0)){ rawDate=lsFallback[lsKeys[j]]; break; }
+        }
+      }
+    }
+    var displayDate = niceDate(rawDate);
+
+    /* Construire le header */
+    var head = doc.createElement('div');
+    head.className = 'cadir-ap-head';
+    var left = doc.createElement('div');
+    left.className = 'cadir-ap-left';
+    var titleLine = doc.createElement('div');
+    titleLine.className = 'cadir-ap-titleline';
+    var meta = doc.createElement('div');
+    meta.className = 'cadir-ap-meta';
+    var actions = doc.createElement('div');
+    actions.className = 'cadir-ap-actions';
+
+    card.insertBefore(head, card.firstChild);
+    head.appendChild(left);
+    head.appendChild(actions);
+    left.appendChild(titleLine);
+    left.appendChild(meta);
+
+    /* Titre */
+    if (titleNode) titleLine.appendChild(titleNode);
+
+    /* Date */
+    if (existingDateNode){
+      existingDateNode.classList.add('cadir-ap-date');
+      if (displayDate) existingDateNode.textContent = displayDate;
+      else existingDateNode.textContent = (existingDateNode.textContent||'').replace(/^•\s*/,'').trim();
+      titleLine.appendChild(existingDateNode);
+    } else if (displayDate){
+      var dateSpan = doc.createElement('span');
+      dateSpan.className = 'cadir-ap-date';
+      dateSpan.textContent = displayDate;
+      titleLine.appendChild(dateSpan);
+    }
+
+    /* Badge parents */
+    if (parentsSent){
+      var badge = doc.createElement('span');
+      badge.className = 'cadir-ap-badge';
+      badge.textContent = 'PARENTS INFORMÉS';
+      meta.appendChild(badge);
+    }
+
+    /* Bouton modifier */
+    if (editBtn){
+      editBtn.classList.add('cadir-ap-edit-btn');
+      editBtn.setAttribute('title','Modifier');
+      editBtn.setAttribute('aria-label','Modifier');
+      actions.appendChild(editBtn);
+    }
+
+    removeDuplicateParentsText(card);
+    hideNonHeaderContent(card, head);
+
+    card.__cadirAPDone = true;
+  }
+
+  /* ═══════════════════════════════════════
+     ⑥ TRI
+     ═══════════════════════════════════════ */
+  function parseDateForSort(card){
+    var dateEl = card.querySelector('.cadir-ap-date,.ap-inline-date');
+    if (!dateEl) return -Infinity;
+    var d = parseToDate(dateEl.textContent);
+    return d ? d.getTime() : -Infinity;
+  }
+
+  function sortCards(cards){
+    if (cards.length<2) return;
+    var parent = cards[0].parentElement;
     if (!parent) return;
-    parent.insertBefore(card, box);
-    card.appendChild(title);
-    card.appendChild(body);
-    body.appendChild(box);
+    var siblings = cards.filter(function(c){ return c.parentElement===parent; });
+    if (siblings.length<2) return;
+    var sorted = siblings.slice().sort(function(a,b){ return parseDateForSort(b)-parseDateForSort(a); });
+    var needsSort = false;
+    for(var i=0;i<sorted.length;i++){ if(sorted[i]!==siblings[i]){ needsSort=true; break; } }
+    if (needsSort) sorted.forEach(function(c){ parent.appendChild(c); });
+  }
 
-    // style
-    if (!document.getElementById('cadir-home-card-style')){
-      const st = document.createElement('style');
-      st.id = 'cadir-home-card-style';
-      st.textContent = `
-        .cadir-home-card{
-          background:#fff;
-          border-radius:14px;
-          box-shadow:0 8px 22px rgba(0,0,0,.06);
-          border:1px solid rgba(15,23,42,.08);
-          padding:14px 16px;
-          max-width: 720px;
-          margin: 14px auto 0 auto;
-        }
-        .cadir-home-card-title{
-          font-weight:900;
-          letter-spacing:.04em;
-          font-size:12px;
-          color:#0f172a;
-          margin-bottom:10px;
-          text-transform:uppercase;
-        }
-        .cadir-home-card-body{
-          font-size:14px;
-          color:#0f172a;
-        }
-        .cadir-home-card-body ul{ margin:0; padding-left:18px; }
-        .cadir-home-card-body li{ margin:6px 0; }
-      `;
-      document.head.appendChild(st);
+  /* ═══════════════════════════════════════
+     ⑦ FORMULAIRE : requis + masquer échéance
+     ═══════════════════════════════════════ */
+  function enforceFormRules(doc){
+    if (doc.__cadirAPFormDone) return;
+
+    /* Masquer champ échéance */
+    var labels = Array.from(doc.querySelectorAll('label,.field-label,.form-label'));
+    labels.forEach(function(lb){
+      var t = normalize(lb.textContent);
+      if (t.indexOf('échéance')>=0 || t.indexOf('echeance')>=0 || t.indexOf('due')>=0){
+        var row = lb.closest('.field,.form-group,.row,.grid,.input-group') || lb.parentElement;
+        if (row) row.classList.add('cadir-hide-due');
+        lb.classList.add('cadir-hide-due');
+        var inp = (row||lb).querySelector && (row||lb).querySelector('input,select,textarea');
+        if (inp){ inp.classList.add('cadir-hide-due'); var w=inp.closest('.field,.form-group,.row,.grid,.input-group')||inp.parentElement; if(w)w.classList.add('cadir-hide-due'); }
+      }
+    });
+    doc.querySelectorAll('input[name*="echeance" i],input[id*="echeance" i],input[name*="due" i],input[id*="due" i]').forEach(function(inp){
+      inp.classList.add('cadir-hide-due');
+      var w = inp.closest('.field,.form-group,.row,.grid,.input-group')||inp.parentElement;
+      if(w) w.classList.add('cadir-hide-due');
+    });
+
+    /* Titre + Date obligatoires */
+    var titleLb = labels.find(function(x){ return normalize(x.textContent).indexOf('intitul')>=0; });
+    var dateLb  = labels.find(function(x){ var t2=normalize(x.textContent); return t2==='début'||t2.indexOf('début')>=0; });
+
+    var titleInput=null, dateInput=null;
+    if(titleLb){ var fid=titleLb.getAttribute('for'); titleInput=fid?doc.querySelector('#'+CSS.escape(fid)):titleLb.parentElement&&titleLb.parentElement.querySelector('input,textarea'); }
+    if(!titleInput) titleInput=doc.querySelector('input[name*="intitul" i],input[name*="title" i]');
+    if(dateLb){ var fid2=dateLb.getAttribute('for'); dateInput=fid2?doc.querySelector('#'+CSS.escape(fid2)):dateLb.parentElement&&dateLb.parentElement.querySelector('input'); }
+    if(!dateInput) dateInput=doc.querySelector('input[type="date"],input[name*="debut" i],input[name*="start" i]');
+
+    if(titleInput){ titleInput.required=true; if(titleLb&&!titleLb.querySelector('.ap-required-hint')){ var s=doc.createElement('span');s.className='ap-required-hint';s.textContent='*';titleLb.appendChild(s); } }
+    if(dateInput){ dateInput.required=true; if(dateLb&&!dateLb.querySelector('.ap-required-hint')){ var s2=doc.createElement('span');s2.className='ap-required-hint';s2.textContent='*';dateLb.appendChild(s2); } }
+
+    var saveBtn = Array.from(doc.querySelectorAll('button,input[type="submit"]')).find(function(b){ return normalize(b.textContent||b.value).indexOf('enregistrer')>=0; });
+    if(saveBtn && !saveBtn.__cadirAPSaveHook){
+      saveBtn.__cadirAPSaveHook = true;
+      saveBtn.addEventListener('click', function(ev){
+        var ok=true;
+        if(titleInput){ titleInput.classList.remove('ap-invalid'); if(!String(titleInput.value||'').trim()){ ok=false; titleInput.classList.add('ap-invalid'); } }
+        if(dateInput){ dateInput.classList.remove('ap-invalid'); if(!String(dateInput.value||'').trim()){ ok=false; dateInput.classList.add('ap-invalid'); } }
+        if(!ok){ ev.preventDefault(); ev.stopPropagation(); alert('Veuillez renseigner le titre et la date de début.'); }
+      }, true);
+    }
+
+    doc.__cadirAPFormDone = true;
+  }
+
+  /* ═══════════════════════════════════════
+     ⑧ BOUCLE PRINCIPALE
+     ═══════════════════════════════════════ */
+  var _raf = 0;
+  var _applying = false;
+
+  function applyToCards(){
+    var ifw = getIframeDocWin();
+    if (!ifw||!ifw.doc) return;
+    var doc = ifw.doc;
+
+    _applying = true;
+    try{
+      injectCSS(doc);
+      ensureIframeReporter();
+      enforceFormRules(doc);
+
+      var dateMap = loadMap();
+      var lsFallback = scanLocalStorageForDates();
+
+      var cards = findCards(doc);
+      cards.forEach(function(card){ ensureLayout(doc, card, dateMap, lsFallback); });
+      sortCards(cards);
+    }finally{
+      _applying = false;
     }
   }
 
-  /* ---------- PERDIR: vignettes activités ---------- */
-  function injectPerdirCardTweaks(){
-    const fr = document.getElementById('frame-perdir');
-    if(!fr) return;
-    let doc;
-    try{ doc = fr.contentDocument; }catch(e){ return; }
-    if(!doc || doc.__cadirV46Applied) return;
-
-    const st = doc.createElement('style');
-    st.textContent = `
-      /* Layout: titre+date à gauche, actions à droite */
-      .cadir-ap-head{
-        display:flex !important;
-        align-items:center !important;
-        justify-content:space-between !important;
-        gap:10px !important;
-      }
-      .cadir-ap-left{
-        display:flex !important;
-        align-items:baseline !important;
-        gap:8px !important;
-        flex-wrap:wrap !important;
-        min-width:0 !important;
-      }
-      .cadir-ap-actions{
-        display:flex !important;
-        align-items:center !important;
-        gap:8px !important;
-        margin-left:auto !important;
-        flex:0 0 auto !important;
-      }
-
-      /* Dans les vignettes: masquer toute action de suppression */
-      .cadir-ap-card .fa-trash,
-      .cadir-ap-card .fa-trash-alt,
-      .cadir-ap-card .bi-trash,
-      .cadir-ap-card button[title*="sup" i],
-      .cadir-ap-card a[title*="sup" i]{
-        display:none !important;
-        visibility:hidden !important;
-        pointer-events:none !important;
-      }
-
-      /* Masquer le texte "Message à adresser aux parents" dans les vignettes (encore plus strict) */
-      .cadir-ap-card .ql-editor,
-      .cadir-ap-card .message,
-      .cadir-ap-card .content,
-      .cadir-ap-card [class*="message" i],
-      .cadir-ap-card [data-field*="message" i],
-      .cadir-ap-card textarea{
-        display:none !important;
-      }
-    `;
-    doc.head.appendChild(st);
-
-    function normalize(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
-
-    function findCards(){
-      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
-      const cards = new Set();
-      pens.forEach(icon=>{
-        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
-        if (!p) return;
-        let card = p;
-        for(let j=0;j<4;j++){
-          if (!card.parentElement) break;
-          const cs = doc.defaultView.getComputedStyle(card);
-          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
-          card = card.parentElement;
-        }
-        cards.add(card);
-      });
-      return Array.from(cards);
-    }
-
-    function parseDate(card){
-      const dateEl = card.querySelector('.cadir-ap-date, .ap-inline-date');
-      const t = (dateEl ? dateEl.textContent : '') || '';
-      const m = t.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
-      if (m){
-        const d = new Date(Number(m[3]), Number(m[2])-1, Number(m[1]));
-        return d.getTime();
-      }
-      return -Infinity;
-    }
-
-    function ensureHeader(card){
-      card.classList.add('cadir-ap-card');
-      // header exists ?
-      let head = card.querySelector('.cadir-ap-head');
-      if (!head) return; // created by v45; if not, ignore
-
-      // actions: find edit button (pen) inside card
-      const editBtn = card.querySelector('.fa-pen,.fa-pencil,.fa-edit')?.closest('button,a');
-      // ensure left container
-      let left = head.querySelector('.cadir-ap-left');
-      if (!left){
-        left = doc.createElement('div');
-        left.className = 'cadir-ap-left';
-        // move first child (title wrapper) into left if needed
-        const first = head.firstElementChild;
-        if (first) left.appendChild(first);
-        head.insertBefore(left, head.firstChild);
-      }
-
-      // move edit button to actions
-      if (editBtn){
-        let actions = head.querySelector('.cadir-ap-actions');
-        if (!actions){
-          actions = doc.createElement('div');
-          actions.className = 'cadir-ap-actions';
-          head.appendChild(actions);
-        }
-        actions.appendChild(editBtn);
-      }
-    }
-
-    function sortCardsNewestFirst(){
-      // Try to sort siblings if they share same parent
-      const cards = findCards();
-      if (cards.length < 2) return;
-      const parent = cards[0].parentElement;
-      if (!parent) return;
-      const siblings = cards.filter(c => c.parentElement === parent);
-      if (siblings.length < 2) return;
-      siblings.sort((a,b)=>parseDate(b)-parseDate(a));
-      siblings.forEach(c=>parent.appendChild(c));
-    }
-
-    let raf=0;
-    function apply(){
-      raf=0;
-      const cards = findCards();
-      cards.forEach(ensureHeader);
-      sortCardsNewestFirst();
-    }
-    function schedule(){ if (raf) return; raf = requestAnimationFrame(apply); }
-
-    const obs = new MutationObserver(()=>schedule());
-    obs.observe(doc.body, {childList:true, subtree:true});
-    schedule();
-    setTimeout(schedule, 350);
-    setTimeout(schedule, 1200);
-
-    doc.__cadirV46Applied = true;
+  function schedule(){
+    if (_applying || _raf) return;
+    _raf = requestAnimationFrame(function(){ _raf=0; applyToCards(); });
   }
 
-  document.addEventListener('DOMContentLoaded', function(){
-    wrapHomeTodayEvents();
-    setTimeout(wrapHomeTodayEvents, 1200);
-    setTimeout(injectPerdirCardTweaks, 900);
+  /* ─────────── Observer dans l'iframe ─────────── */
+  function setupObserver(){
+    var ifw = getIframeDocWin();
+    if (!ifw||!ifw.doc||ifw.doc.__cadirAPObs) return;
+    var obs = new MutationObserver(schedule);
+    obs.observe(ifw.doc.body, {childList:true, subtree:true});
+    ifw.doc.__cadirAPObs = true;
+  }
+
+  /* ─────────── Init ─────────── */
+  function fullInit(){
+    applyToCards();
+    setupObserver();
+  }
+
+  /* Polling robuste (gère blob recreation / timing online) — modéré */
+  setInterval(function(){
+    ensureIframeReporter();
+    var ifw = getIframeDocWin();
+    if (ifw && ifw.doc && !ifw.doc.__cadirAPObs) setupObserver();
+  }, 1500);
+
+  /* Hooks */
+  getFrame()?.addEventListener('load', function(){
+    setTimeout(fullInit, 600);
+    setTimeout(fullInit, 1400);
   });
 
-  document.getElementById('frame-perdir')?.addEventListener('load', function(){
-    setTimeout(injectPerdirCardTweaks, 500);
-    setTimeout(injectPerdirCardTweaks, 1400);
-  });
-
-  const _loadModule = window.loadModule;
+  var _loadModule = window.loadModule;
   if (typeof _loadModule === 'function'){
     window.loadModule = function(name){
-      const r = _loadModule.apply(this, arguments);
+      var r = _loadModule.apply(this, arguments);
       if (name === 'perdir'){
-        setTimeout(injectPerdirCardTweaks, 800);
-      }
-      if (name === 'home' || name === 'cadir'){
-        setTimeout(wrapHomeTodayEvents, 800);
-      }
-      return r;
-    };
-  }
-})();
-</script>
-
-
-<script>
-/* ===== V47 - Vignettes Activités pédagogiques: intitulé + date + info parents + modifier ===== */
-(function(){
-  function injectPerdirCardsV47(){
-    const fr = document.getElementById('frame-perdir');
-    if(!fr) return;
-    let doc;
-    try{ doc = fr.contentDocument; }catch(e){ return; }
-    if(!doc || doc.__cadirV47Applied) return;
-
-    const st = doc.createElement('style');
-    st.textContent = `
-      .cadir-ap-card{ padding:10px 14px !important; }
-      .cadir-ap-head{ display:flex !important; align-items:center !important; justify-content:space-between !important; gap:10px !important; }
-      .cadir-ap-left{ display:flex !important; flex-direction:column !important; gap:6px !important; min-width:0 !important; }
-      .cadir-ap-titleline{ display:flex !important; align-items:baseline !important; gap:8px !important; flex-wrap:wrap !important; }
-      .cadir-ap-date{ color:#6b7280 !important; font-size:12px !important; font-weight:800 !important; white-space:nowrap !important; }
-      .cadir-ap-meta{ display:flex !important; align-items:center !important; gap:8px !important; flex-wrap:wrap !important; }
-      .cadir-ap-parents{
-        background: rgba(59,130,246,.10) !important;
-        color:#2563eb !important;
-        border: 1px solid rgba(59,130,246,.22) !important;
-        font-weight:900 !important;
-        font-size:11px !important;
-        padding: 3px 8px !important;
-        border-radius: 999px !important;
-        text-transform:uppercase !important;
-        white-space:nowrap !important;
-      }
-      .cadir-ap-actions{ display:flex !important; align-items:center !important; gap:8px !important; margin-left:auto !important; flex:0 0 auto !important; }
-
-      /* Pas de suppression dans la vignette */
-      .cadir-ap-card .fa-trash,
-      .cadir-ap-card .fa-trash-alt,
-      .cadir-ap-card .bi-trash,
-      .cadir-ap-card button[title*="sup" i],
-      .cadir-ap-card a[title*="sup" i]{ display:none !important; visibility:hidden !important; pointer-events:none !important; }
-
-      /* Masquer le contenu long du message (rich text), pas l'info */
-      .cadir-ap-card .ql-editor,
-      .cadir-ap-card [contenteditable="true"],
-      .cadir-ap-card textarea,
-      .cadir-ap-card .richtext,
-      .cadir-ap-card .wysiwyg{ display:none !important; }
-
-      .cadir-ap-hide-long{ display:none !important; }
-    `;
-    doc.head.appendChild(st);
-
-    function normalize(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
-
-    function findCards(){
-      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
-      const cards = new Set();
-      pens.forEach(icon=>{
-        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
-        if (!p) return;
-        let card = p;
-        for(let j=0;j<4;j++){
-          if (!card.parentElement) break;
-          const cs = doc.defaultView.getComputedStyle(card);
-          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
-          card = card.parentElement;
-        }
-        cards.add(card);
-      });
-      return Array.from(cards);
-    }
-
-    function detectParentsSent(card){
-      const t = normalize(card.textContent || '');
-      if (t.includes('message envoyé aux parents') || t.includes('message envoye aux parents')) return true;
-      if (t.includes('parents inform')) return true;
-      if (card.querySelector('.fa-check, .fa-check-circle, .bi-check, .lucide-check')) return true;
-      return false;
-    }
-
-    function getTitleNode(card){
-      return card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
-    }
-
-    function getDateNode(card){
-      // date injected earlier: .ap-inline-date or already transformed .cadir-ap-date
-      return card.querySelector('.cadir-ap-date') || card.querySelector('.ap-inline-date');
-    }
-
-    function hideLongTextBlocks(card){
-      // Hide blocks that look like the message: large text nodes
-      const blocks = Array.from(card.querySelectorAll('div,p,span'));
-      blocks.forEach(b=>{
-        if (b.classList.contains('cadir-ap-parents') || b.classList.contains('cadir-ap-date')) return;
-        const txt = (b.textContent || '').trim();
-        if (txt.length >= 120) b.classList.add('cadir-ap-hide-long');
-      });
-    }
-
-    function ensureLayout(card){
-      card.classList.add('cadir-ap-card');
-
-      // Find edit action (pen) and keep it right
-      const editBtn = card.querySelector('.fa-pen,.fa-pencil,.fa-edit')?.closest('button,a');
-
-      // Ensure header container
-      let head = card.querySelector('.cadir-ap-head');
-      let left, actions, titleLine, metaLine;
-
-      if (!head){
-        head = doc.createElement('div');
-        head.className = 'cadir-ap-head';
-
-        left = doc.createElement('div');
-        left.className = 'cadir-ap-left';
-
-        actions = doc.createElement('div');
-        actions.className = 'cadir-ap-actions';
-
-        titleLine = doc.createElement('div');
-        titleLine.className = 'cadir-ap-titleline';
-
-        metaLine = doc.createElement('div');
-        metaLine.className = 'cadir-ap-meta';
-
-        // Insert head at top of card
-        card.insertBefore(head, card.firstChild);
-        head.appendChild(left);
-        head.appendChild(actions);
-        left.appendChild(titleLine);
-        left.appendChild(metaLine);
-      } else {
-        left = head.querySelector('.cadir-ap-left') || head.firstElementChild;
-        actions = head.querySelector('.cadir-ap-actions') || head.lastElementChild;
-        titleLine = head.querySelector('.cadir-ap-titleline') || left?.firstElementChild;
-        metaLine = head.querySelector('.cadir-ap-meta') || left?.lastElementChild;
-      }
-
-      // Move title + date into titleLine
-      const titleNode = getTitleNode(card);
-      const dateNode = getDateNode(card);
-      if (titleNode && titleLine && !titleLine.contains(titleNode)) titleLine.appendChild(titleNode);
-
-      if (dateNode){
-        dateNode.classList.add('cadir-ap-date');
-        // strip leading bullet if any
-        dateNode.textContent = (dateNode.textContent || '').replace(/^•\s*/,'').trim();
-        if (titleLine && !titleLine.contains(dateNode)) titleLine.appendChild(dateNode);
-      }
-
-      // Parents badge in meta line (no message content)
-      if (metaLine){
-        let badge = metaLine.querySelector('.cadir-ap-parents') || card.querySelector('.cadir-ap-parents');
-        if (!badge){
-          badge = doc.createElement('span');
-          badge.className = 'cadir-ap-parents';
-          badge.textContent = 'MESSAGE ENVOYÉ AUX PARENTS';
-          metaLine.appendChild(badge);
-        }
-        badge.style.display = detectParentsSent(card) ? 'inline-flex' : 'none';
-      }
-
-      // Keep edit button on right
-      if (editBtn && actions && editBtn.parentElement !== actions){
-        actions.appendChild(editBtn);
-      }
-
-      // Hide long message content blocks
-      hideLongTextBlocks(card);
-    }
-
-    // Apply continuously (rerenders)
-    let raf=0;
-    function apply(){
-      raf=0;
-      findCards().forEach(ensureLayout);
-    }
-    function schedule(){ if (raf) return; raf = requestAnimationFrame(apply); }
-
-    const obs = new MutationObserver(()=>schedule());
-    obs.observe(doc.body, {childList:true, subtree:true});
-    schedule();
-    setTimeout(schedule, 350);
-    setTimeout(schedule, 1200);
-
-    doc.__cadirV47Applied = true;
-  }
-
-  document.getElementById('frame-perdir')?.addEventListener('load', function(){
-    setTimeout(injectPerdirCardsV47, 600);
-    setTimeout(injectPerdirCardsV47, 1400);
-  });
-
-  const _loadModule = window.loadModule;
-  if (typeof _loadModule === 'function'){
-    window.loadModule = function(name){
-      const r = _loadModule.apply(this, arguments);
-      if (name === 'perdir'){
-        setTimeout(injectPerdirCardsV47, 900);
+        setTimeout(fullInit, 700);
+        setTimeout(fullInit, 1500);
       }
       return r;
     };
   }
 
   document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(injectPerdirCardsV47, 1200);
+    setTimeout(fullInit, 1000);
   });
+
 })();
 </script>
+
 
 
 <script>
@@ -8701,528 +6335,253 @@ Principe:
 
 
 <script>
-/* ===== V49 - Activités pédagogiques: une seule info parents + pas de description =====
-  - Ne garde QUE: Intitulé + Date (début) + badge "PARENTS INFORMÉS" (si applicable) + bouton Modifier
-  - Supprime/masque toute ligne texte existante "Parents informés" pour éviter le doublon
-  - Masque toute description/contenu (y compris message)
-*/
+/* ═══════════════════════════════════════════════════════════════════════════════
+   GOOGLE CALENDAR — Auto-sync transparent
+   ═══════════════════════════════════════════════════════════════════════════════
+   ① Au chargement: si gcal activé + clientId → auth silencieuse → fetch auto
+   ② Refresh périodique toutes les 5 min
+   ③ Gestion expiration token (re-auth silencieuse avant expiry)
+   ④ Indicateur visuel de statut dans la barre
+   ═══════════════════════════════════════════════════════════════════════════════ */
 (function(){
-  function injectPerdirV49(){
-    const fr = document.getElementById('frame-perdir');
-    if(!fr) return;
-    let doc;
-    try{ doc = fr.contentDocument; }catch(e){ return; }
-    if(!doc || doc.__cadirV49Applied) return;
+  'use strict';
 
-    const st = doc.createElement('style');
-    st.textContent = `
-      .cadir-ap-card{ padding:10px 14px !important; }
-      .cadir-ap-head{ display:flex !important; align-items:center !important; justify-content:space-between !important; gap:10px !important; }
-      .cadir-ap-left{ display:flex !important; flex-direction:column !important; gap:6px !important; min-width:0 !important; }
-      .cadir-ap-titleline{ display:flex !important; align-items:baseline !important; gap:8px !important; flex-wrap:wrap !important; }
-      .cadir-ap-date{ color:#6b7280 !important; font-size:12px !important; font-weight:800 !important; white-space:nowrap !important; }
-      .cadir-ap-meta{ display:flex !important; align-items:center !important; gap:8px !important; flex-wrap:wrap !important; }
-      .cadir-ap-badge{
-        background: rgba(16,185,129,.12) !important;
-        color:#059669 !important;
-        border: 1px solid rgba(16,185,129,.25) !important;
-        font-weight:900 !important;
-        font-size:11px !important;
-        padding: 3px 8px !important;
-        border-radius: 999px !important;
-        text-transform:uppercase !important;
-        white-space:nowrap !important;
-      }
-      .cadir-ap-actions{ display:flex !important; align-items:center !important; gap:8px !important; margin-left:auto !important; flex:0 0 auto !important; }
+  var SYNC_INTERVAL = 5 * 60 * 1000;   // 5 minutes
+  var TOKEN_MARGIN  = 5 * 60 * 1000;    // refresh 5 min avant expiry
+  var _tokenExpiresAt = 0;
+  var _syncTimer = null;
+  var _gsiLoaded = false;
+  var _silentAuthFailed = false;
+  var _tokenClient = null;
 
-      /* Pas de suppression dans la vignette */
-      .cadir-ap-card .fa-trash,
-      .cadir-ap-card .fa-trash-alt,
-      .cadir-ap-card .bi-trash,
-      .cadir-ap-card button[title*="sup" i],
-      .cadir-ap-card a[title*="sup" i]{ display:none !important; visibility:hidden !important; pointer-events:none !important; }
+  /* ─── Helpers ─── */
+  function getS(){
+    try{ return JSON.parse(localStorage.getItem(typeof STORAGE_KEY!=='undefined'?STORAGE_KEY:'pilote_settings')||'{}'); }catch(e){ return {}; }
+  }
 
-      /* Masquer tout contenu/description/message dans la vignette */
-      .cadir-ap-card .ql-editor,
-      .cadir-ap-card [contenteditable="true"],
-      .cadir-ap-card textarea,
-      .cadir-ap-card .richtext,
-      .cadir-ap-card .wysiwyg,
-      .cadir-ap-card p,
-      .cadir-ap-card pre,
-      .cadir-ap-card .description,
-      .cadir-ap-card [class*="desc" i],
-      .cadir-ap-card [data-field*="message" i]{ display:none !important; }
-    `;
-    doc.head.appendChild(st);
+  function isGcalConfigured(){
+    var s = getS();
+    return !!(s.gcalEnabled && (s.gcalClientId || '').trim());
+  }
 
-    function normalize(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
+  function getClientId(){
+    var s = getS();
+    return (s.gcalClientId || '').trim();
+  }
 
-    function findCards(){
-      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
-      const cards = new Set();
-      pens.forEach(icon=>{
-        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
-        if (!p) return;
-        let card = p;
-        for(let j=0;j<4;j++){
-          if (!card.parentElement) break;
-          const cs = doc.defaultView.getComputedStyle(card);
-          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
-          card = card.parentElement;
-        }
-        cards.add(card);
-      });
-      return Array.from(cards);
+  function hasToken(){
+    return typeof _gcalAccessToken !== 'undefined' && !!_gcalAccessToken;
+  }
+
+  function tokenAlive(){
+    if (!hasToken()) return false;
+    if (_tokenExpiresAt && Date.now() > _tokenExpiresAt - TOKEN_MARGIN) return false;
+    return true;
+  }
+
+  /* ─── Charger la bibliothèque GIS ─── */
+  function loadGSI(cb){
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2){
+      _gsiLoaded = true;
+      cb();
+      return;
     }
+    if (_gsiLoaded) { cb(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.async = true;
+    s.onload = function(){ _gsiLoaded = true; cb(); };
+    s.onerror = function(){ console.warn('[PILOTE] Impossible de charger GIS'); };
+    document.head.appendChild(s);
+  }
 
-    function detectParentsInformed(card){
-      const t = normalize(card.textContent || '');
-      if (t.includes('parents inform')) return true;
-      if (t.includes('message envoyé aux parents') || t.includes('message envoye aux parents')) return true;
-      if (card.querySelector('.fa-check, .fa-check-circle, .bi-check, .lucide-check')) return true;
-      return false;
-    }
-
-    function getTitleNode(card){
-      return card.querySelector('h3,h4,.title,.card-title,strong') || card.firstElementChild || card;
-    }
-    function getDateNode(card){
-      return card.querySelector('.cadir-ap-date') || card.querySelector('.ap-inline-date');
-    }
-
-    function removeDuplicateParentsText(card){
-      // Remove/hide any element that literally shows "Parents informés"
-      const nodes = Array.from(card.querySelectorAll('*'));
-      nodes.forEach(n=>{
-        if (n.classList && (n.classList.contains('cadir-ap-badge'))) return;
-        const txt = normalize(n.textContent || '');
-        if (txt === 'parents informés' || txt === 'parents informes' || txt.startsWith('parents inform')){
-          // don't remove title node (contains other text), so only if element is small
-          if ((n.textContent || '').trim().length <= 30){
-            n.style.display = 'none';
+  /* ─── Créer le tokenClient (une seule fois) ─── */
+  function ensureTokenClient(){
+    if (_tokenClient) return _tokenClient;
+    var clientId = getClientId();
+    if (!clientId) return null;
+    try{
+      _tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: 'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.readonly',
+        callback: function(resp){
+          if (resp.error){
+            _silentAuthFailed = true;
+            updateSyncStatus('disconnected');
+            return;
           }
+          _gcalAccessToken = resp.access_token;
+          _tokenExpiresAt = Date.now() + ((resp.expires_in || 3600) * 1000);
+          _silentAuthFailed = false;
+          updateSyncStatus('connected');
+          /* UI settings panel — update if visible */
+          var statusEl = document.getElementById('gcal-auth-status');
+          if (statusEl) statusEl.innerHTML = '<span style="color:#34a853;"><i class="fas fa-check"></i> Connecté</span>';
+          var btnEl = document.getElementById('btn-gcal-auth');
+          if (btnEl){ btnEl.innerHTML = '<i class="fas fa-check-circle"></i> Connecté'; btnEl.style.background = '#34a853'; }
+          /* Auto-fetch: get calendar list then events */
+          autoFetchAfterAuth();
         }
       });
-    }
-
-    function hideEverythingExceptHeader(card, head){
-      // hide direct children except header
-      Array.from(card.children).forEach(ch=>{
-        if (ch === head) return;
-        // keep action buttons if they are outside header (rare)
-        if (ch.querySelector && ch.querySelector('.fa-pen,.fa-pencil,.fa-edit')) return;
-        ch.style.display = 'none';
-      });
-    }
-
-    function ensureLayout(card){
-      card.classList.add('cadir-ap-card');
-
-      const editBtn = card.querySelector('.fa-pen,.fa-pencil,.fa-edit')?.closest('button,a');
-
-      // Build header if missing
-      let head = card.querySelector('.cadir-ap-head');
-      if (!head){
-        head = doc.createElement('div');
-        head.className = 'cadir-ap-head';
-        const left = doc.createElement('div');
-        left.className = 'cadir-ap-left';
-        const actions = doc.createElement('div');
-        actions.className = 'cadir-ap-actions';
-        const titleLine = doc.createElement('div');
-        titleLine.className = 'cadir-ap-titleline';
-        const meta = doc.createElement('div');
-        meta.className = 'cadir-ap-meta';
-
-        card.insertBefore(head, card.firstChild);
-        head.appendChild(left);
-        head.appendChild(actions);
-        left.appendChild(titleLine);
-        left.appendChild(meta);
-      }
-
-      const left = head.querySelector('.cadir-ap-left');
-      const actions = head.querySelector('.cadir-ap-actions');
-      const titleLine = head.querySelector('.cadir-ap-titleline');
-      const meta = head.querySelector('.cadir-ap-meta');
-
-      const titleNode = getTitleNode(card);
-      const dateNode = getDateNode(card);
-
-      if (titleNode && titleLine && !titleLine.contains(titleNode)) titleLine.appendChild(titleNode);
-      if (dateNode){
-        dateNode.classList.add('cadir-ap-date');
-        dateNode.textContent = (dateNode.textContent || '').replace(/^•\s*/,'').trim();
-        if (titleLine && !titleLine.contains(dateNode)) titleLine.appendChild(dateNode);
-      }
-
-      // Single badge (create if needed)
-      if (meta){
-        let badge = meta.querySelector('.cadir-ap-badge');
-        if (!badge){
-          badge = doc.createElement('span');
-          badge.className = 'cadir-ap-badge';
-          badge.textContent = 'PARENTS INFORMÉS';
-          meta.appendChild(badge);
-        }
-        badge.style.display = detectParentsInformed(card) ? 'inline-flex' : 'none';
-      }
-
-      if (editBtn && actions && editBtn.parentElement !== actions) actions.appendChild(editBtn);
-
-      removeDuplicateParentsText(card);
-      hideEverythingExceptHeader(card, head);
-    }
-
-    let raf=0;
-    function apply(){
-      raf=0;
-      findCards().forEach(ensureLayout);
-    }
-    function schedule(){ if (raf) return; raf = requestAnimationFrame(apply); }
-
-    const obs = new MutationObserver(()=>schedule());
-    obs.observe(doc.body, {childList:true, subtree:true});
-    schedule();
-    setTimeout(schedule, 350);
-    setTimeout(schedule, 1200);
-
-    doc.__cadirV49Applied = true;
+    }catch(e){ _tokenClient = null; }
+    return _tokenClient;
   }
 
-  document.getElementById('frame-perdir')?.addEventListener('load', function(){
-    setTimeout(injectPerdirV49, 700);
-    setTimeout(injectPerdirV49, 1600);
-  });
+  /* ─── Auth silencieuse (pas de popup si consentement déjà donné) ─── */
+  function silentAuth(cb){
+    var tc = ensureTokenClient();
+    if (!tc) return;
+    try{
+      tc.requestAccessToken({ prompt: '' });
+    }catch(e){
+      _silentAuthFailed = true;
+      if (cb) cb(false);
+    }
+  }
 
-  const _loadModule = window.loadModule;
-  if (typeof _loadModule === 'function'){
-    window.loadModule = function(name){
-      const r = _loadModule.apply(this, arguments);
-      if (name === 'perdir'){
-        setTimeout(injectPerdirV49, 900);
+  /* ─── Auth interactive (fallback si silent échoue) ─── */
+  function interactiveAuth(){
+    var tc = ensureTokenClient();
+    if (!tc) return;
+    try{ tc.requestAccessToken({ prompt: 'consent' }); }catch(e){}
+  }
+
+  /* ─── Auto-fetch après auth réussie ─── */
+  function autoFetchAfterAuth(){
+    /* S'assurer qu'il y a des agendas sélectionnés */
+    var s = getS();
+    if (s.gcalCals && s.gcalCals.length && s.gcalSel && s.gcalSel.length){
+      /* Agendas déjà connus → fetch events directement */
+      if (typeof _gcalCalsData !== 'undefined') _gcalCalsData = s.gcalCals;
+      if (typeof renderGcalList === 'function') try{ renderGcalList(s.gcalCals, s.gcalSel); }catch(e){}
+      setTimeout(function(){ doSyncEvents(); }, 200);
+    } else {
+      /* Pas d'agendas connus → fetch list d'abord (qui déclenche fetch events via fix 2) */
+      if (typeof fetchGcalList === 'function') try{ fetchGcalList(); }catch(e){}
+    }
+    startPeriodicSync();
+  }
+
+  /* ─── Sync events (wrapper robuste) ─── */
+  function doSyncEvents(){
+    if (!tokenAlive()){
+      /* Token expiré → re-auth silencieuse */
+      if (!_silentAuthFailed){
+        silentAuth();
       }
+      return;
+    }
+    if (typeof gcalFetchEvents === 'function'){
+      try{ gcalFetchEvents(); }catch(e){}
+    }
+  }
+
+  /* ─── Refresh périodique ─── */
+  function startPeriodicSync(){
+    if (_syncTimer) return;
+    _syncTimer = setInterval(function(){
+      if (!isGcalConfigured()) return;
+      if (!tokenAlive()){
+        if (!_silentAuthFailed) silentAuth();
+        return;
+      }
+      doSyncEvents();
+    }, SYNC_INTERVAL);
+  }
+
+  function stopPeriodicSync(){
+    if (_syncTimer){ clearInterval(_syncTimer); _syncTimer = null; }
+  }
+
+  /* ─── Indicateur visuel de sync ─── */
+  function updateSyncStatus(state){
+    var el = document.getElementById('gcal-sync-indicator');
+    if (!el){
+      /* Créer l'indicateur dans la barre de titre si possible */
+      var titleBar = document.querySelector('.title-bar-right, .nav-right, .top-bar-actions');
+      if (!titleBar) return;
+      el = document.createElement('span');
+      el.id = 'gcal-sync-indicator';
+      el.style.cssText = 'font-size:.68rem;cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;margin-left:8px;transition:opacity .3s;';
+      el.title = 'Google Agenda — cliquer pour resynchroniser';
+      el.onclick = function(){
+        if (tokenAlive()) doSyncEvents();
+        else if (!_silentAuthFailed) silentAuth();
+        else interactiveAuth();
+      };
+      titleBar.appendChild(el);
+    }
+    if (state === 'connected'){
+      el.innerHTML = '<i class="fab fa-google" style="color:#34a853;font-size:.7rem;"></i><span style="color:#34a853;">Sync</span>';
+      el.style.opacity = '1';
+      setTimeout(function(){ el.style.opacity = '.5'; }, 3000);
+    } else if (state === 'syncing'){
+      el.innerHTML = '<i class="fas fa-sync fa-spin" style="color:#4285f4;font-size:.65rem;"></i><span style="color:#4285f4;">Sync...</span>';
+      el.style.opacity = '1';
+    } else if (state === 'disconnected'){
+      el.innerHTML = '<i class="fab fa-google" style="color:#ccc;font-size:.7rem;"></i><span style="color:#999;">Déconnecté</span>';
+      el.style.opacity = '1';
+    }
+  }
+
+  /* ─── Hook gcalAuth() existant pour capter le token ─── */
+  var _origGcalAuth = window.gcalAuth;
+  if (typeof _origGcalAuth === 'function'){
+    window.gcalAuth = function(){
+      /* Si on a notre tokenClient avec le scope élargi, l'utiliser */
+      if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2){
+        var tc = ensureTokenClient();
+        if (tc){ tc.requestAccessToken({ prompt: 'consent' }); return; }
+      }
+      /* Sinon fallback vers l'original */
+      return _origGcalAuth.apply(this, arguments);
+    };
+  }
+
+  /* ─── Hook gcalFetchEvents pour ajouter indicateur ─── */
+  var _origFetch = window.gcalFetchEvents;
+  if (typeof _origFetch === 'function'){
+    window.gcalFetchEvents = function(){
+      updateSyncStatus('syncing');
+      var r = _origFetch.apply(this, arguments);
+      /* La fetch est async (Promise.all), on re-check après un délai */
+      setTimeout(function(){
+        if (tokenAlive()) updateSyncStatus('connected');
+        else updateSyncStatus('disconnected');
+      }, 4000);
       return r;
     };
   }
 
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(injectPerdirV49, 1300);
+  /* ─── Point d'entrée : au chargement de la page ─── */
+  function initAutoSync(){
+    if (window.location.protocol === 'file:') return;  /* OAuth ne marche pas en file:// */
+    if (!isGcalConfigured()) return;
+
+    loadGSI(function(){
+      /* Tenter l'auth silencieuse */
+      silentAuth();
+    });
+  }
+
+  /* Attendre que le DOM et les settings soient chargés */
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(initAutoSync, 800); });
+  } else {
+    setTimeout(initAutoSync, 800);
+  }
+
+  /* Aussi re-tenter quand on revient sur l'onglet (le token a pu expirer) */
+  document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState === 'visible' && isGcalConfigured()){
+      if (!tokenAlive() && !_silentAuthFailed){
+        loadGSI(function(){ silentAuth(); });
+      } else if (tokenAlive()){
+        doSyncEvents();
+      }
+    }
   });
+
 })();
 </script>
 
-
-<script>
-/* ===== V50 - Activités pédagogiques: supprimer doublon "parents informés" + bouton modifier stylisé ===== */
-(function(){
-  function injectPerdirV50(){
-    const fr = document.getElementById('frame-perdir');
-    if(!fr) return;
-    let doc;
-    try{ doc = fr.contentDocument; }catch(e){ return; }
-    if(!doc || doc.__cadirV50Applied) return;
-
-    const st = doc.createElement('style');
-    st.textContent = `
-      /* Header layout: left content + right actions */
-      .cadir-ap-head{ display:flex !important; align-items:flex-start !important; justify-content:space-between !important; gap:12px !important; }
-      .cadir-ap-left{ flex:1 1 auto !important; min-width:0 !important; }
-      .cadir-ap-actions{ flex:0 0 auto !important; margin-left:auto !important; display:flex !important; align-items:center !important; justify-content:flex-end !important; }
-
-      /* Bouton modifier stylisé */
-      .cadir-ap-edit-btn{
-        width:34px !important;
-        height:34px !important;
-        border-radius:10px !important;
-        border:1px solid rgba(15,23,42,.10) !important;
-        background:#f8fafc !important;
-        box-shadow:0 6px 16px rgba(0,0,0,.06) !important;
-        display:inline-flex !important;
-        align-items:center !important;
-        justify-content:center !important;
-        cursor:pointer !important;
-        transition: transform .08s ease, background .15s ease;
-      }
-      .cadir-ap-edit-btn:hover{ transform: translateY(-1px); background:#ffffff !important; }
-      .cadir-ap-edit-btn:active{ transform: translateY(0px); }
-
-      /* Icône dans le bouton */
-      .cadir-ap-edit-btn .fa-pen,
-      .cadir-ap-edit-btn .fa-pencil,
-      .cadir-ap-edit-btn .fa-edit{ font-size:14px !important; opacity:.9 !important; }
-
-      /* Supprimer toute ligne "Parents informés" existante (icone + texte) */
-      .cadir-ap-card .cadir-ap-old-parents{ display:none !important; }
-    `;
-    doc.head.appendChild(st);
-
-    function normalize(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
-
-    function findCards(){
-      const pens = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
-      const cards = new Set();
-      pens.forEach(icon=>{
-        const p = icon.closest('button,a')?.closest('div,li,article,section') || icon.closest('div,li,article,section');
-        if (!p) return;
-        let card = p;
-        for(let j=0;j<4;j++){
-          if (!card.parentElement) break;
-          const cs = doc.defaultView.getComputedStyle(card);
-          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
-          card = card.parentElement;
-        }
-        cards.add(card);
-      });
-      return Array.from(cards);
-    }
-
-    function removeParentsLines(card){
-      const nodes = Array.from(card.querySelectorAll('*'));
-      nodes.forEach(n=>{
-        if (n.classList && n.classList.contains('cadir-ap-badge')) return;
-        const txt = normalize(n.textContent || '');
-        // if element is basically the "parents informés" line, hide it
-        if (txt === 'parents informés' || txt === 'parents informes' || txt.includes('parents inform')){
-          // only hide if small and not containing title/date
-          if ((n.textContent || '').trim().length <= 40){
-            n.classList.add('cadir-ap-old-parents');
-          }
-        }
-      });
-    }
-
-    function styleEditButton(card){
-      const editBtn = card.querySelector('.fa-pen,.fa-pencil,.fa-edit')?.closest('button,a');
-      if (!editBtn) return null;
-      editBtn.classList.add('cadir-ap-edit-btn');
-      editBtn.setAttribute('title','Modifier');
-      editBtn.setAttribute('aria-label','Modifier');
-      return editBtn;
-    }
-
-    function enforceRightAlignment(card){
-      const head = card.querySelector('.cadir-ap-head');
-      if (!head) return;
-      const actions = head.querySelector('.cadir-ap-actions');
-      if (!actions) return;
-      const editBtn = styleEditButton(card);
-      if (editBtn && editBtn.parentElement !== actions){
-        actions.appendChild(editBtn);
-      }
-    }
-
-    let raf=0;
-    function apply(){
-      raf=0;
-      const cards = findCards();
-      cards.forEach(card=>{
-        removeParentsLines(card);
-        enforceRightAlignment(card);
-      });
-    }
-    function schedule(){ if (raf) return; raf = requestAnimationFrame(apply); }
-
-    const obs = new MutationObserver(()=>schedule());
-    obs.observe(doc.body, {childList:true, subtree:true});
-    schedule();
-    setTimeout(schedule, 350);
-    setTimeout(schedule, 1200);
-
-    doc.__cadirV50Applied = true;
-  }
-
-  document.getElementById('frame-perdir')?.addEventListener('load', function(){
-    setTimeout(injectPerdirV50, 700);
-    setTimeout(injectPerdirV50, 1600);
-  });
-
-  const _loadModule = window.loadModule;
-  if (typeof _loadModule === 'function'){
-    window.loadModule = function(name){
-      const r = _loadModule.apply(this, arguments);
-      if (name === 'perdir'){
-        setTimeout(injectPerdirV50, 900);
-      }
-      return r;
-    };
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(injectPerdirV50, 1300);
-  });
-})();
-</script>
-
-
-<script>
-/* ===== V51 - Fix vignettes blanches quand on filtre "Message envoyé aux parents" =====
-Cause: nos masquages CSS trop larges cachent le contenu de certaines cartes (titre/date) après rerender/filtre.
-Fix:
-- Ne plus masquer globalement p/div/etc. dans .cadir-ap-card
-- Masquer uniquement le bloc "Message à adresser aux parents" / editeur (ql-editor, textarea, contenteditable)
-- Reconstruit le header (titre+date+badge) même si le module rend autrement après filtre
-*/
-(function(){
-  function injectFix(){
-    const fr = document.getElementById('frame-perdir');
-    if(!fr) return;
-    let doc;
-    try{ doc = fr.contentDocument; }catch(e){ return; }
-    if(!doc || doc.__cadirV51Applied) return;
-
-    const st = doc.createElement('style');
-    st.textContent = `
-      /* Cancel overly broad hiding from older versions */
-      .cadir-ap-card p,
-      .cadir-ap-card pre,
-      .cadir-ap-card .description,
-      .cadir-ap-card [class*="desc" i]{ display: revert !important; }
-
-      /* Only hide message editor/long message content */
-      .cadir-ap-card .ql-editor,
-      .cadir-ap-card [contenteditable="true"],
-      .cadir-ap-card textarea,
-      .cadir-ap-card .richtext,
-      .cadir-ap-card .wysiwyg,
-      .cadir-ap-card [data-field*="message" i]{ display:none !important; }
-    `;
-    doc.head.appendChild(st);
-
-    function normalize(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
-
-    function findCards(){
-      // cards are those having edit icon
-      const icons = Array.from(doc.querySelectorAll('.fa-pen,.fa-pencil,.fa-edit'));
-      const cards = new Set();
-      icons.forEach(ic=>{
-        let card = ic.closest('div,li,article,section');
-        if (!card) return;
-        for(let j=0;j<4;j++){
-          if (!card.parentElement) break;
-          const cs = doc.defaultView.getComputedStyle(card);
-          if ((cs.borderRadius && cs.borderRadius !== '0px') || cs.boxShadow !== 'none') break;
-          card = card.parentElement;
-        }
-        cards.add(card);
-      });
-      return Array.from(cards);
-    }
-
-    function detectParentsInformed(card){
-      const t = normalize(card.textContent || '');
-      if (t.includes('parents inform')) return true;
-      if (t.includes('message envoyé aux parents') || t.includes('message envoye aux parents')) return true;
-      if (card.querySelector('.fa-check, .fa-check-circle, .bi-check, .lucide-check')) return true;
-      return false;
-    }
-
-    function getTitle(card){
-      const el = card.querySelector('h3,h4,.title,.card-title,strong');
-      if (el && (el.textContent||'').trim()) return el;
-      // fallback: first text node span/div with short text
-      const cand = Array.from(card.querySelectorAll('div,span,p,strong')).find(n => {
-        const tx = (n.textContent||'').trim();
-        return tx && tx.length <= 40 && !/parents inform|message envoyé|message envoye|lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche/i.test(tx);
-      });
-      return cand || null;
-    }
-
-    function getDateEl(card){
-      return card.querySelector('.cadir-ap-date') || card.querySelector('.ap-inline-date') || Array.from(card.querySelectorAll('div,span')).find(n => /\b\d{1,2}\/\d{1,2}\/\d{4}\b/.test(n.textContent||'') || /(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)/i.test(n.textContent||''));
-    }
-
-    function ensureHeader(card){
-      card.classList.add('cadir-ap-card');
-      let head = card.querySelector('.cadir-ap-head');
-      if (!head){
-        head = doc.createElement('div');
-        head.className = 'cadir-ap-head';
-        const left = doc.createElement('div');
-        left.className = 'cadir-ap-left';
-        const actions = doc.createElement('div');
-        actions.className = 'cadir-ap-actions';
-        const titleLine = doc.createElement('div');
-        titleLine.className = 'cadir-ap-titleline';
-        const meta = doc.createElement('div');
-        meta.className = 'cadir-ap-meta';
-        card.insertBefore(head, card.firstChild);
-        head.appendChild(left);
-        head.appendChild(actions);
-        left.appendChild(titleLine);
-        left.appendChild(meta);
-      }
-      const titleLine = head.querySelector('.cadir-ap-titleline');
-      const meta = head.querySelector('.cadir-ap-meta');
-      const actions = head.querySelector('.cadir-ap-actions');
-
-      const titleNode = getTitle(card);
-      if (titleNode && titleLine && !titleLine.contains(titleNode)) titleLine.appendChild(titleNode);
-
-      const dateNode = getDateEl(card);
-      if (dateNode){
-        dateNode.classList.add('cadir-ap-date');
-        dateNode.textContent = (dateNode.textContent||'').replace(/^•\s*/,'').trim();
-        if (titleLine && !titleLine.contains(dateNode)) titleLine.appendChild(dateNode);
-      }
-
-      // badge
-      if (meta){
-        let badge = meta.querySelector('.cadir-ap-badge');
-        if (!badge){
-          badge = doc.createElement('span');
-          badge.className = 'cadir-ap-badge';
-          badge.textContent = 'PARENTS INFORMÉS';
-          meta.appendChild(badge);
-        }
-        badge.style.display = detectParentsInformed(card) ? 'inline-flex' : 'none';
-      }
-
-      // style edit button and keep in actions
-      const editBtn = card.querySelector('.fa-pen,.fa-pencil,.fa-edit')?.closest('button,a');
-      if (editBtn){
-        editBtn.classList.add('cadir-ap-edit-btn');
-        if (actions && editBtn.parentElement !== actions) actions.appendChild(editBtn);
-      }
-    }
-
-    let raf=0;
-    function apply(){
-      raf=0;
-      findCards().forEach(ensureHeader);
-    }
-    function schedule(){ if (raf) return; raf = requestAnimationFrame(apply); }
-
-    const obs = new MutationObserver(()=>schedule());
-    obs.observe(doc.body, {childList:true, subtree:true});
-    schedule();
-    setTimeout(schedule, 350);
-    setTimeout(schedule, 1200);
-
-    doc.__cadirV51Applied = true;
-  }
-
-  document.getElementById('frame-perdir')?.addEventListener('load', function(){
-    setTimeout(injectFix, 700);
-    setTimeout(injectFix, 1600);
-  });
-
-  const _loadModule = window.loadModule;
-  if (typeof _loadModule === 'function'){
-    window.loadModule = function(name){
-      const r = _loadModule.apply(this, arguments);
-      if (name === 'perdir'){
-        setTimeout(injectFix, 900);
-      }
-      return r;
-    };
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(injectFix, 1300);
-  });
-})();
-</script>
-
-</body></html>
